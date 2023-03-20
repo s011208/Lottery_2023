@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String) {
+    android.util.Log.v("QQQQ", "greeting")
     Text(text = "Hello $name!")
 }
 

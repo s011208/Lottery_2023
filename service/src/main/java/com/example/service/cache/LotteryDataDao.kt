@@ -2,6 +2,7 @@ package com.example.service.cache
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.data.LotteryData
 
@@ -13,6 +14,6 @@ interface LotteryDataDao {
     @Query("DELETE FROM lotterydata")
     fun delete()
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg users: LotteryData)
 }
