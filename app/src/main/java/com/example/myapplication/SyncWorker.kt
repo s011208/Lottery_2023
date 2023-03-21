@@ -42,6 +42,13 @@ class SyncWorker(context: Context, params: WorkerParameters) :
                     is MyEvents.EndSync -> {
                         onStopChannel.send(if (it.error == null) SUCCESS else ERROR)
                     }
+                    is MyEvents.SyncingProgress -> {
+                        when (it.type) {
+                            MyViewModel.LotteryType.Lto -> setForegroundAsync("Sync is running", "Lto")
+                            MyViewModel.LotteryType.LtoBig -> setForegroundAsync("Sync is running", "LtoBig")
+                            MyViewModel.LotteryType.LtoHk -> setForegroundAsync("Sync is running", "LtoHk")
+                        }
+                    }
                     else -> {
                         // ignore
                     }
@@ -52,7 +59,7 @@ class SyncWorker(context: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         android.util.Log.v("QQQQ", "doWork")
-        setForegroundAsync(createForegroundInfo())
+        setForegroundAsync("Sync is running", "Preparing for sync")
         viewModel.handleEvent(MyEvents.StartSync)
         val result = onStopChannel.receive()
         android.util.Log.v("QQQQ", "done: $result")
@@ -64,8 +71,11 @@ class SyncWorker(context: Context, params: WorkerParameters) :
 //        return Result.success()
     }
 
-    private fun createForegroundInfo(): ForegroundInfo {
-        val title = "Sync"
+    private fun setForegroundAsync(title: String, content: String) {
+        setForegroundAsync(createForegroundInfo(title, content))
+    }
+
+    private fun createForegroundInfo(title: String, content: String): ForegroundInfo {
         val cancel = "Cancel"
         // This PendingIntent can be used to cancel the worker
         val intent = WorkManager.getInstance(applicationContext)
@@ -76,7 +86,7 @@ class SyncWorker(context: Context, params: WorkerParameters) :
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setContentTitle(title)
             .setTicker(title)
-            .setContentText("Syncing")
+            .setContentText(content)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setOngoing(true)
             // Add the cancel action to the notification which can

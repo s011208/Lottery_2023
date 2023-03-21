@@ -6,7 +6,7 @@ import com.example.data.LotteryType
 import java.text.SimpleDateFormat
 import java.util.*
 
-abstract class Parser {
+abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
     companion object {
         private const val DATE_FORMATTER = "yyyy/MM/dd"
     }
@@ -16,21 +16,36 @@ abstract class Parser {
     internal val dateFormat = SimpleDateFormat(DATE_FORMATTER, Locale.getDefault())
 
     fun parse(): Result<LotteryData> {
-        val lotteryDataList = mutableListOf<LotteryRowData>()
+        val lotteryDataList = mutableSetOf<LotteryRowData>()
 
         try {
             do {
-                android.util.Log.v("QQQQ", "lotteryDataList: ${lotteryDataList.size}")
+                android.util.Log.v(
+                    "QQQQ",
+                    "type: ${getType()}, url: ${getUrl()}"
+                )
                 lotteryDataList.addAll(parseInternal(getUrl()))
+                if (cacheLotteryData != null) {
+                    val cacheLotteryDataSet = cacheLotteryData.dataList.toMutableSet()
+                    if (!cacheLotteryDataSet.addAll(lotteryDataList)) {
+                        // merge and finish
+                        lotteryDataList.clear()
+                        lotteryDataList.addAll(cacheLotteryDataSet)
+                        break
+                    }
+                }
                 ++currentPage
-            } while (lotteryDataList.isNotEmpty() && lotteryDataList.last().date != getLastDataDate())
+                val minDate = lotteryDataList.toList().minOf { it.date }
+                android.util.Log.i("QQQQ", "minDate: $minDate, getLastDataDate(): ${getLastDataDate()}")
+            } while (lotteryDataList.isNotEmpty() && minDate > getLastDataDate())
         } catch (exception: Throwable) {
             return Result.failure(exception)
         }
 
         return Result.success(
             LotteryData(
-                dataList = lotteryDataList,
+                dataList = lotteryDataList.toMutableList()
+                    .also { it.sortByDescending { lotteryRowData -> lotteryRowData.date } },
                 type = getType(),
                 normalNumberCount = getNormalCount(),
                 specialNumberCount = getSpecialCount(),

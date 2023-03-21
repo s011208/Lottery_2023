@@ -8,9 +8,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class MyViewModel(private val syncUseCase: SyncUseCase): ViewModel() {
-    private val _uiState = MutableStateFlow(UiState.Empty)
-    val uiState : StateFlow<UiState> = _uiState.asStateFlow()
+class MyViewModel(private val syncUseCase: SyncUseCase) : ViewModel() {
+    private val _uiState = MutableStateFlow<UiState>(UiState.Empty)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val _eventState = MutableSharedFlow<MyEvents>()
     val eventStateSharedFlow = _eventState.asSharedFlow()
@@ -19,7 +19,12 @@ class MyViewModel(private val syncUseCase: SyncUseCase): ViewModel() {
         when (event) {
             MyEvents.StartSync -> {
                 viewModelScope.launch(Dispatchers.IO) {
+                    _eventState.emit(MyEvents.SyncingProgress(LotteryType.Lto))
                     syncUseCase.parseLto()
+                    _eventState.emit(MyEvents.SyncingProgress(LotteryType.LtoBig))
+                    syncUseCase.parseLtoBig()
+                    _eventState.emit(MyEvents.SyncingProgress(LotteryType.LtoHk))
+                    syncUseCase.parseLtoHk()
                     _eventState.emit(MyEvents.EndSync())
                 }
             }
@@ -27,5 +32,9 @@ class MyViewModel(private val syncUseCase: SyncUseCase): ViewModel() {
                 // ignore
             }
         }
+    }
+
+    enum class LotteryType {
+        Lto, LtoBig, LtoHk
     }
 }

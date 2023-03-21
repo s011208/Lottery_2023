@@ -39,12 +39,14 @@ class MyApplication : Application() {
 
         val syncTask = PeriodicWorkRequestBuilder<SyncWorker>(
             6, TimeUnit.HOURS, // repeatInterval (the period cycle)
-            15, TimeUnit.MINUTES) // flexInterval
+            15, TimeUnit.MINUTES
+        ) // flexInterval
             .setConstraints(constraints)
             .build()
 
 
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork("Sync task", ExistingPeriodicWorkPolicy.REPLACE, syncTask)
+        WorkManager.getInstance(context)
+            .enqueueUniquePeriodicWork("Sync task", ExistingPeriodicWorkPolicy.REPLACE, syncTask)
         android.util.Log.v("QQQQ", "startSyncTask end")
 
         // TODO 移到下載的地方
@@ -52,10 +54,12 @@ class MyApplication : Application() {
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
                 OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS)
+                TimeUnit.MILLISECONDS
+            )
             .build()
 
-        WorkManager.getInstance(context).enqueueUniqueWork("Test", ExistingWorkPolicy.REPLACE, myWorkRequest)
+        WorkManager.getInstance(context)
+            .enqueueUniqueWork("Test", ExistingWorkPolicy.REPLACE, myWorkRequest)
     }
 }
 
@@ -67,5 +71,7 @@ val myModule = module {
         ).build()
     }
 
-    single { MyViewModel(SyncUseCase(ParseService())) }
+    single { MyViewModel(get()) }
+    single { ParseService() }
+    single { SyncUseCase(get()) }
 }

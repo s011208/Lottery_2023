@@ -11,6 +11,9 @@ interface LotteryDataDao {
     @Query("SELECT * FROM lotterydata")
     fun getAll(): List<LotteryData>
 
+    @Query("SELECT * FROM lotterydata WHERE type=:id")
+    fun getLottery(id: String): LotteryData?
+
     @Query("DELETE FROM lotterydata")
     fun delete()
 

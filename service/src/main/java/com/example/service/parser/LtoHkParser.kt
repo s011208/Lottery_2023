@@ -5,13 +5,13 @@ import com.example.data.LotteryRowData
 import com.example.data.LotteryType
 import org.jsoup.Jsoup
 
-class LtoParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData)  {
+class LtoHkParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData)  {
     companion object {
-        private const val URL = "https://www.pilio.idv.tw/lto/list.asp?orderby=new&indexpage="
+        private const val URL = "https://www.pilio.idv.tw/ltohk/list.asp?indexpage="
 
         private const val COLUMN_COUNT = 3
 
-        private const val LAST_DATA_DATE = 1201132800000
+        private const val LAST_DATA_DATE = 1025740800000
     }
 
     override fun getBaseUrl(): String = URL
@@ -43,7 +43,7 @@ class LtoParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData)  {
 
     override fun getLastDataDate(): Long = LAST_DATA_DATE
 
-    override fun getType(): LotteryType = LotteryType.Lto
+    override fun getType(): LotteryType = LotteryType.LtoHK
 
     override fun getNormalCount(): Int = 6
 
