@@ -9,6 +9,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.example.data.LotteryType
 import com.example.myapplication.vm.MyEvents
 import com.example.myapplication.vm.MyViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -44,9 +45,9 @@ class SyncWorker(context: Context, params: WorkerParameters) :
                     }
                     is MyEvents.SyncingProgress -> {
                         when (it.type) {
-                            MyViewModel.LotteryType.Lto -> setForegroundAsync("Sync is running", "Lto")
-                            MyViewModel.LotteryType.LtoBig -> setForegroundAsync("Sync is running", "LtoBig")
-                            MyViewModel.LotteryType.LtoHk -> setForegroundAsync("Sync is running", "LtoHk")
+                            LotteryType.Lto -> setForegroundAsync("Sync is running", "Lto")
+                            LotteryType.LtoBig -> setForegroundAsync("Sync is running", "LtoBig")
+                            LotteryType.LtoHK -> setForegroundAsync("Sync is running", "LtoHk")
                         }
                     }
                     else -> {

@@ -18,16 +18,16 @@ fun MainScreen() {
     val viewModel: MyViewModel by inject(MyViewModel::class.java)
     val state = viewModel.uiState.collectAsState()
 
-    when (state.value) {
+    when (val value = state.value) {
         is UiState.Empty -> {
             Box {
                 Button(onClick = { /*TODO*/ }) {
-                    
+                    Text(text = "Click me")
                 }
             }
         }
         is UiState.Show -> {
-
+            Table(value.rowList)
         }
     }
 

@@ -45,9 +45,12 @@ class LtoBigParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData) {
 
     override fun getType(): LotteryType = LotteryType.LtoBig
 
-    override fun getNormalCount(): Int = 6
+    override fun getNormalCount(): Int = 49
 
     override fun getSpecialCount(): Int = 1
+    override fun isSpecialNumberSeparate(): Boolean {
+        return false
+    }
 
     private fun dateConverter(date: String): Long {
         return dateFormat.parse(date.substring(0, date.length - 3).trim())?.time ?: 0L

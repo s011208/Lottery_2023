@@ -1,12 +1,14 @@
 package com.example.myapplication.vm
 
+import com.example.data.LotteryType
+
 sealed class MyEvents {
 
-    object StartSync: MyEvents()
+    object StartSync : MyEvents()
 
-    data class EndSync(val error: Throwable? = null): MyEvents()
+    data class EndSync(val error: Throwable? = null) : MyEvents()
 
-    data class SyncingProgress(val type: MyViewModel.LotteryType): MyEvents()
+    data class SyncingProgress(val type: LotteryType) : MyEvents()
 
 
 }

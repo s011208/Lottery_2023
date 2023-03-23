@@ -49,6 +49,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
                 type = getType(),
                 normalNumberCount = getNormalCount(),
                 specialNumberCount = getSpecialCount(),
+                isSpecialNumberSeparate = isSpecialNumberSeparate(),
             )
         )
     }
@@ -66,4 +67,6 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
     internal abstract fun getNormalCount(): Int
 
     internal abstract fun getSpecialCount(): Int
+
+    internal abstract fun isSpecialNumberSeparate(): Boolean
 }

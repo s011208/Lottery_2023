@@ -17,10 +17,11 @@ data class LotteryRowData(
 
 @Entity
 data class LotteryData(
-    @ColumnInfo val dataList: List<LotteryRowData> = listOf(),
     @PrimaryKey val type: LotteryType,
+    @ColumnInfo val dataList: List<LotteryRowData> = listOf(),
     @ColumnInfo val normalNumberCount: Int,
-    @ColumnInfo val specialNumberCount: Int
+    @ColumnInfo val specialNumberCount: Int,
+    @ColumnInfo val isSpecialNumberSeparate: Boolean,
 )
 
 enum class LotteryType {

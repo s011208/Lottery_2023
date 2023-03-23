@@ -13,15 +13,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.compose.MainScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.example.myapplication.vm.MyViewModel
 import com.example.service.service.ParseService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycle.addObserver(viewModel)
+
         setContent {
             MyApplicationTheme {
 //                LaunchedEffect(this) {

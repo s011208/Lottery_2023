@@ -45,7 +45,7 @@ class LtoHkParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData)  {
 
     override fun getType(): LotteryType = LotteryType.LtoHK
 
-    override fun getNormalCount(): Int = 6
+    override fun getNormalCount(): Int = 49
 
     override fun getSpecialCount(): Int = 1
 
@@ -59,5 +59,9 @@ class LtoHkParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData)  {
 
     private fun specialNumberConverter(number: String): List<Int> {
         return ArrayList<Int>().apply { add(number.toInt()) }
+    }
+
+    override fun isSpecialNumberSeparate(): Boolean {
+        return false
     }
 }
