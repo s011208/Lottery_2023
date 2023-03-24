@@ -43,12 +43,12 @@ object LotteryDataMapper {
             }
             SortType.AddToTen -> {
                 val makeLotteryData = makeLotteryData(lotteryData)
-                val comparator = GridComparator(ADD_TO_TEN_ORDER)
+                val comparator = GridComparator(ADD_TO_TEN_ORDER, lotteryData.isSpecialNumberSeparate)
                 makeLotteryData.map { row -> row.copy(dataList = row.dataList.sortedWith(comparator)) }
             }
             SortType.LastDigit -> {
                 val makeLotteryData = makeLotteryData(lotteryData)
-                val comparator = GridComparator(LAST_DIGIT_ORDER)
+                val comparator = GridComparator(LAST_DIGIT_ORDER, lotteryData.isSpecialNumberSeparate)
                 makeLotteryData.map { row -> row.copy(dataList = row.dataList.sortedWith(comparator)) }
             }
         }
@@ -84,14 +84,17 @@ object LotteryDataMapper {
                 )
             )
         }
-        for (number in 1..specialNumberCount) {
-            headerRowList.add(
-                Grid(
-                    index = number,
-                    text = number.toString(),
-                    type = Grid.Type.Special
+
+        if (lotteryData.isSpecialNumberSeparate) {
+            for (number in 1..specialNumberCount) {
+                headerRowList.add(
+                    Grid(
+                        index = number,
+                        text = number.toString(),
+                        type = Grid.Type.Special
+                    )
                 )
-            )
+            }
         }
 
         rtn.add(Row(headerRowList, Row.Type.Header))
@@ -263,12 +266,17 @@ object LotteryDataMapper {
     }
 }
 
-private class GridComparator(private val orderList: List<Int>) : Comparator<Grid> {
+private class GridComparator(
+    private val orderList: List<Int>,
+    private val isSpecialNumberSeparate: Boolean,
+) : Comparator<Grid> {
     override fun compare(p0: Grid?, p1: Grid?): Int {
         if (p0 == p1) return 0
         if (p0 == null) return 1
         if (p1 == null) return -1
-        if (p0.type == p1.type) {
+        if (p0.type == p1.type ||
+            (!isSpecialNumberSeparate && p0.type != Grid.Type.Date && p1.type != Grid.Type.Date)
+        ) {
             return if (p0.type == Grid.Type.Normal || p0.type == Grid.Type.Special) {
                 orderList.indexOf(p0.index).compareTo(orderList.indexOf(p1.index))
             } else {

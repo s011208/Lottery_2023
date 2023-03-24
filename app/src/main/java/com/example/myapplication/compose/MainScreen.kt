@@ -18,7 +18,7 @@ fun MainScreen() {
     when (val value = state.value.mapToUiState()) {
         is UiState.Empty -> {
             Box {
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = { throw RuntimeException("Test Crash") }) {
                     Text(text = "Click me")
                 }
             }
