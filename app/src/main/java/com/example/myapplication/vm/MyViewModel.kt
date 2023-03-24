@@ -5,11 +5,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.LotteryType
-import com.example.service.SortType
+import com.example.myapplication.SortType
 import com.example.service.usecase.DisplayUseCase
 import com.example.service.usecase.SyncUseCase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -17,8 +16,9 @@ class MyViewModel(
     private val syncUseCase: SyncUseCase,
     private val displayUseCase: DisplayUseCase,
 ) : ViewModel(), DefaultLifecycleObserver {
-    private val _uiState = MutableStateFlow<UiState>(UiState.Empty)
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    private val _viewModelState = MutableStateFlow(ViewModelState())
+    val viewModelState: StateFlow<ViewModelState> = _viewModelState.asStateFlow()
 
     private val _eventState = MutableSharedFlow<MyEvents>()
     val eventStateSharedFlow = _eventState.asSharedFlow()
@@ -26,8 +26,25 @@ class MyViewModel(
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
         viewModelScope.launch(Dispatchers.IO) {
-            val data = displayUseCase.getLotteryData(LotteryType.Lto) ?: return@launch
-            _uiState.emit(UiState.Show(LotteryType.Lto, SortType.Normal, LotteryDataMapper.map(data, SortType.Normal)))
+            _viewModelState.emit(
+                _viewModelState.value.copy(
+                    loadingHint = "Loading ${_viewModelState.value.lotteryType}",
+                    isLoading = true
+                )
+            )
+            val data =
+                displayUseCase.getLotteryData(_viewModelState.value.lotteryType) ?: return@launch
+            val sortType = SortType.NormalOrder
+            val result = LotteryDataMapper.map(data, sortType)
+            android.util.Log.e("QQQQ", "${_viewModelState.value}")
+            _viewModelState.emit(
+                _viewModelState.value.copy(
+                    isLoading = false,
+                    lotteryType = LotteryType.Lto,
+                    sortType = sortType,
+                    rowList = result
+                )
+            )
         }
     }
 
@@ -42,6 +59,46 @@ class MyViewModel(
                     _eventState.emit(MyEvents.SyncingProgress(LotteryType.LtoHK))
                     syncUseCase.parseLtoHk()
                     _eventState.emit(MyEvents.EndSync())
+                }
+            }
+            is MyEvents.ChangeSortType -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    _viewModelState.emit(
+                        _viewModelState.value.copy(
+                            loadingHint = "Loading ${_viewModelState.value.lotteryType}",
+                            isLoading = true
+                        )
+                    )
+                    val data = displayUseCase.getLotteryData(_viewModelState.value.lotteryType)
+                        ?: return@launch
+                    val result = LotteryDataMapper.map(data, event.type)
+
+                    _viewModelState.emit(
+                        _viewModelState.value.copy(
+                            isLoading = false,
+                            sortType = event.type,
+                            rowList = result
+                        )
+                    )
+                }
+            }
+            is MyEvents.ChangeLotteryType -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    _viewModelState.emit(
+                        _viewModelState.value.copy(
+                            loadingHint = "Loading ${event.type}",
+                            isLoading = true
+                        )
+                    )
+                    val data = displayUseCase.getLotteryData(event.type) ?: return@launch
+                    val result = LotteryDataMapper.map(data, _viewModelState.value.sortType)
+                    _viewModelState.emit(
+                        _viewModelState.value.copy(
+                            isLoading = false,
+                            lotteryType = event.type,
+                            rowList = result
+                        )
+                    )
                 }
             }
             else -> {
