@@ -2,8 +2,7 @@ package com.example.myapplication.vm
 
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
-import com.example.myapplication.SortType
-import com.example.myapplication.vm.LotteryDataMapper.getMonth
+import com.example.service.cache.SortType
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.Comparator

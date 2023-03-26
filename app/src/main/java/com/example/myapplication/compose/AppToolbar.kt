@@ -8,13 +8,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.data.LotteryType
-import com.example.myapplication.SortType
+import com.example.service.cache.SortType
 import com.example.myapplication.compose.ViewModelStateMapper.mapToUiState
 import com.example.myapplication.compose.appsettings.FontSettingsDialog
 import com.example.myapplication.compose.general.AppToolbarSettingsDropDownText
 import com.example.myapplication.compose.general.AppToolbarSettingsText
 import com.example.myapplication.vm.MyEvents
 import com.example.myapplication.vm.MyViewModel
+import com.example.service.cache.DisplayOrder
 import org.koin.java.KoinJavaComponent
 
 private val PADDING = 4
@@ -42,6 +43,7 @@ fun AppToolbar() {
                     ScrollToTop(viewModel)
                     LotteryTypeDropdownMenu(value, viewModel)
                     SortTypeDropdownMenu(value, viewModel)
+                    DisplayOrderDropdownMenu(value, viewModel)
                     SettingsDropdownMenu(value, viewModel)
                 }
                 else -> {}
@@ -52,12 +54,16 @@ fun AppToolbar() {
 
 @Composable
 fun ScrollToBottom(viewModel: MyViewModel) {
-    AppToolbarSettingsText(text = "Scroll to bottom", Modifier.clickable { viewModel.handleEvent(MyEvents.ScrollToBottom) })
+    AppToolbarSettingsText(
+        text = "Scroll to bottom",
+        Modifier.clickable { viewModel.handleEvent(MyEvents.ScrollToBottom) })
 }
 
 @Composable
 fun ScrollToTop(viewModel: MyViewModel) {
-    AppToolbarSettingsText(text = "Scroll to top", Modifier.clickable { viewModel.handleEvent(MyEvents.ScrollToTop) })
+    AppToolbarSettingsText(
+        text = "Scroll to top",
+        Modifier.clickable { viewModel.handleEvent(MyEvents.ScrollToTop) })
 }
 
 @Composable
@@ -108,6 +114,35 @@ private fun SortTypeDropdownMenu(
                 DropdownMenuItem(
                     onClick = {
                         viewModel.handleEvent(MyEvents.ChangeSortType(itemValue))
+                        expanded = false
+                    },
+                    enabled = true,
+                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DisplayOrderDropdownMenu(
+    value: UiState.Show,
+    viewModel: MyViewModel
+) {
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    Box(modifier = Modifier.padding(PADDING.dp)) {
+        AppToolbarSettingsText(value.displayOrder.name, Modifier.clickable { expanded = true })
+
+        DropdownMenu(expanded = expanded, onDismissRequest = {
+            expanded = false
+        }) {
+            DisplayOrder.values().forEachIndexed { itemIndex, itemValue ->
+                DropdownMenuItem(
+                    onClick = {
+                        viewModel.handleEvent(MyEvents.ChangeDisplayOrder(itemValue))
                         expanded = false
                     },
                     enabled = true,

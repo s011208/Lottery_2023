@@ -1,7 +1,8 @@
 package com.example.myapplication.vm
 
 import com.example.data.LotteryType
-import com.example.myapplication.SortType
+import com.example.service.cache.DisplayOrder
+import com.example.service.cache.SortType
 
 data class ViewModelState(
     val lotteryType: LotteryType = LotteryType.Lto,
@@ -10,6 +11,7 @@ data class ViewModelState(
     val isLoading: Boolean = false,
     val loadingHint: String = "",
     val fontSize: Int = 16,
+    val displayOrder: DisplayOrder = DisplayOrder.DESCEND,
 )
 
 data class Row(

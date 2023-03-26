@@ -7,8 +7,10 @@ import androidx.room.Room
 import androidx.work.*
 import com.example.myapplication.vm.MyViewModel
 import com.example.service.cache.LotteryDataDatabase
+import com.example.service.cache.Preferences
 import com.example.service.service.ParseService
 import com.example.service.usecase.DisplayUseCase
+import com.example.service.usecase.SettingsUseCase
 import com.example.service.usecase.SyncUseCase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -72,8 +74,10 @@ val myModule = module {
         ).build()
     }
 
-    single { MyViewModel(get(), get()) }
+    single { MyViewModel(get(), get(), get()) }
     single { ParseService() }
     single { SyncUseCase(get()) }
     single { DisplayUseCase() }
+    single { Preferences(get()) }
+    single { SettingsUseCase(get()) }
 }

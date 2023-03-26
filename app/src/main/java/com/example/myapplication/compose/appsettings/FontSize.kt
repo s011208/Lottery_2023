@@ -22,12 +22,8 @@ import androidx.compose.ui.window.Dialog
 import com.example.myapplication.compose.general.DialogText
 import com.example.myapplication.vm.MyEvents
 import com.example.myapplication.vm.MyViewModel
+import com.example.service.cache.FontSize
 import org.koin.java.KoinJavaComponent
-
-
-enum class FontSize {
-    EXTRA_SMALL, SMALL, NORMAL, LARGE, EXTRA_LARGE
-}
 
 @Composable
 fun FontSettingsDialog(dialogOpen: MutableState<Boolean>) {
