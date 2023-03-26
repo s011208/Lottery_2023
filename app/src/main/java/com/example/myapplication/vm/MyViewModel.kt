@@ -114,17 +114,17 @@ class MyViewModel(
             }
             is MyEvents.ChangeFontSize -> {
                 viewModelScope.launch {
+                    val fontSize = when (event.fontSize) {
+                        FontSize.EXTRA_SMALL -> 12
+                        FontSize.SMALL -> 14
+                        FontSize.NORMAL -> 16
+                        FontSize.LARGE -> 18
+                        FontSize.EXTRA_LARGE -> 20
+                    }
                     _viewModelState.emit(
-                        _viewModelState.value.copy(
-                            fontSize = when (event.fontSize) {
-                                FontSize.EXTRA_SMALL -> 12
-                                FontSize.SMALL -> 14
-                                FontSize.NORMAL -> 16
-                                FontSize.LARGE -> 18
-                                FontSize.EXTRA_LARGE -> 20
-                            }
-                        )
+                        _viewModelState.value.copy(fontSize = fontSize)
                     )
+                    _eventState.emit(MyEvents.FontSizeChanged(fontSize))
                 }
             }
             else -> {

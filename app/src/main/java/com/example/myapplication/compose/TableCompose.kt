@@ -2,15 +2,14 @@ package com.example.myapplication.compose
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Divider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
@@ -35,6 +34,8 @@ fun Table(rowList: List<Row>) {
     val horizontalScrollState = rememberScrollState(0)
     val lazyListState = rememberLazyListState(0)
     val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
+    val fontSize: MutableState<Int> =
+        remember { mutableStateOf(viewModel.viewModelState.value.fontSize) }
 
     LaunchedEffect("Table") {
         viewModel.eventStateSharedFlow.collect { myEvent ->
@@ -45,8 +46,20 @@ fun Table(rowList: List<Row>) {
                 MyEvents.ScrollToTop -> {
                     lazyListState.scrollToItem(0)
                 }
+                is MyEvents.FontSizeChanged -> {
+                    fontSize.value = myEvent.fontSize
+                }
                 else -> {}
             }
+        }
+    }
+    if (rowList.isNotEmpty()) {
+        val first = rowList.first()
+        Column(modifier = Modifier.horizontalScroll(horizontalScrollState)) {
+            RowFactory(
+                first,
+                fontSize.value,
+            )
         }
     }
 
@@ -54,12 +67,10 @@ fun Table(rowList: List<Row>) {
         state = lazyListState,
         modifier = Modifier.horizontalScroll(horizontalScrollState)
     ) {
-        if (rowList.isNotEmpty()) {
-            val first = rowList.first()
-            rowList.forEach { row ->
-                item {
-                    RowFactory(row, viewModel.viewModelState.value.fontSize)
-                }
+        rowList.forEachIndexed { index, row ->
+            if (index == 0) return@forEachIndexed
+            item {
+                RowFactory(row, fontSize.value)
             }
         }
     }
@@ -96,8 +107,8 @@ private fun getNumberWidth(fontSize: Int): Dp {
 }
 
 @Composable
-fun RowFactory(row: Row, fontSize: Int) {
-    Row {
+fun RowFactory(row: Row, fontSize: Int, modifier: Modifier = Modifier) {
+    Row(modifier = modifier) {
         row.dataList.forEach { grid -> GridFactory(grid, row.type, fontSize) }
     }
 }

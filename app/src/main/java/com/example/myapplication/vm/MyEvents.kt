@@ -22,4 +22,6 @@ sealed class MyEvents {
     object ScrollToTop: MyEvents()
 
     data class ChangeFontSize(val fontSize: FontSize): MyEvents()
+
+    data class FontSizeChanged(val fontSize: Int): MyEvents()
 }
