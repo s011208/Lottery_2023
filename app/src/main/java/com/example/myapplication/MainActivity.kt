@@ -33,13 +33,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MyApplicationTheme {
-//                LaunchedEffect(this) {
-//                    launch(Dispatchers.IO) {
-//                        android.util.Log.v("QQQQ", "delete")
-//                        ParseService().myPresenter.userDao().delete()
-//                    }
-//                }
-
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),

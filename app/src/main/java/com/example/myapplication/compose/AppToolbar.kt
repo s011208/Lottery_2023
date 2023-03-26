@@ -10,10 +10,14 @@ import androidx.compose.ui.unit.dp
 import com.example.data.LotteryType
 import com.example.myapplication.SortType
 import com.example.myapplication.compose.ViewModelStateMapper.mapToUiState
+import com.example.myapplication.compose.appsettings.FontSettingsDialog
+import com.example.myapplication.compose.general.AppToolbarSettingsDropDownText
+import com.example.myapplication.compose.general.AppToolbarSettingsText
 import com.example.myapplication.vm.MyEvents
 import com.example.myapplication.vm.MyViewModel
-import com.example.myapplication.vm.ViewModelState
 import org.koin.java.KoinJavaComponent
+
+private val PADDING = 4
 
 @Composable
 fun AppToolbar() {
@@ -34,13 +38,26 @@ fun AppToolbar() {
         actions = {
             when (value) {
                 is UiState.Show -> {
+                    ScrollToBottom(viewModel)
+                    ScrollToTop(viewModel)
                     LotteryTypeDropdownMenu(value, viewModel)
                     SortTypeDropdownMenu(value, viewModel)
+                    SettingsDropdownMenu(value, viewModel)
                 }
                 else -> {}
             }
         }
     )
+}
+
+@Composable
+fun ScrollToBottom(viewModel: MyViewModel) {
+    AppToolbarSettingsText(text = "Scroll to bottom", Modifier.clickable { viewModel.handleEvent(MyEvents.ScrollToBottom) })
+}
+
+@Composable
+fun ScrollToTop(viewModel: MyViewModel) {
+    AppToolbarSettingsText(text = "Scroll to top", Modifier.clickable { viewModel.handleEvent(MyEvents.ScrollToTop) })
 }
 
 @Composable
@@ -52,11 +69,8 @@ private fun LotteryTypeDropdownMenu(
         mutableStateOf(false)
     }
 
-    Box(modifier = Modifier.padding(4.dp)) {
-        Text(
-            text = value.lotteryType.name,
-            modifier = Modifier.clickable { expanded = true }
-        )
+    Box(modifier = Modifier.padding(PADDING.dp)) {
+        AppToolbarSettingsText(value.lotteryType.name, Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
@@ -68,7 +82,7 @@ private fun LotteryTypeDropdownMenu(
                         expanded = false
                     },
                     enabled = true,
-                    text = { Text(text = itemValue.name) }
+                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) }
                 )
             }
         }
@@ -84,11 +98,8 @@ private fun SortTypeDropdownMenu(
         mutableStateOf(false)
     }
 
-    Box(modifier = Modifier.padding(4.dp)) {
-        Text(
-            text = value.sortType.name,
-            modifier = Modifier.clickable { expanded = true }
-        )
+    Box(modifier = Modifier.padding(PADDING.dp)) {
+        AppToolbarSettingsText(value.sortType.name, Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
@@ -100,9 +111,50 @@ private fun SortTypeDropdownMenu(
                         expanded = false
                     },
                     enabled = true,
-                    text = { Text(text = itemValue.name) }
+                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) }
                 )
             }
         }
     }
+}
+
+@Composable
+private fun SettingsDropdownMenu(
+    value: UiState.Show,
+    viewModel: MyViewModel
+) {
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    var fontSizeDialogOpen = remember {
+        mutableStateOf(false)
+    }
+
+    Box(modifier = Modifier.padding(PADDING.dp)) {
+        AppToolbarSettingsText("Settings", Modifier.clickable { expanded = true })
+
+        DropdownMenu(expanded = expanded, onDismissRequest = {
+            expanded = false
+        }) {
+            AppToolbarSettings.values().forEachIndexed { itemIndex, itemValue ->
+                DropdownMenuItem(
+                    onClick = {
+                        if (itemValue == AppToolbarSettings.FONT_SIZE) {
+                            fontSizeDialogOpen.value = true
+                        }
+                        expanded = false
+                    },
+                    enabled = true,
+                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) }
+                )
+            }
+        }
+    }
+
+    FontSettingsDialog(fontSizeDialogOpen)
+}
+
+enum class AppToolbarSettings {
+    FONT_SIZE,
 }

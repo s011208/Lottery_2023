@@ -3,16 +3,16 @@ package com.example.myapplication.compose
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -20,20 +20,45 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.vm.Grid
+import com.example.myapplication.vm.MyEvents
+import com.example.myapplication.vm.MyViewModel
 import com.example.myapplication.vm.Row
+import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent
 
 @Composable
 fun Table(rowList: List<Row>) {
-    val scroll = rememberScrollState(0)
+    val horizontalScrollState = rememberScrollState(0)
+    val lazyListState = rememberLazyListState(0)
+    val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
 
-    LazyColumn(modifier = Modifier.horizontalScroll(scroll)) {
-        rowList.forEach { row ->
-            item {
-                RowFactory(row)
+    LaunchedEffect("Table") {
+        viewModel.eventStateSharedFlow.collect { myEvent ->
+            when (myEvent) {
+                MyEvents.ScrollToBottom -> {
+                    lazyListState.scrollToItem(rowList.size)
+                }
+                MyEvents.ScrollToTop -> {
+                    lazyListState.scrollToItem(0)
+                }
+                else -> {}
+            }
+        }
+    }
+
+    LazyColumn(
+        state = lazyListState,
+        modifier = Modifier.horizontalScroll(horizontalScrollState)
+    ) {
+        if (rowList.isNotEmpty()) {
+            val first = rowList.first()
+            rowList.forEach { row ->
+                item {
+                    RowFactory(row)
+                }
             }
         }
     }

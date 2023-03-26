@@ -101,6 +101,16 @@ class MyViewModel(
                     )
                 }
             }
+            is MyEvents.ScrollToBottom -> {
+                viewModelScope.launch {
+                    _eventState.emit(MyEvents.ScrollToBottom)
+                }
+            }
+            is MyEvents.ScrollToTop -> {
+                viewModelScope.launch {
+                    _eventState.emit(MyEvents.ScrollToTop)
+                }
+            }
             else -> {
                 // ignore
             }
