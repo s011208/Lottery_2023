@@ -8,7 +8,8 @@ data class ViewModelState(
     val sortType: SortType = SortType.NormalOrder,
     val rowList: List<Row> = listOf(),
     val isLoading: Boolean = false,
-    val loadingHint: String = ""
+    val loadingHint: String = "",
+    val fontSize: Int = 16,
 )
 
 data class Row(

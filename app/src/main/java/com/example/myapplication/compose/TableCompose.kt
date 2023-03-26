@@ -21,6 +21,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.vm.Grid
 import com.example.myapplication.vm.MyEvents
@@ -57,7 +58,7 @@ fun Table(rowList: List<Row>) {
             val first = rowList.first()
             rowList.forEach { row ->
                 item {
-                    RowFactory(row)
+                    RowFactory(row, viewModel.viewModelState.value.fontSize)
                 }
             }
         }
@@ -66,12 +67,12 @@ fun Table(rowList: List<Row>) {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-private fun getDateWidth(): Dp {
+private fun getDateWidth(fontSize: Int): Dp {
     val textMeasurer = rememberTextMeasurer()
     val textLayoutResult: TextLayoutResult =
         textMeasurer.measure(
             text = AnnotatedString("0000/00/00"),
-            style = LocalTextStyle.current
+            style = LocalTextStyle.current.copy(fontSize = fontSize.sp)
         )
     val textSize = textLayoutResult.size
     val density = LocalDensity.current
@@ -81,12 +82,12 @@ private fun getDateWidth(): Dp {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-private fun getNumberWidth(): Dp {
+private fun getNumberWidth(fontSize: Int): Dp {
     val textMeasurer = rememberTextMeasurer()
     val textLayoutResult: TextLayoutResult =
         textMeasurer.measure(
             text = AnnotatedString("00"),
-            style = LocalTextStyle.current
+            style = LocalTextStyle.current.copy(fontSize = fontSize.sp)
         )
     val textSize = textLayoutResult.size
     val density = LocalDensity.current
@@ -95,67 +96,70 @@ private fun getNumberWidth(): Dp {
 }
 
 @Composable
-fun RowFactory(row: Row) {
+fun RowFactory(row: Row, fontSize: Int) {
     Row {
-        row.dataList.forEach { grid -> GridFactory(grid, row.type) }
+        row.dataList.forEach { grid -> GridFactory(grid, row.type, fontSize) }
     }
 }
 
 @Composable
-fun GridFactory(grid: Grid, rowType: Row.Type) {
+fun GridFactory(grid: Grid, rowType: Row.Type, fontSize: Int) {
     when (grid.type) {
-        Grid.Type.Normal -> NormalGrid(grid)
-        Grid.Type.Date -> DateGrid(grid)
-        Grid.Type.Special -> SpecialGrid(grid)
+        Grid.Type.Normal -> NormalGrid(grid, fontSize)
+        Grid.Type.Date -> DateGrid(grid, fontSize)
+        Grid.Type.Special -> SpecialGrid(grid, fontSize)
     }
 }
 
 
 @Composable
-fun DateGrid(grid: Grid) {
+fun DateGrid(grid: Grid, fontSize: Int) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getDateWidth()),
+            .width(getDateWidth(fontSize)),
         text = grid.text,
         color = if (grid.visible) {
             Color.Gray
         } else {
             Color.Transparent
-        }
+        },
+        fontSize = fontSize.sp
     )
 }
 
 @Composable
-fun NormalGrid(grid: Grid) {
+fun NormalGrid(grid: Grid, fontSize: Int) {
     Text(
+        text = grid.text,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getNumberWidth()),
-        text = grid.text,
+            .width(getNumberWidth(fontSize)),
         color = if (grid.visible) {
             Color.Unspecified
         } else {
             Color.Transparent
-        }
+        },
+        fontSize = fontSize.sp
     )
 }
 
 @Composable
-fun SpecialGrid(grid: Grid) {
+fun SpecialGrid(grid: Grid, fontSize: Int) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getNumberWidth()),
+            .width(getNumberWidth(fontSize)),
         text = grid.text,
         color = if (grid.visible) {
             Color.Red
         } else {
             Color.Transparent
-        }
+        },
+        fontSize = fontSize.sp
     )
 }
 

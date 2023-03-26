@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.LotteryType
 import com.example.myapplication.SortType
+import com.example.myapplication.compose.appsettings.FontSize
 import com.example.service.usecase.DisplayUseCase
 import com.example.service.usecase.SyncUseCase
 import kotlinx.coroutines.Dispatchers
@@ -109,6 +110,21 @@ class MyViewModel(
             is MyEvents.ScrollToTop -> {
                 viewModelScope.launch {
                     _eventState.emit(MyEvents.ScrollToTop)
+                }
+            }
+            is MyEvents.ChangeFontSize -> {
+                viewModelScope.launch {
+                    _viewModelState.emit(
+                        _viewModelState.value.copy(
+                            fontSize = when (event.fontSize) {
+                                FontSize.EXTRA_SMALL -> 12
+                                FontSize.SMALL -> 14
+                                FontSize.NORMAL -> 16
+                                FontSize.LARGE -> 18
+                                FontSize.EXTRA_LARGE -> 20
+                            }
+                        )
+                    )
                 }
             }
             else -> {

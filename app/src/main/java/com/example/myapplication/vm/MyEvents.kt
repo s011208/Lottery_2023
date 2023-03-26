@@ -3,6 +3,7 @@ package com.example.myapplication.vm
 import com.example.data.LotteryType
 import com.example.myapplication.SortType
 import com.example.myapplication.compose.AppToolbarSettings
+import com.example.myapplication.compose.appsettings.FontSize
 
 sealed class MyEvents {
 
@@ -19,4 +20,6 @@ sealed class MyEvents {
     object ScrollToBottom: MyEvents()
 
     object ScrollToTop: MyEvents()
+
+    data class ChangeFontSize(val fontSize: FontSize): MyEvents()
 }

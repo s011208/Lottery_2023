@@ -20,6 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.myapplication.compose.general.DialogText
+import com.example.myapplication.vm.MyEvents
+import com.example.myapplication.vm.MyViewModel
+import org.koin.java.KoinJavaComponent
 
 
 enum class FontSize {
@@ -28,6 +31,8 @@ enum class FontSize {
 
 @Composable
 fun FontSettingsDialog(dialogOpen: MutableState<Boolean>) {
+    val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
+
     if (dialogOpen.value) {
         Dialog(onDismissRequest = {
             dialogOpen.value = false
@@ -41,8 +46,10 @@ fun FontSettingsDialog(dialogOpen: MutableState<Boolean>) {
                 LazyColumn(modifier = Modifier.padding(all = 16.dp)) {
                     item {
                         FontSize.values().forEach {
-                            DialogText(it.name, modifier =
-                            Modifier.clickable {
+                            DialogText(
+                                it.name,
+                                modifier = Modifier.clickable {
+                                    viewModel.handleEvent(MyEvents.ChangeFontSize(it))
                                     dialogOpen.value = false
                                 })
                         }
