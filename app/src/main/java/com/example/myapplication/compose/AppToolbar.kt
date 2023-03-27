@@ -31,50 +31,44 @@ fun AppToolbar() {
     val state = viewModel.viewModelState.collectAsState()
     val value = state.value.mapToUiState()
 
-    SmallTopAppBar(
-        title = {
-            Text(
-                text = when (value) {
-                    UiState.Empty -> "Empty"
-                    is UiState.Show -> value.lotteryType.toString()
-                    is UiState.Loading -> value.hint
-                }
-            )
-        },
-        actions = {
-            when (value) {
-                is UiState.Show -> {
-                    ScrollToBottom(viewModel)
-                    ScrollToTop(viewModel)
-                    LotteryTypeDropdownMenu(value, viewModel)
-                    SortTypeDropdownMenu(value, viewModel)
-                    DisplayOrderDropdownMenu(value, viewModel)
-                    SettingsDropdownMenu(value, viewModel)
-                }
-                else -> {}
+    SmallTopAppBar(title = {
+        Text(
+            text = when (value) {
+                UiState.Empty -> "Empty"
+                is UiState.Show -> value.lotteryType.toString()
+                is UiState.Loading -> value.hint
             }
+        )
+    }, actions = {
+        when (value) {
+            is UiState.Show -> {
+                ScrollToBottom(viewModel)
+                ScrollToTop(viewModel)
+                LotteryTypeDropdownMenu(value, viewModel)
+                SortTypeDropdownMenu(value, viewModel)
+                DisplayOrderDropdownMenu(value, viewModel)
+                SettingsDropdownMenu(value, viewModel)
+            }
+            else -> {}
         }
-    )
+    })
 }
 
 @Composable
 fun ScrollToBottom(viewModel: MyViewModel) {
-    AppToolbarSettingsText(
-        text = "Scroll to bottom",
+    AppToolbarSettingsText(text = stringResource(id = R.string.scroll_to_bottom),
         Modifier.clickable { viewModel.handleEvent(MyEvents.ScrollToBottom) })
 }
 
 @Composable
 fun ScrollToTop(viewModel: MyViewModel) {
-    AppToolbarSettingsText(
-        text = "Scroll to top",
+    AppToolbarSettingsText(text = stringResource(id = R.string.scroll_to_top),
         Modifier.clickable { viewModel.handleEvent(MyEvents.ScrollToTop) })
 }
 
 @Composable
 private fun LotteryTypeDropdownMenu(
-    value: UiState.Show,
-    viewModel: MyViewModel
+    value: UiState.Show, viewModel: MyViewModel
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -83,34 +77,34 @@ private fun LotteryTypeDropdownMenu(
     val type = viewModel.viewModelState.collectAsState().value.lotteryType
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
-        AppToolbarSettingsText(value.lotteryType.name, Modifier.clickable { expanded = true })
+        AppToolbarSettingsText(
+            stringResource(id = R.string.lottery_type),
+            Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
             LotteryType.values().forEachIndexed { itemIndex, itemValue ->
-                DropdownMenuItem(
-                    onClick = {
-                        viewModel.handleEvent(MyEvents.ChangeLotteryType(itemValue))
-                        expanded = false
-                    },
-                    enabled = true,
-                    text = {
-                        AppToolbarSettingsDropDownText(
-                            text = itemValue.name,
+                DropdownMenuItem(onClick = {
+                    viewModel.handleEvent(MyEvents.ChangeLotteryType(itemValue))
+                    expanded = false
+                }, enabled = true, text = {
+                    AppToolbarSettingsDropDownText(
+                        text = when (itemValue) {
+                            LotteryType.Lto -> stringResource(id = R.string.lto)
+                            LotteryType.LtoBig -> stringResource(id = R.string.lto_big)
+                            LotteryType.LtoHK -> stringResource(id = R.string.lto_hk)
+                        },
+                    )
+                }, trailingIcon = if (type == itemValue) {
+                    {
+                        Icon(
+                            Icons.Rounded.Check,
+                            stringResource(id = R.string.check_icon_description),
+                            modifier = Modifier.padding(start = 4.dp)
                         )
-                    },
-                    trailingIcon = if (type == itemValue) {
-                        {
-                            Icon(
-                                Icons.Rounded.Check,
-                                stringResource(id = R.string.check_icon_description),
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
-                            )
-                        }
-                    } else null
-                )
+                    }
+                } else null)
             }
         }
     }
@@ -118,8 +112,7 @@ private fun LotteryTypeDropdownMenu(
 
 @Composable
 private fun SortTypeDropdownMenu(
-    value: UiState.Show,
-    viewModel: MyViewModel
+    value: UiState.Show, viewModel: MyViewModel
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -128,34 +121,34 @@ private fun SortTypeDropdownMenu(
     val type = viewModel.viewModelState.collectAsState().value.sortType
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
-        AppToolbarSettingsText(value.sortType.name, Modifier.clickable { expanded = true })
+        AppToolbarSettingsText(
+            stringResource(id = R.string.sort_type),
+            Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
             SortType.values().forEachIndexed { itemIndex, itemValue ->
-                DropdownMenuItem(
-                    onClick = {
-                        viewModel.handleEvent(MyEvents.ChangeSortType(itemValue))
-                        expanded = false
-                    },
-                    enabled = true,
-                    text = {
-                        AppToolbarSettingsDropDownText(
-                            text = itemValue.name
-                        )
-                    },
-                    trailingIcon = if (type == itemValue) {
-                        {
-                            Icon(
-                                Icons.Rounded.Check,
-                                stringResource(id = R.string.check_icon_description),
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
-                            )
+                DropdownMenuItem(onClick = {
+                    viewModel.handleEvent(MyEvents.ChangeSortType(itemValue))
+                    expanded = false
+                }, enabled = true, text = {
+                    AppToolbarSettingsDropDownText(
+                        text = when (itemValue) {
+                            SortType.NormalOrder -> stringResource(id = R.string.normal_order)
+                            SortType.AddToTen -> stringResource(id = R.string.add_to_ten)
+                            SortType.LastDigit -> stringResource(id = R.string.last_digit)
                         }
-                    } else null
-                )
+                    )
+                }, trailingIcon = if (type == itemValue) {
+                    {
+                        Icon(
+                            Icons.Rounded.Check,
+                            stringResource(id = R.string.check_icon_description),
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+                } else null)
             }
         }
     }
@@ -163,8 +156,7 @@ private fun SortTypeDropdownMenu(
 
 @Composable
 private fun DisplayOrderDropdownMenu(
-    value: UiState.Show,
-    viewModel: MyViewModel
+    value: UiState.Show, viewModel: MyViewModel
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -173,30 +165,37 @@ private fun DisplayOrderDropdownMenu(
     val type = viewModel.viewModelState.collectAsState().value.displayOrder
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
-        AppToolbarSettingsText(value.displayOrder.name, Modifier.clickable { expanded = true })
+        AppToolbarSettingsText(
+            stringResource(id = R.string.display_order),
+            Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
             DisplayOrder.values().forEachIndexed { itemIndex, itemValue ->
-                DropdownMenuItem(
-                    onClick = {
-                        viewModel.handleEvent(MyEvents.ChangeDisplayOrder(itemValue))
-                        expanded = false
-                    },
+                DropdownMenuItem(onClick = {
+                    viewModel.handleEvent(MyEvents.ChangeDisplayOrder(itemValue))
+                    expanded = false
+                },
                     enabled = true,
-                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) },
+                    text = {
+                        AppToolbarSettingsDropDownText(
+                            text =
+                            when (itemValue) {
+                                DisplayOrder.DESCEND -> stringResource(id = R.string.descend)
+                                DisplayOrder.ASCEND -> stringResource(id = R.string.ascend)
+                            }
+                        )
+                    },
                     trailingIcon = if (type == itemValue) {
                         {
                             Icon(
                                 Icons.Rounded.Check,
                                 stringResource(id = R.string.check_icon_description),
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
+                                modifier = Modifier.padding(start = 4.dp)
                             )
                         }
-                    } else null
-                )
+                    } else null)
             }
         }
     }
@@ -204,8 +203,7 @@ private fun DisplayOrderDropdownMenu(
 
 @Composable
 private fun SettingsDropdownMenu(
-    value: UiState.Show,
-    viewModel: MyViewModel
+    value: UiState.Show, viewModel: MyViewModel
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -216,7 +214,9 @@ private fun SettingsDropdownMenu(
     }
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
-        AppToolbarSettingsText("Settings", Modifier.clickable { expanded = true })
+        AppToolbarSettingsText(
+            stringResource(id = R.string.settings),
+            Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
@@ -230,7 +230,14 @@ private fun SettingsDropdownMenu(
                         expanded = false
                     },
                     enabled = true,
-                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) },
+                    text = {
+                        AppToolbarSettingsDropDownText(
+                            text =
+                            when (itemValue) {
+                                AppToolbarSettings.FONT_SIZE -> stringResource(id = R.string.font_size)
+                            }
+                        )
+                    },
                 )
             }
         }

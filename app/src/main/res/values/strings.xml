@@ -1,4 +1,24 @@
 <resources>
     <string name="app_name">My Application</string>
     <string name="check_icon_description">Selected</string>
+    <string name="scroll_to_bottom">捲動到最底</string>
+    <string name="scroll_to_top">捲動到最頂</string>
+    <string name="lottery_type">樂透種類</string>
+    <string name="lto">威力彩</string>
+    <string name="lto_big">大樂透</string>
+    <string name="lto_hk">六合彩</string>
+    <string name="sort_type">排列方式</string>
+    <string name="normal_order">一般</string>
+    <string name="last_digit">尾數</string>
+    <string name="add_to_ten">合數</string>
+    <string name="display_order">顯示順序</string>
+    <string name="descend">舊的在上</string>
+    <string name="ascend">新的在上</string>
+    <string name="settings">設定</string>
+    <string name="font_size">字體大小</string>
+    <string name="x_small">最小</string>
+    <string name="small">小</string>
+    <string name="normal">一般</string>
+    <string name="large">大</string>
+    <string name="x_large">最大</string>
 </resources>

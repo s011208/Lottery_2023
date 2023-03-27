@@ -17,8 +17,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.myapplication.R
 import com.example.myapplication.compose.general.DialogText
 import com.example.myapplication.vm.MyEvents
 import com.example.myapplication.vm.MyViewModel
@@ -45,7 +47,13 @@ fun FontSettingsDialog(dialogOpen: MutableState<Boolean>) {
                     item {
                         FontSize.values().forEach {
                             DialogText(
-                                text = it.name,
+                                text = when (it) {
+                                    FontSize.EXTRA_SMALL -> stringResource(id = R.string.x_small)
+                                    FontSize.SMALL -> stringResource(id = R.string.small)
+                                    FontSize.NORMAL -> stringResource(id = R.string.normal)
+                                    FontSize.LARGE -> stringResource(id = R.string.large)
+                                    FontSize.EXTRA_LARGE -> stringResource(id = R.string.x_large)
+                                },
                                 modifier = Modifier.clickable {
                                     viewModel.handleEvent(MyEvents.ChangeFontSize(it))
                                     dialogOpen.value = false
