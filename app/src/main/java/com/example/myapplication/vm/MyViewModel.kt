@@ -12,6 +12,7 @@ import com.example.service.usecase.DisplayUseCase
 import com.example.service.usecase.SettingsUseCase
 import com.example.service.usecase.SyncUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -45,7 +46,6 @@ class MyViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             _viewModelState.emit(
                 _viewModelState.value.copy(
-                    loadingHint = "Loading ${_viewModelState.value.lotteryType}",
                     isLoading = true
                 )
             )
@@ -95,7 +95,6 @@ class MyViewModel(
                 viewModelScope.launch(Dispatchers.IO) {
                     _viewModelState.emit(
                         _viewModelState.value.copy(
-                            loadingHint = "Loading ${_viewModelState.value.lotteryType}",
                             isLoading = true
                         )
                     )
@@ -117,14 +116,12 @@ class MyViewModel(
                 viewModelScope.launch(Dispatchers.IO) {
                     _viewModelState.emit(
                         _viewModelState.value.copy(
-                            loadingHint = "Loading ${event.type}",
                             isLoading = true
                         )
                     )
                     val lotteryType = event.type
                     val sortType = settingsUseCase.getSortType()
                     val displayOrder = _viewModelState.value.displayOrder
-
                     _viewModelState.emit(
                         _viewModelState.value.copy(
                             isLoading = false,
@@ -159,7 +156,6 @@ class MyViewModel(
                 viewModelScope.launch(Dispatchers.IO) {
                     _viewModelState.emit(
                         _viewModelState.value.copy(
-                            loadingHint = "Loading ${event.order}",
                             isLoading = true
                         )
                     )

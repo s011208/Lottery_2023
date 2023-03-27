@@ -21,4 +21,5 @@
     <string name="normal">一般</string>
     <string name="large">大</string>
     <string name="x_large">最大</string>
+    <string name="loading">讀取中…</string>
 </resources>

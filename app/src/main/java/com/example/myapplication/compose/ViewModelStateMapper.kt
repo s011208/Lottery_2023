@@ -7,15 +7,19 @@ import com.example.myapplication.vm.ViewModelState
 import com.example.service.cache.DisplayOrder
 
 object ViewModelStateMapper {
-    fun ViewModelState.mapToUiState() : UiState {
+    fun ViewModelState.mapToUiState(): UiState {
         return if (rowList.isEmpty()) UiState.Empty
-        else if (isLoading) UiState.Loading(loadingHint)
-        else UiState.Show(rowList, lotteryType, sortType, displayOrder)
+        else UiState.Show(rowList, lotteryType, sortType, displayOrder, isLoading)
     }
 }
 
 sealed class UiState {
-    object Empty: UiState()
-    data class Loading(val hint: String): UiState()
-    data class Show(val rowList: List<Row>, val lotteryType: LotteryType, val sortType: SortType, val displayOrder: DisplayOrder): UiState()
+    object Empty : UiState()
+    data class Show(
+        val rowList: List<Row>,
+        val lotteryType: LotteryType,
+        val sortType: SortType,
+        val displayOrder: DisplayOrder,
+        val isLoading: Boolean
+    ) : UiState()
 }

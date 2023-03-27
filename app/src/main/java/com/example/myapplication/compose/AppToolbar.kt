@@ -23,7 +23,7 @@ import com.example.myapplication.vm.MyViewModel
 import com.example.service.cache.DisplayOrder
 import org.koin.java.KoinJavaComponent
 
-private val PADDING = 4
+private const val PADDING = 4
 
 @Composable
 fun AppToolbar() {
@@ -36,7 +36,6 @@ fun AppToolbar() {
             text = when (value) {
                 UiState.Empty -> "Empty"
                 is UiState.Show -> state.value.lotteryType.toUiString()
-                is UiState.Loading -> value.hint
             }
         )
     }, actions = {

@@ -54,24 +54,26 @@ fun Table(rowList: List<Row>) {
             }
         }
     }
-    if (rowList.isNotEmpty()) {
-        val first = rowList.first()
-        Column(modifier = Modifier.horizontalScroll(horizontalScrollState)) {
-            RowFactory(
-                first,
-                fontSize.value,
-            )
+    Column {
+        if (rowList.isNotEmpty()) {
+            val first = rowList.first()
+            Column(modifier = Modifier.horizontalScroll(horizontalScrollState)) {
+                RowFactory(
+                    first,
+                    fontSize.value,
+                )
+            }
         }
-    }
 
-    LazyColumn(
-        state = lazyListState,
-        modifier = Modifier.horizontalScroll(horizontalScrollState)
-    ) {
-        rowList.forEachIndexed { index, row ->
-            if (index == 0) return@forEachIndexed
-            item {
-                RowFactory(row, fontSize.value)
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier.horizontalScroll(horizontalScrollState)
+        ) {
+            rowList.forEachIndexed { index, row ->
+                if (index == 0) return@forEachIndexed
+                item {
+                    RowFactory(row, fontSize.value)
+                }
             }
         }
     }
