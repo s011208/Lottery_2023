@@ -1,6 +1,5 @@
 package com.example.service.usecase
 
-import com.example.data.LotteryData
 import com.example.service.service.ParseService
 
 class SyncUseCase(val service: ParseService) {
@@ -18,5 +17,9 @@ class SyncUseCase(val service: ParseService) {
     fun parseLtoHk() {
         val lotteryData = service.parseLtoHk()
         android.util.Log.v("QQQQ", "parseLtoHk lotteryData size: ${lotteryData}")
+    }
+
+    fun clearDatabase() {
+        service.clearDatabase()
     }
 }

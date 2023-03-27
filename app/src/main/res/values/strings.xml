@@ -27,4 +27,7 @@
     <string name="update_lto">更新資料</string>
     <string name="syncing_title">下載樂透資料</string>
     <string name="syncing_content">正在下載中…</string>
+    <string name="reset">重置資料</string>
+    <string name="reset_title">確定要重置所有資料嗎？</string>
+    <string name="reset_message">重置資料會刪除原本的樂透資料並且重新從網路上下載新的資料。</string>
 </resources>

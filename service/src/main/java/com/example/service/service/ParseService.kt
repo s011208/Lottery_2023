@@ -59,4 +59,8 @@ class ParseService {
         }
         return result
     }
+
+    fun clearDatabase() {
+        database.userDao().delete()
+    }
 }

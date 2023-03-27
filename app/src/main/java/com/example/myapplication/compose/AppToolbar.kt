@@ -16,6 +16,7 @@ import com.example.myapplication.R
 import com.example.service.cache.SortType
 import com.example.myapplication.compose.ViewModelStateMapper.mapToUiState
 import com.example.myapplication.compose.appsettings.FontSettingsDialog
+import com.example.myapplication.compose.appsettings.ResetDatabase
 import com.example.myapplication.compose.general.AppToolbarSettingsDropDownText
 import com.example.myapplication.compose.general.AppToolbarSettingsText
 import com.example.myapplication.vm.MyEvents
@@ -75,8 +76,7 @@ private fun LotteryTypeDropdownMenu(
     val type = viewModel.viewModelState.collectAsState().value.lotteryType
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
-        AppToolbarSettingsText(
-            stringResource(id = R.string.lottery_type),
+        AppToolbarSettingsText(stringResource(id = R.string.lottery_type),
             Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
@@ -115,8 +115,7 @@ private fun SortTypeDropdownMenu(
     val type = viewModel.viewModelState.collectAsState().value.sortType
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
-        AppToolbarSettingsText(
-            stringResource(id = R.string.sort_type),
+        AppToolbarSettingsText(stringResource(id = R.string.sort_type),
             Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
@@ -159,8 +158,7 @@ private fun DisplayOrderDropdownMenu(
     val type = viewModel.viewModelState.collectAsState().value.displayOrder
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
-        AppToolbarSettingsText(
-            stringResource(id = R.string.display_order),
+        AppToolbarSettingsText(stringResource(id = R.string.display_order),
             Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
@@ -170,26 +168,22 @@ private fun DisplayOrderDropdownMenu(
                 DropdownMenuItem(onClick = {
                     viewModel.handleEvent(MyEvents.ChangeDisplayOrder(itemValue))
                     expanded = false
-                },
-                    enabled = true,
-                    text = {
-                        AppToolbarSettingsDropDownText(
-                            text =
-                            when (itemValue) {
-                                DisplayOrder.DESCEND -> stringResource(id = R.string.descend)
-                                DisplayOrder.ASCEND -> stringResource(id = R.string.ascend)
-                            }
-                        )
-                    },
-                    trailingIcon = if (type == itemValue) {
-                        {
-                            Icon(
-                                Icons.Rounded.Check,
-                                stringResource(id = R.string.check_icon_description),
-                                modifier = Modifier.padding(start = 4.dp)
-                            )
+                }, enabled = true, text = {
+                    AppToolbarSettingsDropDownText(
+                        text = when (itemValue) {
+                            DisplayOrder.DESCEND -> stringResource(id = R.string.descend)
+                            DisplayOrder.ASCEND -> stringResource(id = R.string.ascend)
                         }
-                    } else null)
+                    )
+                }, trailingIcon = if (type == itemValue) {
+                    {
+                        Icon(
+                            Icons.Rounded.Check,
+                            stringResource(id = R.string.check_icon_description),
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+                } else null)
             }
         }
     }
@@ -205,9 +199,12 @@ private fun SettingsDropdownMenu(viewModel: MyViewModel) {
         mutableStateOf(false)
     }
 
+    var resetDatabaseDialogOpen = remember {
+        mutableStateOf(false)
+    }
+
     Box(modifier = Modifier.padding(PADDING.dp)) {
-        AppToolbarSettingsText(
-            stringResource(id = R.string.settings),
+        AppToolbarSettingsText(stringResource(id = R.string.settings),
             Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
@@ -223,16 +220,19 @@ private fun SettingsDropdownMenu(viewModel: MyViewModel) {
                             AppToolbarSettings.UPDATE_LTO -> {
                                 viewModel.handleEvent(MyEvents.UpdateData)
                             }
+                            AppToolbarSettings.RESET -> {
+                                resetDatabaseDialogOpen.value = true
+                            }
                         }
                         expanded = false
                     },
                     enabled = true,
                     text = {
                         AppToolbarSettingsDropDownText(
-                            text =
-                            when (itemValue) {
+                            text = when (itemValue) {
                                 AppToolbarSettings.FONT_SIZE -> stringResource(id = R.string.font_size)
                                 AppToolbarSettings.UPDATE_LTO -> stringResource(id = R.string.update_lto)
+                                AppToolbarSettings.RESET -> stringResource(id = R.string.reset)
                             }
                         )
                     },
@@ -242,6 +242,7 @@ private fun SettingsDropdownMenu(viewModel: MyViewModel) {
     }
 
     FontSettingsDialog(fontSizeDialogOpen)
+    ResetDatabase(dialogOpen = resetDatabaseDialogOpen)
 }
 
 @Composable
@@ -252,5 +253,5 @@ private fun LotteryType.toUiString() = when (this) {
 }
 
 enum class AppToolbarSettings {
-    FONT_SIZE, UPDATE_LTO
+    FONT_SIZE, UPDATE_LTO, RESET
 }

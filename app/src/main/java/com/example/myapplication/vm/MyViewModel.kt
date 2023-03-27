@@ -174,6 +174,23 @@ class MyViewModel(
                     settingsUseCase.setDisplayOrder(event.order)
                 }
             }
+            MyEvents.ResetData -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    syncUseCase.clearDatabase()
+                    val lotteryType = _viewModelState.value.lotteryType
+                    val sortType = _viewModelState.value.sortType
+                    val displayOrder = _viewModelState.value.displayOrder
+                    _viewModelState.emit(
+                        _viewModelState.value.copy(
+                            isLoading = false,
+                            lotteryType = lotteryType,
+                            sortType = sortType,
+                            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
+                        )
+                    )
+                    handleEvent(MyEvents.StartSync)
+                }
+            }
             else -> {
                 // ignore
             }
