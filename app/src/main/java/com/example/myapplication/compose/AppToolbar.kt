@@ -35,7 +35,7 @@ fun AppToolbar() {
         Text(
             text = when (value) {
                 UiState.Empty -> "Empty"
-                is UiState.Show -> value.lotteryType.toString()
+                is UiState.Show -> state.value.lotteryType.toUiString()
                 is UiState.Loading -> value.hint
             }
         )
@@ -44,10 +44,10 @@ fun AppToolbar() {
             is UiState.Show -> {
                 ScrollToBottom(viewModel)
                 ScrollToTop(viewModel)
-                LotteryTypeDropdownMenu(value, viewModel)
-                SortTypeDropdownMenu(value, viewModel)
-                DisplayOrderDropdownMenu(value, viewModel)
-                SettingsDropdownMenu(value, viewModel)
+                LotteryTypeDropdownMenu(viewModel)
+                SortTypeDropdownMenu(viewModel)
+                DisplayOrderDropdownMenu(viewModel)
+                SettingsDropdownMenu()
             }
             else -> {}
         }
@@ -68,7 +68,7 @@ fun ScrollToTop(viewModel: MyViewModel) {
 
 @Composable
 private fun LotteryTypeDropdownMenu(
-    value: UiState.Show, viewModel: MyViewModel
+    viewModel: MyViewModel
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -90,11 +90,7 @@ private fun LotteryTypeDropdownMenu(
                     expanded = false
                 }, enabled = true, text = {
                     AppToolbarSettingsDropDownText(
-                        text = when (itemValue) {
-                            LotteryType.Lto -> stringResource(id = R.string.lto)
-                            LotteryType.LtoBig -> stringResource(id = R.string.lto_big)
-                            LotteryType.LtoHK -> stringResource(id = R.string.lto_hk)
-                        },
+                        text = itemValue.toUiString(),
                     )
                 }, trailingIcon = if (type == itemValue) {
                     {
@@ -112,7 +108,7 @@ private fun LotteryTypeDropdownMenu(
 
 @Composable
 private fun SortTypeDropdownMenu(
-    value: UiState.Show, viewModel: MyViewModel
+    viewModel: MyViewModel
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -156,7 +152,7 @@ private fun SortTypeDropdownMenu(
 
 @Composable
 private fun DisplayOrderDropdownMenu(
-    value: UiState.Show, viewModel: MyViewModel
+    viewModel: MyViewModel
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -202,9 +198,7 @@ private fun DisplayOrderDropdownMenu(
 }
 
 @Composable
-private fun SettingsDropdownMenu(
-    value: UiState.Show, viewModel: MyViewModel
-) {
+private fun SettingsDropdownMenu() {
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -244,6 +238,13 @@ private fun SettingsDropdownMenu(
     }
 
     FontSettingsDialog(fontSizeDialogOpen)
+}
+
+@Composable
+private fun LotteryType.toUiString() = when (this) {
+    LotteryType.Lto -> stringResource(id = R.string.lto)
+    LotteryType.LtoBig -> stringResource(id = R.string.lto_big)
+    LotteryType.LtoHK -> stringResource(id = R.string.lto_hk)
 }
 
 enum class AppToolbarSettings {
