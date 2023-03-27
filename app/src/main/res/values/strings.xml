@@ -22,4 +22,7 @@
     <string name="large">大</string>
     <string name="x_large">最大</string>
     <string name="loading">讀取中…</string>
+    <string name="empty_msg">目前沒有資料</string>
+    <string name="click_to_update">點我更新</string>
+    <string name="update_lto">更新資料</string>
 </resources>

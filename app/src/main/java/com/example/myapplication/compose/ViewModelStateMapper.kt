@@ -8,13 +8,11 @@ import com.example.service.cache.DisplayOrder
 
 object ViewModelStateMapper {
     fun ViewModelState.mapToUiState(): UiState {
-        return if (rowList.isEmpty()) UiState.Empty
-        else UiState.Show(rowList, lotteryType, sortType, displayOrder, isLoading)
+        return UiState.Show(rowList, lotteryType, sortType, displayOrder, isLoading)
     }
 }
 
 sealed class UiState {
-    object Empty : UiState()
     data class Show(
         val rowList: List<Row>,
         val lotteryType: LotteryType,

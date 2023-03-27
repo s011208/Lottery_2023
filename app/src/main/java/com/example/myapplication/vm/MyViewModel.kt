@@ -91,6 +91,9 @@ class MyViewModel(
                     _eventState.emit(MyEvents.EndSync())
                 }
             }
+            MyEvents.UpdateData -> {
+                handleEvent(MyEvents.StartSync)
+            }
             is MyEvents.ChangeSortType -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     _viewModelState.emit(

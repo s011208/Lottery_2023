@@ -34,7 +34,6 @@ fun AppToolbar() {
     SmallTopAppBar(title = {
         Text(
             text = when (value) {
-                UiState.Empty -> "Empty"
                 is UiState.Show -> state.value.lotteryType.toUiString()
             }
         )
@@ -46,7 +45,7 @@ fun AppToolbar() {
                 LotteryTypeDropdownMenu(viewModel)
                 SortTypeDropdownMenu(viewModel)
                 DisplayOrderDropdownMenu(viewModel)
-                SettingsDropdownMenu()
+                SettingsDropdownMenu(viewModel)
             }
             else -> {}
         }
@@ -197,7 +196,7 @@ private fun DisplayOrderDropdownMenu(
 }
 
 @Composable
-private fun SettingsDropdownMenu() {
+private fun SettingsDropdownMenu(viewModel: MyViewModel) {
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -217,8 +216,13 @@ private fun SettingsDropdownMenu() {
             AppToolbarSettings.values().forEachIndexed { itemIndex, itemValue ->
                 DropdownMenuItem(
                     onClick = {
-                        if (itemValue == AppToolbarSettings.FONT_SIZE) {
-                            fontSizeDialogOpen.value = true
+                        when (itemValue) {
+                            AppToolbarSettings.FONT_SIZE -> {
+                                fontSizeDialogOpen.value = true
+                            }
+                            AppToolbarSettings.UPDATE_LTO -> {
+                                viewModel.handleEvent(MyEvents.UpdateData)
+                            }
                         }
                         expanded = false
                     },
@@ -228,6 +232,7 @@ private fun SettingsDropdownMenu() {
                             text =
                             when (itemValue) {
                                 AppToolbarSettings.FONT_SIZE -> stringResource(id = R.string.font_size)
+                                AppToolbarSettings.UPDATE_LTO -> stringResource(id = R.string.update_lto)
                             }
                         )
                     },
@@ -247,5 +252,5 @@ private fun LotteryType.toUiString() = when (this) {
 }
 
 enum class AppToolbarSettings {
-    FONT_SIZE,
+    FONT_SIZE, UPDATE_LTO
 }

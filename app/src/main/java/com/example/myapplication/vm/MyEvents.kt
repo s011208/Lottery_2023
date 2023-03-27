@@ -26,4 +26,6 @@ sealed class MyEvents {
     data class ChangeFontSize(val fontSize: FontSize): MyEvents()
 
     data class FontSizeChanged(val fontSize: Int): MyEvents()
+
+    object UpdateData: MyEvents()
 }

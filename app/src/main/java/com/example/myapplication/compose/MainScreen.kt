@@ -24,21 +24,16 @@ fun MainScreen() {
     val state = viewModel.viewModelState.collectAsState()
 
     when (val value = state.value.mapToUiState()) {
-        is UiState.Empty -> {
-            Box {
-                Button(onClick = { throw RuntimeException("Test Crash") }) {
-                    Text(text = "Click me")
-                }
-            }
-        }
         is UiState.Show -> {
             Box {
-                Table(value.rowList)
-
+                if (value.rowList.isNotEmpty()) {
+                    Table(value.rowList)
+                } else if (!value.isLoading) {
+                    EmptyScreen()
+                }
                 if (value.isLoading) {
                     LoadingView(
                         color = Color.Cyan,
-                        modifier = Modifier.align(Alignment.Center),
                         text = stringResource(id = R.string.loading)
                     )
                 }
