@@ -3,11 +3,16 @@ package com.example.myapplication.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.data.LotteryType
+import com.example.myapplication.R
 import com.example.service.cache.SortType
 import com.example.myapplication.compose.ViewModelStateMapper.mapToUiState
 import com.example.myapplication.compose.appsettings.FontSettingsDialog
@@ -75,6 +80,8 @@ private fun LotteryTypeDropdownMenu(
         mutableStateOf(false)
     }
 
+    val type = viewModel.viewModelState.collectAsState().value.lotteryType
+
     Box(modifier = Modifier.padding(PADDING.dp)) {
         AppToolbarSettingsText(value.lotteryType.name, Modifier.clickable { expanded = true })
 
@@ -88,7 +95,21 @@ private fun LotteryTypeDropdownMenu(
                         expanded = false
                     },
                     enabled = true,
-                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) }
+                    text = {
+                        AppToolbarSettingsDropDownText(
+                            text = itemValue.name,
+                        )
+                    },
+                    trailingIcon = if (type == itemValue) {
+                        {
+                            Icon(
+                                Icons.Rounded.Check,
+                                stringResource(id = R.string.check_icon_description),
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                            )
+                        }
+                    } else null
                 )
             }
         }
@@ -104,6 +125,8 @@ private fun SortTypeDropdownMenu(
         mutableStateOf(false)
     }
 
+    val type = viewModel.viewModelState.collectAsState().value.sortType
+
     Box(modifier = Modifier.padding(PADDING.dp)) {
         AppToolbarSettingsText(value.sortType.name, Modifier.clickable { expanded = true })
 
@@ -117,7 +140,21 @@ private fun SortTypeDropdownMenu(
                         expanded = false
                     },
                     enabled = true,
-                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) }
+                    text = {
+                        AppToolbarSettingsDropDownText(
+                            text = itemValue.name
+                        )
+                    },
+                    trailingIcon = if (type == itemValue) {
+                        {
+                            Icon(
+                                Icons.Rounded.Check,
+                                stringResource(id = R.string.check_icon_description),
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                            )
+                        }
+                    } else null
                 )
             }
         }
@@ -133,6 +170,8 @@ private fun DisplayOrderDropdownMenu(
         mutableStateOf(false)
     }
 
+    val type = viewModel.viewModelState.collectAsState().value.displayOrder
+
     Box(modifier = Modifier.padding(PADDING.dp)) {
         AppToolbarSettingsText(value.displayOrder.name, Modifier.clickable { expanded = true })
 
@@ -146,7 +185,17 @@ private fun DisplayOrderDropdownMenu(
                         expanded = false
                     },
                     enabled = true,
-                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) }
+                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) },
+                    trailingIcon = if (type == itemValue) {
+                        {
+                            Icon(
+                                Icons.Rounded.Check,
+                                stringResource(id = R.string.check_icon_description),
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                            )
+                        }
+                    } else null
                 )
             }
         }
@@ -181,7 +230,7 @@ private fun SettingsDropdownMenu(
                         expanded = false
                     },
                     enabled = true,
-                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) }
+                    text = { AppToolbarSettingsDropDownText(text = itemValue.name) },
                 )
             }
         }

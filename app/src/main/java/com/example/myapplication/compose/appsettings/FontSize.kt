@@ -29,6 +29,8 @@ import org.koin.java.KoinJavaComponent
 fun FontSettingsDialog(dialogOpen: MutableState<Boolean>) {
     val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
 
+    val type = viewModel.viewModelState.collectAsState().value.fontType
+
     if (dialogOpen.value) {
         Dialog(onDismissRequest = {
             dialogOpen.value = false
@@ -43,11 +45,13 @@ fun FontSettingsDialog(dialogOpen: MutableState<Boolean>) {
                     item {
                         FontSize.values().forEach {
                             DialogText(
-                                it.name,
+                                text = it.name,
                                 modifier = Modifier.clickable {
                                     viewModel.handleEvent(MyEvents.ChangeFontSize(it))
                                     dialogOpen.value = false
-                                })
+                                },
+                                selected = type == it
+                            )
                         }
                     }
                 }

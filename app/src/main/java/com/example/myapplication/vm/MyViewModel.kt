@@ -33,7 +33,8 @@ class MyViewModel(
                 lotteryType = settingsUseCase.getLotteryType(),
                 sortType = settingsUseCase.getSortType(),
                 fontSize = settingsUseCase.getFontSize().toDisplaySize(),
-                displayOrder = settingsUseCase.getDisplayOrder()
+                fontType = settingsUseCase.getFontSize(),
+                displayOrder = settingsUseCase.getDisplayOrder(),
             )
         )
         viewModelState = _viewModelState.asStateFlow()
@@ -148,7 +149,7 @@ class MyViewModel(
                 viewModelScope.launch {
                     val fontSize = event.fontSize.toDisplaySize()
                     _viewModelState.emit(
-                        _viewModelState.value.copy(fontSize = fontSize)
+                        _viewModelState.value.copy(fontSize = fontSize, fontType = event.fontSize)
                     )
                     _eventState.emit(MyEvents.FontSizeChanged(fontSize))
                     settingsUseCase.setFontSize(event.fontSize)

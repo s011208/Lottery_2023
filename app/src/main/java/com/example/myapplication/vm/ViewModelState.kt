@@ -2,6 +2,7 @@ package com.example.myapplication.vm
 
 import com.example.data.LotteryType
 import com.example.service.cache.DisplayOrder
+import com.example.service.cache.FontSize
 import com.example.service.cache.SortType
 
 data class ViewModelState(
@@ -11,6 +12,7 @@ data class ViewModelState(
     val isLoading: Boolean = false,
     val loadingHint: String = "",
     val fontSize: Int = 16,
+    val fontType: FontSize = FontSize.NORMAL,
     val displayOrder: DisplayOrder = DisplayOrder.DESCEND,
 )
 
