@@ -32,7 +32,8 @@ class SyncWorker(context: Context, params: WorkerParameters) :
 
     private val viewModel: MyViewModel by inject(MyViewModel::class.java)
     private val onStopChannel = Channel<Int>()
-    private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private val notificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     init {
         android.util.Log.i("QQQQ", "SyncWorker init")
@@ -44,11 +45,10 @@ class SyncWorker(context: Context, params: WorkerParameters) :
                         onStopChannel.send(if (it.error == null) SUCCESS else ERROR)
                     }
                     is MyEvents.SyncingProgress -> {
-                        when (it.type) {
-                            LotteryType.Lto -> setForegroundAsync("Sync is running", "Lto")
-                            LotteryType.LtoBig -> setForegroundAsync("Sync is running", "LtoBig")
-                            LotteryType.LtoHK -> setForegroundAsync("Sync is running", "LtoHk")
-                        }
+                        setForegroundAsync(
+                            context.getString(R.string.syncing_title),
+                            context.getString(R.string.syncing_content)
+                        )
                     }
                     else -> {
                         // ignore
@@ -69,7 +69,6 @@ class SyncWorker(context: Context, params: WorkerParameters) :
         } else {
             Result.failure()
         }
-//        return Result.success()
     }
 
     private fun setForegroundAsync(title: String, content: String) {

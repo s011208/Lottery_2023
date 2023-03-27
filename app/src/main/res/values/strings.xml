@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">樂透</string>
     <string name="check_icon_description">Selected</string>
     <string name="scroll_to_bottom">捲動到最底</string>
     <string name="scroll_to_top">捲動到最頂</string>
@@ -25,4 +25,6 @@
     <string name="empty_msg">目前沒有資料</string>
     <string name="click_to_update">點我更新</string>
     <string name="update_lto">更新資料</string>
+    <string name="syncing_title">下載樂透資料</string>
+    <string name="syncing_content">正在下載中…</string>
 </resources>

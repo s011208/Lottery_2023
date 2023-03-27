@@ -11,10 +11,8 @@ import com.example.service.cache.SortType
 import com.example.service.usecase.DisplayUseCase
 import com.example.service.usecase.SettingsUseCase
 import com.example.service.usecase.SyncUseCase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 class MyViewModel(
     private val syncUseCase: SyncUseCase,
@@ -83,11 +81,11 @@ class MyViewModel(
             MyEvents.StartSync -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     _eventState.emit(MyEvents.SyncingProgress(LotteryType.Lto))
-                    syncUseCase.parseLto()
-                    _eventState.emit(MyEvents.SyncingProgress(LotteryType.LtoBig))
-                    syncUseCase.parseLtoBig()
-                    _eventState.emit(MyEvents.SyncingProgress(LotteryType.LtoHK))
-                    syncUseCase.parseLtoHk()
+                    awaitAll(
+                        async { syncUseCase.parseLto() },
+                        async { syncUseCase.parseLtoBig() },
+                        async { syncUseCase.parseLtoHk() },
+                    )
                     _eventState.emit(MyEvents.EndSync())
                 }
             }
