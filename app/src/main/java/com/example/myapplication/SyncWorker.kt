@@ -12,6 +12,7 @@ import androidx.work.WorkerParameters
 import com.example.data.LotteryType
 import com.example.myapplication.vm.MyEvents
 import com.example.myapplication.vm.MyViewModel
+import com.example.myapplication.vm.Source
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitAll
@@ -28,6 +29,8 @@ class SyncWorker(context: Context, params: WorkerParameters) :
 
         private const val NOTIFICATION_ID = 10001
         private const val CHANNEL_ID = "Sync Task"
+
+        internal const val SOURCE = "source"
     }
 
     private val viewModel: MyViewModel by inject(MyViewModel::class.java)
@@ -59,9 +62,10 @@ class SyncWorker(context: Context, params: WorkerParameters) :
     }
 
     override suspend fun doWork(): Result {
-        android.util.Log.v("QQQQ", "doWork")
+        val source = Source.valueOf(inputData.getString(SOURCE) ?: Source.UNKNOWN.name)
+        android.util.Log.v("QQQQ", "doWork, source: $source")
         setForegroundAsync("Sync is running", "Preparing for sync")
-        viewModel.handleEvent(MyEvents.StartSync)
+        viewModel.handleEvent(MyEvents.StartSync(source))
         val result = onStopChannel.receive()
         android.util.Log.v("QQQQ", "done: $result")
         return if (result == SUCCESS) {

@@ -7,11 +7,11 @@ import com.example.service.cache.FontSize
 
 sealed class MyEvents {
 
-    object StartSync : MyEvents()
+    data class StartSync(val source: Source = Source.UNKNOWN) : MyEvents()
 
     data class EndSync(val error: Throwable? = null) : MyEvents()
 
-    data class SyncingProgress(val type: LotteryType) : MyEvents()
+    object SyncingProgress : MyEvents()
 
     data class ChangeSortType(val type: SortType): MyEvents()
 

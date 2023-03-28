@@ -5,7 +5,9 @@ import android.content.Context
 import android.provider.SyncStateContract
 import androidx.room.Room
 import androidx.work.*
+import com.example.analytics.Analytics
 import com.example.myapplication.vm.MyViewModel
+import com.example.myapplication.vm.Source
 import com.example.service.cache.LotteryDataDatabase
 import com.example.service.cache.Preferences
 import com.example.service.service.ParseService
@@ -44,6 +46,7 @@ class MyApplication : Application() {
             6, TimeUnit.HOURS, // repeatInterval (the period cycle)
             15, TimeUnit.MINUTES
         ) // flexInterval
+            .setInputData(Data.Builder().putString(SyncWorker.SOURCE, Source.PERIODIC.name).build())
             .setConstraints(constraints)
             .build()
 
@@ -53,16 +56,17 @@ class MyApplication : Application() {
         android.util.Log.v("QQQQ", "startSyncTask end")
 
         // TODO 移到下載的地方
-        val myWorkRequest = OneTimeWorkRequestBuilder<SyncWorker>()
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS
-            )
-            .build()
-
-        WorkManager.getInstance(context)
-            .enqueueUniqueWork("Test", ExistingWorkPolicy.REPLACE, myWorkRequest)
+//        val myWorkRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+//            .setBackoffCriteria(
+//                BackoffPolicy.LINEAR,
+//                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+//                TimeUnit.MILLISECONDS
+//            )
+//            .setInputData(Data.Builder().putString(SyncWorker.SOURCE, Source.ONE_TIME.name).build())
+//            .build()
+//
+//        WorkManager.getInstance(context)
+//            .enqueueUniqueWork("Test", ExistingWorkPolicy.REPLACE, myWorkRequest)
     }
 }
 
@@ -80,4 +84,5 @@ val myModule = module {
     single { DisplayUseCase() }
     single { Preferences(get()) }
     single { SettingsUseCase(get()) }
+    single { Analytics() }
 }
