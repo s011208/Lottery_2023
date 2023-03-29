@@ -6,6 +6,7 @@ import android.provider.SyncStateContract
 import androidx.room.Room
 import androidx.work.*
 import com.example.analytics.Analytics
+import com.example.debugger.MyLog
 import com.example.myapplication.vm.MyViewModel
 import com.example.myapplication.vm.Source
 import com.example.service.cache.LotteryDataDatabase
@@ -36,7 +37,7 @@ class MyApplication : Application() {
     }
 
     private fun startSyncTask(context: Context) {
-        android.util.Log.v("QQQQ", "startSyncTask")
+        MyLog.log( "startSyncTask")
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .setRequiresCharging(false)
@@ -53,7 +54,7 @@ class MyApplication : Application() {
 
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork("Sync task", ExistingPeriodicWorkPolicy.REPLACE, syncTask)
-        android.util.Log.v("QQQQ", "startSyncTask end")
+        MyLog.log("startSyncTask end")
 
         // TODO 移到下載的地方
 //        val myWorkRequest = OneTimeWorkRequestBuilder<SyncWorker>()

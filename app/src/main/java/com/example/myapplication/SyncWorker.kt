@@ -10,6 +10,7 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.example.data.LotteryType
+import com.example.debugger.MyLog
 import com.example.myapplication.vm.MyEvents
 import com.example.myapplication.vm.MyViewModel
 import com.example.myapplication.vm.Source
@@ -39,10 +40,10 @@ class SyncWorker(context: Context, params: WorkerParameters) :
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     init {
-        android.util.Log.i("QQQQ", "SyncWorker init")
+        MyLog.log("SyncWorker init")
         viewModel.viewModelScope.launch {
             viewModel.eventStateSharedFlow.collect {
-                android.util.Log.v("QQQQ", "event: $it")
+                MyLog.log("event: $it")
                 when (it) {
                     is MyEvents.EndSync -> {
                         onStopChannel.send(if (it.error == null) SUCCESS else ERROR)
@@ -63,11 +64,11 @@ class SyncWorker(context: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         val source = Source.valueOf(inputData.getString(SOURCE) ?: Source.UNKNOWN.name)
-        android.util.Log.v("QQQQ", "doWork, source: $source")
+        MyLog.log("doWork, source: $source")
         setForegroundAsync("Sync is running", "Preparing for sync")
         viewModel.handleEvent(MyEvents.StartSync(source))
         val result = onStopChannel.receive()
-        android.util.Log.v("QQQQ", "done: $result")
+        MyLog.log("done: $result")
         return if (result == SUCCESS) {
             Result.success()
         } else {

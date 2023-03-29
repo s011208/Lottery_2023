@@ -2,6 +2,7 @@ package com.example.service.service
 
 import com.example.data.LotteryData
 import com.example.data.LotteryType
+import com.example.debugger.MyLog
 import com.example.service.cache.LotteryDataDatabase
 import com.example.service.parser.LtoBigParser
 import com.example.service.parser.LtoHkParser
@@ -19,9 +20,9 @@ class ParseService {
                 database.userDao().insertAll(it)
 
                 val all = database.userDao().getAll()
-                android.util.Log.v("QQQQ", "all: ${all.size}")
+                MyLog.log("all: ${all.size}")
                 if (all.isNotEmpty()) {
-                    android.util.Log.v("QQQQ", "first size: ${all.first().dataList.size}")
+                    MyLog.log("first size: ${all.first().dataList.size}")
                 }
             }
         }
@@ -35,9 +36,9 @@ class ParseService {
                 database.userDao().insertAll(it)
 
                 val all = database.userDao().getAll()
-                android.util.Log.v("QQQQ", "all: ${all.size}")
+                MyLog.log( "all: ${all.size}")
                 if (all.isNotEmpty()) {
-                    android.util.Log.v("QQQQ", "first size: ${all.first().dataList.size}")
+                    MyLog.log("first size: ${all.first().dataList.size}")
                 }
             }
         }
@@ -51,9 +52,9 @@ class ParseService {
                 database.userDao().insertAll(it)
 
                 val all = database.userDao().getAll()
-                android.util.Log.v("QQQQ", "all: ${all.size}")
+                MyLog.log("all: ${all.size}")
                 if (all.isNotEmpty()) {
-                    android.util.Log.v("QQQQ", "first size: ${all.first().dataList.size}")
+                    MyLog.log( "first size: ${all.first().dataList.size}")
                 }
             }
         }

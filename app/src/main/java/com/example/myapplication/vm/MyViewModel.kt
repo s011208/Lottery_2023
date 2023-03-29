@@ -247,9 +247,7 @@ class MyViewModel(
                 isLoading = false,
                 lotteryType = _viewModelState.value.lotteryType,
                 sortType = sortType,
-                rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder).also {
-                    android.util.Log.e("QQQQ", "reloadLotteryUiData size: ${it.size}")
-                }
+                rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
             )
         )
     }
