@@ -13,6 +13,7 @@ data class ViewModelState(
     val fontSize: Int = 16,
     val fontType: FontSize = FontSize.NORMAL,
     val displayOrder: DisplayOrder = DisplayOrder.DESCEND,
+    val isSyncing: Boolean = false,
 )
 
 data class Row(

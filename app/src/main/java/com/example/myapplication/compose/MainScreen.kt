@@ -28,13 +28,18 @@ fun MainScreen() {
             Box {
                 if (value.rowList.isNotEmpty()) {
                     Table(value.rowList)
-                } else if (!value.isLoading) {
+                } else if (!value.isLoading && !value.isSyncing) {
                     EmptyScreen()
                 }
                 if (value.isLoading) {
                     LoadingView(
                         color = Color.Cyan,
                         text = stringResource(id = R.string.loading)
+                    )
+                } else if (value.isSyncing) {
+                    LoadingView(
+                        color = Color.Cyan,
+                        text = stringResource(id = R.string.syncing)
                     )
                 }
             }

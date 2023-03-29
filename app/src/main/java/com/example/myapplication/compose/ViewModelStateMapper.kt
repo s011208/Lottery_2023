@@ -8,7 +8,7 @@ import com.example.service.cache.DisplayOrder
 
 object ViewModelStateMapper {
     fun ViewModelState.mapToUiState(): UiState {
-        return UiState.Show(rowList, lotteryType, sortType, displayOrder, isLoading)
+        return UiState.Show(rowList, lotteryType, sortType, displayOrder, isLoading, isSyncing)
     }
 }
 
@@ -18,6 +18,7 @@ sealed class UiState {
         val lotteryType: LotteryType,
         val sortType: SortType,
         val displayOrder: DisplayOrder,
-        val isLoading: Boolean
+        val isLoading: Boolean,
+        val isSyncing: Boolean,
     ) : UiState()
 }
