@@ -18,44 +18,30 @@ class ParseService {
         if (result.isSuccess) {
             result.onSuccess {
                 database.userDao().insertAll(it)
-
-                val all = database.userDao().getAll()
-                Timber.d("all: ${all.size}")
-                if (all.isNotEmpty()) {
-                    Timber.d("first size: ${all.first().dataList.size}")
-                }
             }
+        } else {
+            Timber.w(result.exceptionOrNull(), "parseLto failed")
         }
         return result
     }
 
     fun parseLtoBig(): Result<LotteryData> {
-        val result = LtoBigParser(database.userDao().getLottery(LotteryType.LtoBig.toString())).parse()
+        val result =
+            LtoBigParser(database.userDao().getLottery(LotteryType.LtoBig.toString())).parse()
         if (result.isSuccess) {
             result.onSuccess {
                 database.userDao().insertAll(it)
-
-                val all = database.userDao().getAll()
-                Timber.d( "all: ${all.size}")
-                if (all.isNotEmpty()) {
-                    Timber.d("first size: ${all.first().dataList.size}")
-                }
             }
         }
         return result
     }
 
     fun parseLtoHk(): Result<LotteryData> {
-        val result = LtoHkParser(database.userDao().getLottery(LotteryType.LtoHK.toString())).parse()
+        val result =
+            LtoHkParser(database.userDao().getLottery(LotteryType.LtoHK.toString())).parse()
         if (result.isSuccess) {
             result.onSuccess {
                 database.userDao().insertAll(it)
-
-                val all = database.userDao().getAll()
-                Timber.d("all: ${all.size}")
-                if (all.isNotEmpty()) {
-                    Timber.d( "first size: ${all.first().dataList.size}")
-                }
             }
         }
         return result

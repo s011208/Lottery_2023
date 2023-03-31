@@ -31,4 +31,8 @@
     <string name="reset">重置資料</string>
     <string name="reset_title">確定要重置所有資料嗎？</string>
     <string name="reset_message">重置資料會刪除原本的樂透資料並且重新從網路上下載新的資料。</string>
+
+    <string name="failed_to_load_lto">下載威力彩失敗</string>
+    <string name="failed_to_load_lto_big">下載大樂透失敗</string>
+    <string name="failed_to_load_lto_hk">下載六合彩失敗</string>
 </resources>

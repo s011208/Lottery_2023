@@ -46,7 +46,7 @@ class SyncWorker(context: Context, params: WorkerParameters) :
                 Timber.d("event: $it")
                 when (it) {
                     is MyEvents.EndSync -> {
-                        onStopChannel.send(if (it.error == null) SUCCESS else ERROR)
+                        onStopChannel.send(SUCCESS)
                     }
                     is MyEvents.SyncingProgress -> {
                         setForegroundAsync(

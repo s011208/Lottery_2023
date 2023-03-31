@@ -1,23 +1,27 @@
 package com.example.service.usecase
 
+import com.example.data.LotteryData
 import com.example.service.service.ParseService
 import timber.log.Timber
 
 class SyncUseCase(val service: ParseService) {
 
-    fun parseLto() {
-        val lotteryData = service.parseLto()
-        Timber.d("parseLto lotteryData size: ${lotteryData.getOrNull()?.dataList?.size}")
+    fun parseLto(): Result<LotteryData> {
+        return service.parseLto().also {
+            Timber.i("parseLto lotteryData size: ${it.getOrNull()?.dataList?.size}")
+        }
     }
 
-    fun parseLtoBig() {
-        val lotteryData = service.parseLtoBig()
-        Timber.d("parseLtoBig lotteryData size: ${lotteryData.getOrNull()?.dataList?.size}")
+    fun parseLtoBig(): Result<LotteryData> {
+        return service.parseLtoBig().also {
+            Timber.i("parseLtoBig lotteryData size: ${it.getOrNull()?.dataList?.size}")
+        }
     }
 
-    fun parseLtoHk() {
-        val lotteryData = service.parseLtoHk()
-        Timber.d("parseLtoHk lotteryData size: ${lotteryData.getOrNull()?.dataList?.size}")
+    fun parseLtoHk(): Result<LotteryData> {
+        return service.parseLtoHk().also {
+            Timber.i("parseLtoHk lotteryData size: ${it.getOrNull()?.dataList?.size}")
+        }
     }
 
     fun clearDatabase() {

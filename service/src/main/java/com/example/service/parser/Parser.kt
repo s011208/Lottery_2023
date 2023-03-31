@@ -39,6 +39,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
                 Timber.d("minDate: $minDate, getLastDataDate(): ${getLastDataDate()}")
             } while (lotteryDataList.isNotEmpty() && minDate > getLastDataDate())
         } catch (exception: Throwable) {
+            Timber.w(exception, "exception")
             return Result.failure(exception)
         }
 

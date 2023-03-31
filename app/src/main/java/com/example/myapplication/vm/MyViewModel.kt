@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.analytics.Analytics
 import com.example.data.LotteryType
+import com.example.myapplication.R
 import com.example.service.cache.DisplayOrder
 import com.example.service.cache.FontSize
 import com.example.service.cache.SortType
@@ -232,13 +233,58 @@ class MyViewModel(
         _viewModelState.emit(_viewModelState.value.copy(isSyncing = true))
         withContext(Dispatchers.IO) {
             awaitAll(
-                async { syncUseCase.parseLto() },
-                async { syncUseCase.parseLtoBig() },
-                async { syncUseCase.parseLtoHk() },
+                async {
+                    syncUseCase.parseLto().also {
+                        if (it.isFailure) {
+                            _eventState.emit(
+                                MyEvents.SyncFailed(
+                                    it.exceptionOrNull(),
+                                    LotteryType.Lto,
+                                    R.string.failed_to_load_lto,
+                                )
+                            )
+                            it.exceptionOrNull()?.let { throwable ->
+                                analytics.recordException(throwable)
+                            }
+                        }
+                    }
+                },
+                async {
+                    syncUseCase.parseLtoBig().also { it ->
+                        if (it.isFailure) {
+                            _eventState.emit(
+                                MyEvents.SyncFailed(
+                                    it.exceptionOrNull(),
+                                    LotteryType.LtoBig,
+                                    R.string.failed_to_load_lto_big,
+                                )
+                            )
+                            it.exceptionOrNull()?.let { throwable ->
+                                analytics.recordException(throwable)
+                            }
+                        }
+                    }
+                },
+                async {
+                    syncUseCase.parseLtoHk().also {
+                        if (it.isFailure) {
+                            _eventState.emit(
+                                MyEvents.SyncFailed(
+                                    it.exceptionOrNull(),
+                                    LotteryType.LtoHK,
+                                    R.string.failed_to_load_lto_hk,
+                                )
+                            )
+                            it.exceptionOrNull()?.let { throwable ->
+                                analytics.recordException(throwable)
+                            }
+                        }
+                    }
+                },
             )
         }
         _viewModelState.emit(_viewModelState.value.copy(isSyncing = false))
-        _eventState.emit(MyEvents.EndSync())
+        _eventState.emit(MyEvents.EndSync)
         viewModelScope.launch(Dispatchers.IO) {
             analytics.trackSyncSource(source.name)
         }
