@@ -21,6 +21,7 @@ class SyncUseCase(val service: ParseService) {
     }
 
     fun clearDatabase() {
+        Timber.w("clearDatabase")
         service.clearDatabase()
     }
 }

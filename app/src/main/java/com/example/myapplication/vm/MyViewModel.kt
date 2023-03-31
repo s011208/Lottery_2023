@@ -15,6 +15,7 @@ import com.example.service.usecase.SyncUseCase
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.koin.java.KoinJavaComponent
+import timber.log.Timber
 
 class MyViewModel(
     private val syncUseCase: SyncUseCase,
@@ -45,7 +46,7 @@ class MyViewModel(
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             reloadLotteryUiData()
             startSync(Source.APP_START)
         }
@@ -67,172 +68,178 @@ class MyViewModel(
     }
 
     fun handleEvent(event: MyEvents) {
-        when (event) {
-            is MyEvents.StartSync -> {
-                startSync(event.source)
-            }
-            MyEvents.UpdateData -> {
-                updateData()
-            }
-            is MyEvents.ChangeSortType -> {
-                changeSortType(event)
-            }
-            is MyEvents.ChangeLotteryType -> {
-                changeLotteryType(event)
-            }
-            is MyEvents.ScrollToBottom -> {
-                scrollToBottom()
-            }
-            is MyEvents.ScrollToTop -> {
-                scrollToTop()
-            }
-            is MyEvents.ChangeFontSize -> {
-                changeFontSize(event)
-            }
-            is MyEvents.ChangeDisplayOrder -> {
-                changeDisplayOrder(event)
-            }
-            MyEvents.ResetData -> {
-                resetData()
-            }
-            else -> {
-                // ignore
-            }
-        }
-    }
-
-    private fun startSync(source: Source) {
-        viewModelScope.launch(Dispatchers.IO) {
-            syncData(source)
-            reloadLotteryUiData()
-        }
-    }
-
-    private fun updateData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            syncData(Source.UI)
-            reloadLotteryUiData()
-        }
-    }
-
-    private fun changeSortType(event: MyEvents.ChangeSortType) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _viewModelState.emit(
-                _viewModelState.value.copy(
-                    isLoading = true
-                )
-            )
-            val lotteryType = _viewModelState.value.lotteryType
-            val sortType = event.type
-            val displayOrder = _viewModelState.value.displayOrder
-
-            _viewModelState.emit(
-                _viewModelState.value.copy(
-                    isLoading = false,
-                    sortType = event.type,
-                    rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
-                )
-            )
-            settingsUseCase.setSortType(event.type)
-        }
-    }
-
-    private fun changeLotteryType(event: MyEvents.ChangeLotteryType) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _viewModelState.emit(
-                _viewModelState.value.copy(
-                    isLoading = true
-                )
-            )
-            val lotteryType = event.type
-            val sortType = settingsUseCase.getSortType()
-            val displayOrder = _viewModelState.value.displayOrder
-            _viewModelState.emit(
-                _viewModelState.value.copy(
-                    isLoading = false,
-                    lotteryType = event.type,
-                    rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
-                )
-            )
-            settingsUseCase.setLotteryType(event.type)
-        }
-    }
-
-    private fun scrollToBottom() {
         viewModelScope.launch {
-            _eventState.emit(MyEvents.ScrollToBottom)
+            when (event) {
+                is MyEvents.StartSync -> {
+                    startSync(event.source)
+                }
+                MyEvents.UpdateData -> {
+                    updateData()
+                }
+                is MyEvents.ChangeSortType -> {
+                    changeSortType(event)
+                }
+                is MyEvents.ChangeLotteryType -> {
+                    changeLotteryType(event)
+                }
+                is MyEvents.ScrollToBottom -> {
+                    scrollToBottom()
+                }
+                is MyEvents.ScrollToTop -> {
+                    scrollToTop()
+                }
+                is MyEvents.ChangeFontSize -> {
+                    changeFontSize(event)
+                }
+                is MyEvents.ChangeDisplayOrder -> {
+                    changeDisplayOrder(event)
+                }
+                MyEvents.ResetData -> {
+                    resetData()
+                }
+                else -> {
+                    // ignore
+                }
+            }
         }
     }
 
-    private fun scrollToTop() {
-        viewModelScope.launch {
-            _eventState.emit(MyEvents.ScrollToTop)
-        }
+    private suspend fun startSync(source: Source) {
+        syncData(source)
+        reloadLotteryUiData()
     }
 
-    private fun changeFontSize(event: MyEvents.ChangeFontSize) {
-        viewModelScope.launch {
-            val fontSize = event.fontSize.toDisplaySize()
-            _viewModelState.emit(
-                _viewModelState.value.copy(fontSize = fontSize, fontType = event.fontSize)
+    private suspend fun updateData() {
+        syncData(Source.UI)
+        reloadLotteryUiData()
+    }
+
+    private suspend fun changeSortType(event: MyEvents.ChangeSortType) {
+        _viewModelState.emit(
+            _viewModelState.value.copy(
+                isLoading = true
             )
-            _eventState.emit(MyEvents.FontSizeChanged(fontSize))
-            settingsUseCase.setFontSize(event.fontSize)
+        )
+        val lotteryType = _viewModelState.value.lotteryType
+        val sortType = event.type
+        val displayOrder = _viewModelState.value.displayOrder
+        val rowList: List<Row>
+        withContext(Dispatchers.IO) {
+            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
         }
+
+        _viewModelState.emit(
+            _viewModelState.value.copy(
+                isLoading = false,
+                sortType = event.type,
+                rowList = rowList
+            )
+        )
+        settingsUseCase.setSortType(event.type)
     }
 
-    private fun changeDisplayOrder(event: MyEvents.ChangeDisplayOrder) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _viewModelState.emit(
-                _viewModelState.value.copy(
-                    isLoading = true
-                )
+    private suspend fun changeLotteryType(event: MyEvents.ChangeLotteryType) {
+        _viewModelState.emit(
+            _viewModelState.value.copy(
+                isLoading = true
             )
-            val lotteryType = _viewModelState.value.lotteryType
-            val sortType = _viewModelState.value.sortType
-            val displayOrder = event.order
-
-            _viewModelState.emit(
-                _viewModelState.value.copy(
-                    isLoading = false,
-                    displayOrder = event.order,
-                    rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
-                )
-            )
-            settingsUseCase.setDisplayOrder(event.order)
+        )
+        val lotteryType = event.type
+        val sortType = settingsUseCase.getSortType()
+        val displayOrder = _viewModelState.value.displayOrder
+        val rowList: List<Row>
+        withContext(Dispatchers.IO) {
+            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
         }
+        _viewModelState.emit(
+            _viewModelState.value.copy(
+                isLoading = false,
+                lotteryType = event.type,
+                rowList = rowList
+            )
+        )
+        settingsUseCase.setLotteryType(event.type)
     }
 
-    private fun resetData() {
-        viewModelScope.launch(Dispatchers.IO) {
+    private suspend fun scrollToBottom() {
+        _eventState.emit(MyEvents.ScrollToBottom)
+    }
+
+    private suspend fun scrollToTop() {
+        _eventState.emit(MyEvents.ScrollToTop)
+    }
+
+    private suspend fun changeFontSize(event: MyEvents.ChangeFontSize) {
+        val fontSize = event.fontSize.toDisplaySize()
+        _viewModelState.emit(
+            _viewModelState.value.copy(fontSize = fontSize, fontType = event.fontSize)
+        )
+        _eventState.emit(MyEvents.FontSizeChanged(fontSize))
+        settingsUseCase.setFontSize(event.fontSize)
+    }
+
+    private suspend fun changeDisplayOrder(event: MyEvents.ChangeDisplayOrder) {
+        _viewModelState.emit(
+            _viewModelState.value.copy(
+                isLoading = true
+            )
+        )
+        val lotteryType = _viewModelState.value.lotteryType
+        val sortType = _viewModelState.value.sortType
+        val displayOrder = event.order
+        val rowList: List<Row>
+        withContext(Dispatchers.IO) {
+            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
+        }
+
+        _viewModelState.emit(
+            _viewModelState.value.copy(
+                isLoading = false,
+                displayOrder = event.order,
+                rowList = rowList
+            )
+        )
+        settingsUseCase.setDisplayOrder(event.order)
+    }
+
+    private suspend fun resetData() {
+        val lotteryType = _viewModelState.value.lotteryType
+        val sortType = _viewModelState.value.sortType
+        val displayOrder = _viewModelState.value.displayOrder
+        val rowList: List<Row>
+        withContext(Dispatchers.IO) {
             syncUseCase.clearDatabase()
-            val lotteryType = _viewModelState.value.lotteryType
-            val sortType = _viewModelState.value.sortType
-            val displayOrder = _viewModelState.value.displayOrder
-            _viewModelState.emit(
-                _viewModelState.value.copy(
-                    isLoading = false,
-                    lotteryType = lotteryType,
-                    sortType = sortType,
-                    rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
-                )
-            )
-            syncData(Source.UI)
-            reloadLotteryUiData()
+            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
         }
+        _viewModelState.emit(
+            _viewModelState.value.copy(
+                isLoading = false,
+                lotteryType = lotteryType,
+                sortType = sortType,
+                rowList = rowList
+            )
+        )
+        syncData(Source.UI)
+        reloadLotteryUiData()
     }
 
     private suspend fun syncData(source: Source) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _eventState.emit(MyEvents.SyncingProgress)
-            _viewModelState.emit(_viewModelState.value.copy(isSyncing = true))
+        if (_viewModelState.value.isSyncing) {
+            Timber.w("cancel sync because someone is syncing")
+            return
+        }
+        _eventState.emit(MyEvents.SyncingProgress)
+        _viewModelState.emit(_viewModelState.value.copy(isSyncing = true))
+        withContext(Dispatchers.IO) {
             awaitAll(
                 async { syncUseCase.parseLto() },
                 async { syncUseCase.parseLtoBig() },
                 async { syncUseCase.parseLtoHk() },
             )
-            _viewModelState.emit(_viewModelState.value.copy(isSyncing = false))
-            _eventState.emit(MyEvents.EndSync())
+        }
+        _viewModelState.emit(_viewModelState.value.copy(isSyncing = false))
+        _eventState.emit(MyEvents.EndSync())
+        viewModelScope.launch(Dispatchers.IO) {
             analytics.trackSyncSource(source.name)
         }
     }
@@ -246,12 +253,17 @@ class MyViewModel(
         val lotteryType = _viewModelState.value.lotteryType
         val sortType = _viewModelState.value.sortType
         val displayOrder = _viewModelState.value.displayOrder
+
+        val rowList: List<Row>
+        withContext(Dispatchers.IO) {
+            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
+        }
         _viewModelState.emit(
             _viewModelState.value.copy(
                 isLoading = false,
                 lotteryType = _viewModelState.value.lotteryType,
                 sortType = sortType,
-                rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
+                rowList = rowList
             )
         )
     }
