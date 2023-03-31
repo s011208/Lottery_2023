@@ -1,7 +1,11 @@
 package com.example.myapplication
 
 import android.app.Application
+import android.app.UiModeManager
 import android.content.Context
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.Room
 import androidx.work.*
 import com.example.analytics.Analytics
@@ -41,6 +45,12 @@ class MyApplication : Application() {
         }
 
         startSyncTask(this)
+
+        if (VERSION.SDK_INT <= VERSION_CODES.R) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            (getSystemService(Context.UI_MODE_SERVICE) as UiModeManager).setApplicationNightMode(UiModeManager.MODE_NIGHT_YES)
+        }
     }
 
     private fun initTimber() {

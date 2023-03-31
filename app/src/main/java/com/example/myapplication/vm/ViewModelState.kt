@@ -1,6 +1,7 @@
 package com.example.myapplication.vm
 
 import com.example.data.LotteryType
+import com.example.service.cache.DayNightMode
 import com.example.service.cache.DisplayOrder
 import com.example.service.cache.FontSize
 import com.example.service.cache.SortType
@@ -14,6 +15,7 @@ data class ViewModelState(
     val fontType: FontSize = FontSize.NORMAL,
     val displayOrder: DisplayOrder = DisplayOrder.DESCEND,
     val isSyncing: Boolean = false,
+    val dayNightSettings: DayNightMode = DayNightMode.AUTO
 )
 
 data class Row(

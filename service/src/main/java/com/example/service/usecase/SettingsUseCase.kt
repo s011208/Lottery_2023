@@ -1,10 +1,7 @@
 package com.example.service.usecase
 
 import com.example.data.LotteryType
-import com.example.service.cache.DisplayOrder
-import com.example.service.cache.FontSize
-import com.example.service.cache.Preferences
-import com.example.service.cache.SortType
+import com.example.service.cache.*
 
 class SettingsUseCase(private val preferences: Preferences) {
 
@@ -23,4 +20,9 @@ class SettingsUseCase(private val preferences: Preferences) {
     fun getDisplayOrder(): DisplayOrder = preferences.getDisplayOrder()
 
     fun setDisplayOrder(order: DisplayOrder) = preferences.setDisplayOrder(order)
+
+    fun setDayNightSettings(settings: DayNightMode) = preferences.setDayNight(settings)
+
+    fun getDayNight(): DayNightMode = preferences.getDayNight()
 }
+

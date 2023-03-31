@@ -2,6 +2,7 @@ package com.example.myapplication.vm
 
 import androidx.annotation.StringRes
 import com.example.data.LotteryType
+import com.example.service.cache.DayNightMode
 import com.example.service.cache.DisplayOrder
 import com.example.service.cache.SortType
 import com.example.service.cache.FontSize
@@ -31,6 +32,8 @@ sealed class MyEvents {
     object ScrollToTop : MyEvents()
 
     data class ChangeFontSize(val fontSize: FontSize) : MyEvents()
+
+    data class ChangeDayNightSettings(val dayNightSettings: DayNightMode): MyEvents()
 
     data class FontSizeChanged(val fontSize: Int) : MyEvents()
 

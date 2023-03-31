@@ -35,4 +35,9 @@
     <string name="failed_to_load_lto">下載威力彩失敗</string>
     <string name="failed_to_load_lto_big">下載大樂透失敗</string>
     <string name="failed_to_load_lto_hk">下載六合彩失敗</string>
+
+    <string name="day_night_settings">日夜間模式</string>
+    <string name="mode_day">日間模式</string>
+    <string name="mode_night">夜間模式</string>
+    <string name="mode_system">預設(系統)</string>
 </resources>

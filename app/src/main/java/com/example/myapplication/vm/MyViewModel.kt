@@ -40,6 +40,7 @@ class MyViewModel(
                 fontSize = settingsUseCase.getFontSize().toDisplaySize(),
                 fontType = settingsUseCase.getFontSize(),
                 displayOrder = settingsUseCase.getDisplayOrder(),
+                dayNightSettings = settingsUseCase.getDayNight(),
             )
         )
         viewModelState = _viewModelState.asStateFlow()
@@ -98,11 +99,20 @@ class MyViewModel(
                 MyEvents.ResetData -> {
                     resetData()
                 }
+                is MyEvents.ChangeDayNightSettings -> {
+                    changeDayNightSettings(event)
+                }
                 else -> {
                     // ignore
                 }
             }
         }
+    }
+
+    private suspend fun changeDayNightSettings(event: MyEvents.ChangeDayNightSettings) {
+        _eventState.emit(event)
+        _viewModelState.emit(_viewModelState.value.copy(dayNightSettings = event.dayNightSettings))
+        settingsUseCase.setDayNightSettings(event.dayNightSettings)
     }
 
     private suspend fun startSync(source: Source) {

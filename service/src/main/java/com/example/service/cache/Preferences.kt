@@ -1,7 +1,6 @@
 package com.example.service.cache
 
 import android.content.Context
-import android.content.SharedPreferences
 import com.example.data.LotteryType
 
 class Preferences(context: Context) {
@@ -16,6 +15,8 @@ class Preferences(context: Context) {
         private const val KEY_SORT_TYPE = "sort_type"
 
         private const val KEY_DISPLAY_ORDER = "display_order"
+
+        private const val KEY_DAY_NIGHT = "day_night"
     }
 
     private val sharedPreferences =
@@ -50,6 +51,13 @@ class Preferences(context: Context) {
 
     fun setDisplayOrder(order: DisplayOrder) =
         sharedPreferences.edit().putString(KEY_DISPLAY_ORDER, order.name).apply()
+
+    fun getDayNight(): DayNightMode = DayNightMode.valueOf(
+        sharedPreferences.getString(KEY_DAY_NIGHT, DayNightMode.AUTO.name) ?: DayNightMode.AUTO.name
+    )
+
+    fun setDayNight(dayNightMode: DayNightMode) =
+        sharedPreferences.edit().putString(KEY_DAY_NIGHT, dayNightMode.name).apply()
 }
 
 enum class FontSize {
@@ -58,4 +66,8 @@ enum class FontSize {
 
 enum class DisplayOrder {
     ASCEND, DESCEND
+}
+
+enum class DayNightMode {
+    DAY, NIGHT, AUTO
 }

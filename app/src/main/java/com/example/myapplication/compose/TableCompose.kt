@@ -1,13 +1,11 @@
 package com.example.myapplication.compose
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Divider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -22,13 +20,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
 import com.example.myapplication.vm.Grid
 import com.example.myapplication.vm.MyEvents
 import com.example.myapplication.vm.MyViewModel
 import com.example.myapplication.vm.Row
-import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent
+
+private const val GRID_HORIZONTAL_PADDING = 4
 
 @Composable
 fun Table(rowList: List<Row>) {
@@ -91,7 +89,7 @@ private fun getDateWidth(fontSize: Int): Dp {
     val textSize = textLayoutResult.size
     val density = LocalDensity.current
 
-    return with(density) { textSize.width.toDp() }
+    return with(density) { textSize.width.toDp() } + GRID_HORIZONTAL_PADDING.dp
 }
 
 @OptIn(ExperimentalTextApi::class)
@@ -106,7 +104,7 @@ private fun getNumberWidth(fontSize: Int): Dp {
     val textSize = textLayoutResult.size
     val density = LocalDensity.current
 
-    return with(density) { textSize.width.toDp() }
+    return with(density) { textSize.width.toDp() } + GRID_HORIZONTAL_PADDING.dp
 }
 
 @Composable

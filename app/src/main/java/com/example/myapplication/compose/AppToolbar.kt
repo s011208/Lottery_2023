@@ -7,14 +7,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.data.LotteryType
 import com.example.myapplication.R
-import com.example.service.cache.SortType
 import com.example.myapplication.compose.ViewModelStateMapper.mapToUiState
+import com.example.myapplication.compose.appsettings.DayNightSettingsDialog
 import com.example.myapplication.compose.appsettings.FontSettingsDialog
 import com.example.myapplication.compose.appsettings.ResetDatabase
 import com.example.myapplication.compose.general.AppToolbarSettingsDropDownText
@@ -22,6 +21,7 @@ import com.example.myapplication.compose.general.AppToolbarSettingsText
 import com.example.myapplication.vm.MyEvents
 import com.example.myapplication.vm.MyViewModel
 import com.example.service.cache.DisplayOrder
+import com.example.service.cache.SortType
 import org.koin.java.KoinJavaComponent
 
 private const val PADDING = 4
@@ -48,7 +48,6 @@ fun AppToolbar() {
                 DisplayOrderDropdownMenu(viewModel)
                 SettingsDropdownMenu(viewModel)
             }
-            else -> {}
         }
     })
 }
@@ -203,6 +202,10 @@ private fun SettingsDropdownMenu(viewModel: MyViewModel) {
         mutableStateOf(false)
     }
 
+    var dayNightSettingsDialogOpen = remember {
+        mutableStateOf(false)
+    }
+
     Box(modifier = Modifier.padding(PADDING.dp)) {
         AppToolbarSettingsText(stringResource(id = R.string.settings),
             Modifier.clickable { expanded = true })
@@ -223,6 +226,9 @@ private fun SettingsDropdownMenu(viewModel: MyViewModel) {
                             AppToolbarSettings.RESET -> {
                                 resetDatabaseDialogOpen.value = true
                             }
+                            AppToolbarSettings.DAY_NIGHT_MODE -> {
+                                dayNightSettingsDialogOpen.value = true
+                            }
                         }
                         expanded = false
                     },
@@ -233,6 +239,7 @@ private fun SettingsDropdownMenu(viewModel: MyViewModel) {
                                 AppToolbarSettings.FONT_SIZE -> stringResource(id = R.string.font_size)
                                 AppToolbarSettings.UPDATE_LTO -> stringResource(id = R.string.update_lto)
                                 AppToolbarSettings.RESET -> stringResource(id = R.string.reset)
+                                AppToolbarSettings.DAY_NIGHT_MODE -> stringResource(id = R.string.day_night_settings)
                             }
                         )
                     },
@@ -243,6 +250,7 @@ private fun SettingsDropdownMenu(viewModel: MyViewModel) {
 
     FontSettingsDialog(fontSizeDialogOpen)
     ResetDatabase(dialogOpen = resetDatabaseDialogOpen)
+    DayNightSettingsDialog(dayNightSettingsDialogOpen)
 }
 
 @Composable
@@ -253,5 +261,5 @@ private fun LotteryType.toUiString() = when (this) {
 }
 
 enum class AppToolbarSettings {
-    FONT_SIZE, UPDATE_LTO, RESET
+    FONT_SIZE, UPDATE_LTO, RESET, DAY_NIGHT_MODE,
 }
