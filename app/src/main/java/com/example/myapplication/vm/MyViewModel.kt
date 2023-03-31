@@ -222,17 +222,19 @@ class MyViewModel(
         }
     }
 
-    private suspend fun CoroutineScope.syncData(source: Source) {
-        _eventState.emit(MyEvents.SyncingProgress)
-        _viewModelState.emit(_viewModelState.value.copy(isSyncing = true))
-        awaitAll(
-            async { syncUseCase.parseLto() },
-            async { syncUseCase.parseLtoBig() },
-            async { syncUseCase.parseLtoHk() },
-        )
-        _viewModelState.emit(_viewModelState.value.copy(isSyncing = false))
-        _eventState.emit(MyEvents.EndSync())
-        analytics.trackSyncSource(source.name)
+    private suspend fun syncData(source: Source) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _eventState.emit(MyEvents.SyncingProgress)
+            _viewModelState.emit(_viewModelState.value.copy(isSyncing = true))
+            awaitAll(
+                async { syncUseCase.parseLto() },
+                async { syncUseCase.parseLtoBig() },
+                async { syncUseCase.parseLtoHk() },
+            )
+            _viewModelState.emit(_viewModelState.value.copy(isSyncing = false))
+            _eventState.emit(MyEvents.EndSync())
+            analytics.trackSyncSource(source.name)
+        }
     }
 
     private suspend fun reloadLotteryUiData() {

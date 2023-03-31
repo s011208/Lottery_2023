@@ -2,12 +2,12 @@ package com.example.service.service
 
 import com.example.data.LotteryData
 import com.example.data.LotteryType
-import com.example.debugger.MyLog
 import com.example.service.cache.LotteryDataDatabase
 import com.example.service.parser.LtoBigParser
 import com.example.service.parser.LtoHkParser
 import com.example.service.parser.LtoParser
 import org.koin.java.KoinJavaComponent.inject
+import timber.log.Timber
 
 class ParseService {
 
@@ -20,9 +20,9 @@ class ParseService {
                 database.userDao().insertAll(it)
 
                 val all = database.userDao().getAll()
-                MyLog.log("all: ${all.size}")
+                Timber.d("all: ${all.size}")
                 if (all.isNotEmpty()) {
-                    MyLog.log("first size: ${all.first().dataList.size}")
+                    Timber.d("first size: ${all.first().dataList.size}")
                 }
             }
         }
@@ -36,9 +36,9 @@ class ParseService {
                 database.userDao().insertAll(it)
 
                 val all = database.userDao().getAll()
-                MyLog.log( "all: ${all.size}")
+                Timber.d( "all: ${all.size}")
                 if (all.isNotEmpty()) {
-                    MyLog.log("first size: ${all.first().dataList.size}")
+                    Timber.d("first size: ${all.first().dataList.size}")
                 }
             }
         }
@@ -52,9 +52,9 @@ class ParseService {
                 database.userDao().insertAll(it)
 
                 val all = database.userDao().getAll()
-                MyLog.log("all: ${all.size}")
+                Timber.d("all: ${all.size}")
                 if (all.isNotEmpty()) {
-                    MyLog.log( "first size: ${all.first().dataList.size}")
+                    Timber.d( "first size: ${all.first().dataList.size}")
                 }
             }
         }

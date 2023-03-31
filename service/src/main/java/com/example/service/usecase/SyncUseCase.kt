@@ -1,23 +1,23 @@
 package com.example.service.usecase
 
-import com.example.debugger.MyLog
 import com.example.service.service.ParseService
+import timber.log.Timber
 
 class SyncUseCase(val service: ParseService) {
 
     fun parseLto() {
         val lotteryData = service.parseLto()
-        MyLog.log("parseLto lotteryData size: ${lotteryData.getOrNull()?.dataList?.size}")
+        Timber.d("parseLto lotteryData size: ${lotteryData.getOrNull()?.dataList?.size}")
     }
 
     fun parseLtoBig() {
         val lotteryData = service.parseLtoBig()
-        MyLog.log("parseLtoBig lotteryData size: ${lotteryData.getOrNull()?.dataList?.size}")
+        Timber.d("parseLtoBig lotteryData size: ${lotteryData.getOrNull()?.dataList?.size}")
     }
 
     fun parseLtoHk() {
         val lotteryData = service.parseLtoHk()
-        MyLog.log("parseLtoHk lotteryData size: ${lotteryData.getOrNull()?.dataList?.size}")
+        Timber.d("parseLtoHk lotteryData size: ${lotteryData.getOrNull()?.dataList?.size}")
     }
 
     fun clearDatabase() {

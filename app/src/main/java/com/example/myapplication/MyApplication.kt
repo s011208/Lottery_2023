@@ -2,11 +2,9 @@ package com.example.myapplication
 
 import android.app.Application
 import android.content.Context
-import android.provider.SyncStateContract
 import androidx.room.Room
 import androidx.work.*
 import com.example.analytics.Analytics
-import com.example.debugger.MyLog
 import com.example.myapplication.vm.MyViewModel
 import com.example.myapplication.vm.Source
 import com.example.service.cache.LotteryDataDatabase
@@ -19,12 +17,21 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
+import timber.log.Timber
+import timber.log.Timber.*
 import java.util.concurrent.TimeUnit
+
 
 class MyApplication : Application() {
 
+    companion object {
+        private const val LOG_TAG = "QQQQ"
+    }
+
     override fun onCreate() {
         super.onCreate()
+
+        initTimber()
 
         startKoin {
             // declare used Android context
@@ -36,8 +43,18 @@ class MyApplication : Application() {
         startSyncTask(this)
     }
 
+    private fun initTimber() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(object : DebugTree() {
+                override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                    super.log(priority, "$tag:$LOG_TAG", message, t)
+                }
+            })
+        }
+    }
+
     private fun startSyncTask(context: Context) {
-        MyLog.log( "startSyncTask")
+        Timber.d("startSyncTask")
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .setRequiresCharging(false)
@@ -54,7 +71,7 @@ class MyApplication : Application() {
 
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork("Sync task", ExistingPeriodicWorkPolicy.REPLACE, syncTask)
-        MyLog.log("startSyncTask end")
+        Timber.d("startSyncTask end")
 
         // TODO 移到下載的地方
 //        val myWorkRequest = OneTimeWorkRequestBuilder<SyncWorker>()

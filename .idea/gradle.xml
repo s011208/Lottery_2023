@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$/analytics" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/data" />
-            <option value="$PROJECT_DIR$/debugger" />
             <option value="$PROJECT_DIR$/service" />
           </set>
         </option>

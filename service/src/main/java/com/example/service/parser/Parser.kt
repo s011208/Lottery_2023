@@ -3,7 +3,7 @@ package com.example.service.parser
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
 import com.example.data.LotteryType
-import com.example.debugger.MyLog
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -21,7 +21,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
 
         try {
             do {
-                MyLog.log(
+                Timber.d(
                     "type: ${getType()}, url: ${getUrl()}"
                 )
                 lotteryDataList.addAll(parseInternal(getUrl()))
@@ -36,7 +36,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
                 }
                 ++currentPage
                 val minDate = lotteryDataList.toList().minOf { it.date }
-                MyLog.log("minDate: $minDate, getLastDataDate(): ${getLastDataDate()}")
+                Timber.d("minDate: $minDate, getLastDataDate(): ${getLastDataDate()}")
             } while (lotteryDataList.isNotEmpty() && minDate > getLastDataDate())
         } catch (exception: Throwable) {
             return Result.failure(exception)

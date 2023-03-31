@@ -10,7 +10,6 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.example.data.LotteryType
-import com.example.debugger.MyLog
 import com.example.myapplication.vm.MyEvents
 import com.example.myapplication.vm.MyViewModel
 import com.example.myapplication.vm.Source
@@ -20,6 +19,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
+import timber.log.Timber
 
 class SyncWorker(context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
@@ -40,10 +40,10 @@ class SyncWorker(context: Context, params: WorkerParameters) :
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     init {
-        MyLog.log("SyncWorker init")
+        Timber.d("SyncWorker init")
         viewModel.viewModelScope.launch {
             viewModel.eventStateSharedFlow.collect {
-                MyLog.log("event: $it")
+                Timber.d("event: $it")
                 when (it) {
                     is MyEvents.EndSync -> {
                         onStopChannel.send(if (it.error == null) SUCCESS else ERROR)
@@ -64,11 +64,11 @@ class SyncWorker(context: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         val source = Source.valueOf(inputData.getString(SOURCE) ?: Source.UNKNOWN.name)
-        MyLog.log("doWork, source: $source")
+        Timber.d("doWork, source: $source")
         setForegroundAsync("Sync is running", "Preparing for sync")
         viewModel.handleEvent(MyEvents.StartSync(source))
         val result = onStopChannel.receive()
-        MyLog.log("done: $result")
+        Timber.d("done: $result")
         return if (result == SUCCESS) {
             Result.success()
         } else {
