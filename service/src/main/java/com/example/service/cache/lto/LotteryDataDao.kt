@@ -1,4 +1,4 @@
-package com.example.service.cache
+package com.example.service.cache.lto
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -18,5 +18,5 @@ interface LotteryDataDao {
     fun delete()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg users: LotteryData)
+    fun insertAll(vararg data: LotteryData)
 }

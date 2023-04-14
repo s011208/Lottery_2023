@@ -8,7 +8,6 @@ import com.example.service.cache.DayNightMode
 
 object Utils {
 
-
     fun setMode(context: Context, mode: DayNightMode) {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
             val localMode = when (mode) {

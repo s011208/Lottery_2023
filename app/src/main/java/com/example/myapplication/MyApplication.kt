@@ -9,12 +9,15 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.Room
 import androidx.work.*
 import com.example.analytics.Analytics
-import com.example.myapplication.vm.MyViewModel
-import com.example.myapplication.vm.Source
-import com.example.service.cache.LotteryDataDatabase
+import com.example.myapplication.compose.lotterylog.vm.LotteryLogViewModel
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
+import com.example.myapplication.compose.lotterytable.vm.Source
 import com.example.service.cache.Preferences
+import com.example.service.cache.log.LotteryLogDatabase
+import com.example.service.cache.lto.LotteryDataDatabase
 import com.example.service.service.ParseService
 import com.example.service.usecase.DisplayUseCase
+import com.example.service.usecase.LotteryLogUseCase
 import com.example.service.usecase.SettingsUseCase
 import com.example.service.usecase.SyncUseCase
 import org.koin.android.ext.koin.androidApplication
@@ -22,7 +25,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
 import timber.log.Timber
-import timber.log.Timber.*
+import timber.log.Timber.DebugTree
 import java.util.concurrent.TimeUnit
 
 
@@ -49,7 +52,9 @@ class MyApplication : Application() {
         if (VERSION.SDK_INT <= VERSION_CODES.R) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
-            (getSystemService(Context.UI_MODE_SERVICE) as UiModeManager).setApplicationNightMode(UiModeManager.MODE_NIGHT_YES)
+            (getSystemService(Context.UI_MODE_SERVICE) as UiModeManager).setApplicationNightMode(
+                UiModeManager.MODE_NIGHT_YES
+            )
         }
     }
 
@@ -102,15 +107,24 @@ val myModule = module {
     single {
         Room.databaseBuilder(
             androidApplication(),
-            LotteryDataDatabase::class.java, "database-name"
-        ).build()
+            LotteryDataDatabase::class.java, "lottery"
+        ).fallbackToDestructiveMigration().build()
     }
 
-    single { MyViewModel(get(), get(), get()) }
+    single {
+        Room.databaseBuilder(
+            androidApplication(),
+            LotteryLogDatabase::class.java, "lottery-log"
+        ).fallbackToDestructiveMigration().build()
+    }
+
+    single { LotteryTableViewModel(get(), get(), get()) }
     single { ParseService() }
     single { SyncUseCase(get()) }
     single { DisplayUseCase() }
     single { Preferences(get()) }
     single { SettingsUseCase(get()) }
     single { Analytics() }
+    single { LotteryLogUseCase() }
+    single { LotteryLogViewModel(get()) }
 }

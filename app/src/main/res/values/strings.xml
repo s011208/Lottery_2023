@@ -40,4 +40,8 @@
     <string name="mode_day">日間模式</string>
     <string name="mode_night">夜間模式</string>
     <string name="mode_system">預設(系統)</string>
+
+    <string name="back">返回</string>
+    <string name="lottery_log">下載紀錄</string>
+    <string name="no_lottery_log">沒有下載紀錄</string>
 </resources>

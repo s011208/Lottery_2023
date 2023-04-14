@@ -2,7 +2,7 @@ package com.example.service.usecase
 
 import com.example.data.LotteryData
 import com.example.data.LotteryType
-import com.example.service.cache.LotteryDataDatabase
+import com.example.service.cache.lto.LotteryDataDatabase
 import org.koin.java.KoinJavaComponent
 
 class DisplayUseCase {

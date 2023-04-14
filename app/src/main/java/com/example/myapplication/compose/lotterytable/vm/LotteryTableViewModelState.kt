@@ -1,4 +1,4 @@
-package com.example.myapplication.vm
+package com.example.myapplication.compose.lotterytable.vm
 
 import com.example.data.LotteryType
 import com.example.service.cache.DayNightMode

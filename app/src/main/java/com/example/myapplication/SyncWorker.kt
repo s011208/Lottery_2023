@@ -9,13 +9,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.example.data.LotteryType
-import com.example.myapplication.vm.MyEvents
-import com.example.myapplication.vm.MyViewModel
-import com.example.myapplication.vm.Source
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.awaitAll
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
+import com.example.myapplication.compose.lotterytable.vm.Source
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
@@ -34,7 +30,7 @@ class SyncWorker(context: Context, params: WorkerParameters) :
         internal const val SOURCE = "source"
     }
 
-    private val viewModel: MyViewModel by inject(MyViewModel::class.java)
+    private val viewModel: LotteryTableViewModel by inject(LotteryTableViewModel::class.java)
     private val onStopChannel = Channel<Int>()
     private val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -45,10 +41,10 @@ class SyncWorker(context: Context, params: WorkerParameters) :
             viewModel.eventStateSharedFlow.collect {
                 Timber.d("event: $it")
                 when (it) {
-                    is MyEvents.EndSync -> {
+                    is LotteryTableEvents.EndSync -> {
                         onStopChannel.send(SUCCESS)
                     }
-                    is MyEvents.SyncingProgress -> {
+                    is LotteryTableEvents.SyncingProgress -> {
                         setForegroundAsync(
                             context.getString(R.string.syncing_title),
                             context.getString(R.string.syncing_content)
@@ -66,7 +62,7 @@ class SyncWorker(context: Context, params: WorkerParameters) :
         val source = Source.valueOf(inputData.getString(SOURCE) ?: Source.UNKNOWN.name)
         Timber.d("doWork, source: $source")
         setForegroundAsync("Sync is running", "Preparing for sync")
-        viewModel.handleEvent(MyEvents.StartSync(source))
+        viewModel.handleEvent(LotteryTableEvents.StartSync(source))
         val result = onStopChannel.receive()
         Timber.d("done: $result")
         return if (result == SUCCESS) {

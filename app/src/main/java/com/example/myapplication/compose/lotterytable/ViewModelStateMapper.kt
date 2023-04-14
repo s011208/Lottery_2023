@@ -1,10 +1,10 @@
 package com.example.myapplication.compose
 
 import com.example.data.LotteryType
-import com.example.service.cache.SortType
-import com.example.myapplication.vm.Row
-import com.example.myapplication.vm.ViewModelState
+import com.example.myapplication.compose.lotterytable.vm.Row
+import com.example.myapplication.compose.lotterytable.vm.ViewModelState
 import com.example.service.cache.DisplayOrder
+import com.example.service.cache.SortType
 
 object ViewModelStateMapper {
     fun ViewModelState.mapToUiState(): UiState {

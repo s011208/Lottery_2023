@@ -13,17 +13,27 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.myapplication.compose.AppToolbar
-import com.example.myapplication.compose.MainScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.compose.LotteryTableMainScreen
+import com.example.myapplication.compose.lotterylog.LotteryLog
+import com.example.myapplication.compose.lotterylog.LotteryLogToolbar
+import com.example.myapplication.compose.lotterytable.LotteryTableToolbar
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import com.example.myapplication.vm.MyEvents
-import com.example.myapplication.vm.MyViewModel
 import org.koin.java.KoinJavaComponent
 import timber.log.Timber
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
+    companion object {
+        const val SCREEN_NAME_MAIN = "Main"
+        const val SCREEN_NAME_LOTTERY_LOG = "lottery_log"
+    }
+
+    private val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +45,7 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(this) {
                     viewModel.eventStateSharedFlow.collect { event ->
                         when (event) {
-                            is MyEvents.SyncFailed -> {
+                            is LotteryTableEvents.SyncFailed -> {
                                 Toast.makeText(
                                     context,
                                     event.textResource,
@@ -43,7 +53,7 @@ class MainActivity : ComponentActivity() {
                                 ).show()
                                 Timber.w("event: $event")
                             }
-                            is MyEvents.ChangeDayNightSettings -> {
+                            is LotteryTableEvents.ChangeDayNightSettings -> {
                                 Utils.setMode(context, event.dayNightSettings)
                             }
                             else -> {}
@@ -56,11 +66,27 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Column {
-                        AppToolbar()
-                        MainScreen()
-                    }
+                    NavigationScreen()
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun NavigationScreen() {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = MainActivity.SCREEN_NAME_MAIN) {
+        composable(MainActivity.SCREEN_NAME_MAIN) {
+            Column {
+                LotteryTableToolbar(navController)
+                LotteryTableMainScreen()
+            }
+        }
+        composable(MainActivity.SCREEN_NAME_LOTTERY_LOG) {
+            Column {
+                LotteryLogToolbar(navController)
+                LotteryLog()
             }
         }
     }
@@ -70,6 +96,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     MyApplicationTheme {
-        MainScreen()
+        NavigationScreen()
     }
 }

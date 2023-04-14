@@ -20,32 +20,34 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.vm.Grid
-import com.example.myapplication.vm.MyEvents
-import com.example.myapplication.vm.MyViewModel
-import com.example.myapplication.vm.Row
+import com.example.myapplication.compose.lotterytable.vm.Grid
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
+import com.example.myapplication.compose.lotterytable.vm.Row
 import org.koin.java.KoinJavaComponent
 
 private const val GRID_HORIZONTAL_PADDING = 4
 
 @Composable
-fun Table(rowList: List<Row>) {
+fun LotteryTable(
+    rowList: List<Row>
+) {
     val horizontalScrollState = rememberScrollState(0)
     val lazyListState = rememberLazyListState(0)
-    val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
+    val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
     val fontSize: MutableState<Int> =
         remember { mutableStateOf(viewModel.viewModelState.value.fontSize) }
 
     LaunchedEffect("Table") {
         viewModel.eventStateSharedFlow.collect { myEvent ->
             when (myEvent) {
-                MyEvents.ScrollToBottom -> {
+                LotteryTableEvents.ScrollToBottom -> {
                     lazyListState.scrollToItem(rowList.size)
                 }
-                MyEvents.ScrollToTop -> {
+                LotteryTableEvents.ScrollToTop -> {
                     lazyListState.scrollToItem(0)
                 }
-                is MyEvents.FontSizeChanged -> {
+                is LotteryTableEvents.FontSizeChanged -> {
                     fontSize.value = myEvent.fontSize
                 }
                 else -> {}

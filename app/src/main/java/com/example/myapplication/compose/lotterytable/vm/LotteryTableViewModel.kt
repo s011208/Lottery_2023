@@ -1,4 +1,4 @@
-package com.example.myapplication.vm
+package com.example.myapplication.compose.lotterytable.vm
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.*
 import org.koin.java.KoinJavaComponent
 import timber.log.Timber
 
-class MyViewModel(
+class LotteryTableViewModel(
     private val syncUseCase: SyncUseCase,
     private val displayUseCase: DisplayUseCase,
     private val settingsUseCase: SettingsUseCase,
@@ -27,7 +27,7 @@ class MyViewModel(
     private val _viewModelState: MutableStateFlow<ViewModelState>
     val viewModelState: StateFlow<ViewModelState>
 
-    private val _eventState = MutableSharedFlow<MyEvents>()
+    private val _eventState = MutableSharedFlow<LotteryTableEvents>()
     val eventStateSharedFlow = _eventState.asSharedFlow()
 
     private val analytics: Analytics by KoinJavaComponent.inject(Analytics::class.java)
@@ -69,37 +69,37 @@ class MyViewModel(
         )
     }
 
-    fun handleEvent(event: MyEvents) {
+    fun handleEvent(event: LotteryTableEvents) {
         viewModelScope.launch {
             when (event) {
-                is MyEvents.StartSync -> {
+                is LotteryTableEvents.StartSync -> {
                     startSync(event.source)
                 }
-                MyEvents.UpdateData -> {
+                LotteryTableEvents.UpdateData -> {
                     updateData()
                 }
-                is MyEvents.ChangeSortType -> {
+                is LotteryTableEvents.ChangeSortType -> {
                     changeSortType(event)
                 }
-                is MyEvents.ChangeLotteryType -> {
+                is LotteryTableEvents.ChangeLotteryType -> {
                     changeLotteryType(event)
                 }
-                is MyEvents.ScrollToBottom -> {
+                is LotteryTableEvents.ScrollToBottom -> {
                     scrollToBottom()
                 }
-                is MyEvents.ScrollToTop -> {
+                is LotteryTableEvents.ScrollToTop -> {
                     scrollToTop()
                 }
-                is MyEvents.ChangeFontSize -> {
+                is LotteryTableEvents.ChangeFontSize -> {
                     changeFontSize(event)
                 }
-                is MyEvents.ChangeDisplayOrder -> {
+                is LotteryTableEvents.ChangeDisplayOrder -> {
                     changeDisplayOrder(event)
                 }
-                MyEvents.ResetData -> {
+                LotteryTableEvents.ResetData -> {
                     resetData()
                 }
-                is MyEvents.ChangeDayNightSettings -> {
+                is LotteryTableEvents.ChangeDayNightSettings -> {
                     changeDayNightSettings(event)
                 }
                 else -> {
@@ -109,7 +109,7 @@ class MyViewModel(
         }
     }
 
-    private suspend fun changeDayNightSettings(event: MyEvents.ChangeDayNightSettings) {
+    private suspend fun changeDayNightSettings(event: LotteryTableEvents.ChangeDayNightSettings) {
         _eventState.emit(event)
         _viewModelState.emit(_viewModelState.value.copy(dayNightSettings = event.dayNightSettings))
         settingsUseCase.setDayNightSettings(event.dayNightSettings)
@@ -125,7 +125,7 @@ class MyViewModel(
         reloadLotteryUiData()
     }
 
-    private suspend fun changeSortType(event: MyEvents.ChangeSortType) {
+    private suspend fun changeSortType(event: LotteryTableEvents.ChangeSortType) {
         _viewModelState.emit(
             _viewModelState.value.copy(
                 isLoading = true
@@ -149,7 +149,7 @@ class MyViewModel(
         settingsUseCase.setSortType(event.type)
     }
 
-    private suspend fun changeLotteryType(event: MyEvents.ChangeLotteryType) {
+    private suspend fun changeLotteryType(event: LotteryTableEvents.ChangeLotteryType) {
         _viewModelState.emit(
             _viewModelState.value.copy(
                 isLoading = true
@@ -173,23 +173,23 @@ class MyViewModel(
     }
 
     private suspend fun scrollToBottom() {
-        _eventState.emit(MyEvents.ScrollToBottom)
+        _eventState.emit(LotteryTableEvents.ScrollToBottom)
     }
 
     private suspend fun scrollToTop() {
-        _eventState.emit(MyEvents.ScrollToTop)
+        _eventState.emit(LotteryTableEvents.ScrollToTop)
     }
 
-    private suspend fun changeFontSize(event: MyEvents.ChangeFontSize) {
+    private suspend fun changeFontSize(event: LotteryTableEvents.ChangeFontSize) {
         val fontSize = event.fontSize.toDisplaySize()
         _viewModelState.emit(
             _viewModelState.value.copy(fontSize = fontSize, fontType = event.fontSize)
         )
-        _eventState.emit(MyEvents.FontSizeChanged(fontSize))
+        _eventState.emit(LotteryTableEvents.FontSizeChanged(fontSize))
         settingsUseCase.setFontSize(event.fontSize)
     }
 
-    private suspend fun changeDisplayOrder(event: MyEvents.ChangeDisplayOrder) {
+    private suspend fun changeDisplayOrder(event: LotteryTableEvents.ChangeDisplayOrder) {
         _viewModelState.emit(
             _viewModelState.value.copy(
                 isLoading = true
@@ -239,7 +239,7 @@ class MyViewModel(
             Timber.w("cancel sync because someone is syncing")
             return
         }
-        _eventState.emit(MyEvents.SyncingProgress)
+        _eventState.emit(LotteryTableEvents.SyncingProgress)
         _viewModelState.emit(_viewModelState.value.copy(isSyncing = true))
         withContext(Dispatchers.IO) {
             awaitAll(
@@ -247,7 +247,7 @@ class MyViewModel(
                     syncUseCase.parseLto().also {
                         if (it.isFailure) {
                             _eventState.emit(
-                                MyEvents.SyncFailed(
+                                LotteryTableEvents.SyncFailed(
                                     it.exceptionOrNull(),
                                     LotteryType.Lto,
                                     R.string.failed_to_load_lto,
@@ -263,7 +263,7 @@ class MyViewModel(
                     syncUseCase.parseLtoBig().also { it ->
                         if (it.isFailure) {
                             _eventState.emit(
-                                MyEvents.SyncFailed(
+                                LotteryTableEvents.SyncFailed(
                                     it.exceptionOrNull(),
                                     LotteryType.LtoBig,
                                     R.string.failed_to_load_lto_big,
@@ -279,7 +279,7 @@ class MyViewModel(
                     syncUseCase.parseLtoHk().also {
                         if (it.isFailure) {
                             _eventState.emit(
-                                MyEvents.SyncFailed(
+                                LotteryTableEvents.SyncFailed(
                                     it.exceptionOrNull(),
                                     LotteryType.LtoHK,
                                     R.string.failed_to_load_lto_hk,
@@ -294,7 +294,7 @@ class MyViewModel(
             )
         }
         _viewModelState.emit(_viewModelState.value.copy(isSyncing = false))
-        _eventState.emit(MyEvents.EndSync)
+        _eventState.emit(LotteryTableEvents.EndSync)
         viewModelScope.launch(Dispatchers.IO) {
             analytics.trackSyncSource(source.name)
         }

@@ -12,13 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.R
-import com.example.myapplication.vm.MyEvents
-import com.example.myapplication.vm.MyViewModel
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import org.koin.java.KoinJavaComponent
 
 @Composable
 fun EmptyScreen() {
-    val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
+    val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -26,7 +26,7 @@ fun EmptyScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = stringResource(id = R.string.empty_msg), modifier = Modifier.padding(16.dp))
-            Button(onClick = { viewModel.handleEvent(MyEvents.UpdateData) }) {
+            Button(onClick = { viewModel.handleEvent(LotteryTableEvents.UpdateData) }) {
                 Text(text = stringResource(id = R.string.click_to_update))
             }
         }

@@ -1,11 +1,10 @@
-package com.example.myapplication.vm
+package com.example.myapplication.compose.lotterytable.vm
 
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
 import com.example.service.cache.SortType
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.Comparator
 
 object LotteryDataMapper {
 

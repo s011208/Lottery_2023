@@ -16,14 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.myapplication.R
 import com.example.myapplication.compose.general.DialogText
-import com.example.myapplication.vm.MyEvents
-import com.example.myapplication.vm.MyViewModel
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import com.example.service.cache.DayNightMode
 import org.koin.java.KoinJavaComponent
 
 @Composable
 fun DayNightSettingsDialog(dialogOpen: MutableState<Boolean>) {
-    val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
+    val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
 
     val type = viewModel.viewModelState.collectAsState().value.dayNightSettings
 
@@ -47,7 +47,7 @@ fun DayNightSettingsDialog(dialogOpen: MutableState<Boolean>) {
                                     DayNightMode.AUTO -> stringResource(id = R.string.mode_system)
                                 },
                                 modifier = Modifier.clickable {
-                                    viewModel.handleEvent(MyEvents.ChangeDayNightSettings(it))
+                                    viewModel.handleEvent(LotteryTableEvents.ChangeDayNightSettings(it))
                                     dialogOpen.value = false
                                 },
                                 selected = type == it

@@ -1,8 +1,6 @@
 package com.example.myapplication.compose.appsettings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
@@ -14,15 +12,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.myapplication.R
-import com.example.myapplication.compose.general.DialogText
-import com.example.myapplication.vm.MyEvents
-import com.example.myapplication.vm.MyViewModel
-import com.example.service.cache.FontSize
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import org.koin.java.KoinJavaComponent
 
 @Composable
 fun ResetDatabase(dialogOpen: MutableState<Boolean>) {
-    val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
+    val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
 
     if (dialogOpen.value) {
         Dialog(onDismissRequest = {
@@ -50,7 +46,7 @@ fun ResetDatabase(dialogOpen: MutableState<Boolean>) {
                         }
                         Button(onClick = {
                             dialogOpen.value = false
-                            viewModel.handleEvent(MyEvents.ResetData)
+                            viewModel.handleEvent(LotteryTableEvents.ResetData)
                         }) {
                             Text(text = stringResource(id = android.R.string.ok))
                         }

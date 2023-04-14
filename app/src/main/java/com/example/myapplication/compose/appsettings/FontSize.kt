@@ -1,35 +1,28 @@
 package com.example.myapplication.compose.appsettings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.myapplication.R
 import com.example.myapplication.compose.general.DialogText
-import com.example.myapplication.vm.MyEvents
-import com.example.myapplication.vm.MyViewModel
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
+import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import com.example.service.cache.FontSize
 import org.koin.java.KoinJavaComponent
 
 @Composable
 fun FontSettingsDialog(dialogOpen: MutableState<Boolean>) {
-    val viewModel: MyViewModel by KoinJavaComponent.inject(MyViewModel::class.java)
+    val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
 
     val type = viewModel.viewModelState.collectAsState().value.fontType
 
@@ -55,7 +48,7 @@ fun FontSettingsDialog(dialogOpen: MutableState<Boolean>) {
                                     FontSize.EXTRA_LARGE -> stringResource(id = R.string.x_large)
                                 },
                                 modifier = Modifier.clickable {
-                                    viewModel.handleEvent(MyEvents.ChangeFontSize(it))
+                                    viewModel.handleEvent(LotteryTableEvents.ChangeFontSize(it))
                                     dialogOpen.value = false
                                 },
                                 selected = type == it
