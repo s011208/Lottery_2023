@@ -1,8 +1,10 @@
 package com.example.service.parser
 
+import com.example.analytics.Analytics
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
 import com.example.data.LotteryType
+import org.koin.java.KoinJavaComponent
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -15,6 +17,8 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
     private var currentPage: Int = 1
 
     internal val dateFormat = SimpleDateFormat(DATE_FORMATTER, Locale.getDefault())
+
+    val analytics: Analytics by KoinJavaComponent.inject(Analytics::class.java)
 
     fun parse(): Result<LotteryData> {
         val lotteryDataList = mutableSetOf<LotteryRowData>()

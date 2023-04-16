@@ -28,13 +28,17 @@ class LtoBigParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData) {
         var specialNumberList: List<Int>
         for (i in COLUMN_COUNT until tds.size) {
             val value = tds[i].text()
-            when {
-                i % COLUMN_COUNT == 0 -> date = dateConverter(value)
-                i % COLUMN_COUNT == 1 -> numberList = numberConverter(value)
-                i % COLUMN_COUNT == 2 -> {
-                    specialNumberList = specialNumberConverter(value)
-                    rtn.add(LotteryRowData(date, numberList, specialNumberList))
+            try {
+                when {
+                    i % COLUMN_COUNT == 0 -> date = dateConverter(value)
+                    i % COLUMN_COUNT == 1 -> numberList = numberConverter(value)
+                    i % COLUMN_COUNT == 2 -> {
+                        specialNumberList = specialNumberConverter(value)
+                        rtn.add(LotteryRowData(date, numberList, specialNumberList))
+                    }
                 }
+            } catch (throwable: Throwable) {
+                analytics.recordException(throwable)
             }
         }
 

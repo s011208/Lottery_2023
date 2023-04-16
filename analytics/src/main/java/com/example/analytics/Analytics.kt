@@ -24,4 +24,8 @@ class Analytics {
     fun recordException(throwable: Throwable) {
         Firebase.crashlytics.recordException(throwable)
     }
+
+    fun log(log: String) {
+        Firebase.crashlytics.log(log)
+    }
 }

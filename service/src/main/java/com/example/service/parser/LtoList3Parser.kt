@@ -26,9 +26,13 @@ class LtoList3Parser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData) 
         var date: Long = 0
         var numberList: List<Int>
         for (i in IGNORE_COLUMN until tds.size step 3) {
-            date = dateConverter(tds[i].text())
-            numberList = numberConverter(tds[i + 1].text())
-            rtn.add(LotteryRowData(date, numberList, listOf()))
+            try {
+                date = dateConverter(tds[i].text())
+                numberList = numberConverter(tds[i + 1].text())
+                rtn.add(LotteryRowData(date, numberList, listOf()))
+            } catch (throwable: Throwable) {
+                analytics.recordException(throwable)
+            }
         }
 
         return rtn

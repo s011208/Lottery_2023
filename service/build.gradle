@@ -52,4 +52,5 @@ dependencies {
 
     implementation "io.insert-koin:koin-android:3.3.3"
     implementation project(':data')
+    implementation project(path: ':analytics')
 }

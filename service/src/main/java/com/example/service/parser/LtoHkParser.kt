@@ -5,7 +5,7 @@ import com.example.data.LotteryRowData
 import com.example.data.LotteryType
 import org.jsoup.Jsoup
 
-class LtoHkParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData)  {
+class LtoHkParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData) {
     companion object {
         private const val URL = "https://www.pilio.idv.tw/ltohk/list.asp?indexpage="
 
@@ -28,13 +28,17 @@ class LtoHkParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData)  {
         var specialNumberList: List<Int>
         for (i in COLUMN_COUNT until tds.size) {
             val value = tds[i].text()
-            when {
-                i % COLUMN_COUNT == 0 -> date = dateConverter(value)
-                i % COLUMN_COUNT == 1 -> numberList = numberConverter(value)
-                i % COLUMN_COUNT == 2 -> {
-                    specialNumberList = specialNumberConverter(value)
-                    rtn.add(LotteryRowData(date, numberList, specialNumberList))
+            try {
+                when {
+                    i % COLUMN_COUNT == 0 -> date = dateConverter(value)
+                    i % COLUMN_COUNT == 1 -> numberList = numberConverter(value)
+                    i % COLUMN_COUNT == 2 -> {
+                        specialNumberList = specialNumberConverter(value)
+                        rtn.add(LotteryRowData(date, numberList, specialNumberList))
+                    }
                 }
+            } catch (throwable: Throwable) {
+                analytics.recordException(throwable)
             }
         }
 
