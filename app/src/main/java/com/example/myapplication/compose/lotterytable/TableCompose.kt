@@ -24,9 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.compose.lotterytable.vm.*
 import org.koin.java.KoinJavaComponent
-import timber.log.Timber
 
 private const val GRID_HORIZONTAL_PADDING = 4
+
+private const val LIST_LOTTERY_TABLE_FONT_SIZE_RATIO = 1.5f
 
 @Composable
 fun LotteryTable(
@@ -117,10 +118,9 @@ private fun ListLotteryTable(
             modifier = Modifier.horizontalScroll(horizontalScrollState)
         ) {
             rowList.forEachIndexed { index, row ->
-                Timber.v("row: $row")
                 if (index == 0) return@forEachIndexed
                 item {
-                    RowFactory(row, fontSize.value)
+                    RowFactory(row, fontSize.value, Modifier, LIST_LOTTERY_TABLE_FONT_SIZE_RATIO)
                 }
             }
         }
@@ -159,41 +159,41 @@ private fun getNumberWidth(fontSize: Int): Dp {
 }
 
 @Composable
-fun RowFactory(row: Row, fontSize: Int, modifier: Modifier = Modifier) {
+fun RowFactory(row: Row, fontSize: Int, modifier: Modifier = Modifier, fontSizeRatio: Float = 1f) {
     Row(modifier = modifier) {
-        row.dataList.forEach { grid -> GridFactory(grid, row.type, fontSize) }
+        row.dataList.forEach { grid -> GridFactory(grid, fontSize, fontSizeRatio) }
     }
 }
 
 @Composable
-fun GridFactory(grid: Grid, rowType: Row.Type, fontSize: Int) {
+fun GridFactory(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f) {
     when (grid.type) {
-        Grid.Type.Normal -> NormalGrid(grid, fontSize)
-        Grid.Type.Date -> DateGrid(grid, fontSize)
+        Grid.Type.Normal -> NormalGrid(grid, fontSize, fontSizeRatio)
+        Grid.Type.Date -> DateGrid(grid, fontSize, fontSizeRatio)
         Grid.Type.Special -> SpecialGrid(grid, fontSize)
     }
 }
 
 
 @Composable
-fun DateGrid(grid: Grid, fontSize: Int) {
+fun DateGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getDateWidth(fontSize)),
+            .width(getDateWidth(fontSize) * fontSizeRatio),
         text = grid.text,
         color = if (grid.visible) {
             Color.Gray
         } else {
             Color.Transparent
         },
-        fontSize = fontSize.sp
+        fontSize = fontSize.sp * fontSizeRatio
     )
 }
 
 @Composable
-fun NormalGrid(grid: Grid, fontSize: Int) {
+fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f) {
     Text(
         text = grid.text,
         textAlign = TextAlign.Center,
@@ -205,7 +205,7 @@ fun NormalGrid(grid: Grid, fontSize: Int) {
         } else {
             Color.Transparent
         },
-        fontSize = fontSize.sp
+        fontSize = fontSize.sp * fontSizeRatio
     )
 }
 
