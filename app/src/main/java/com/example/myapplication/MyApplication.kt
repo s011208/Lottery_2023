@@ -118,7 +118,7 @@ val myModule = module {
         ).fallbackToDestructiveMigration().build()
     }
 
-    single { LotteryTableViewModel(get(), get(), get()) }
+    single { LotteryTableViewModel(get(), get(), get(), get()) }
     single { ParseService() }
     single { SyncUseCase(get()) }
     single { DisplayUseCase() }

@@ -12,16 +12,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.compose.LotteryTableMainScreen
 import com.example.myapplication.compose.lotterylog.LotteryLog
-import com.example.myapplication.compose.lotterylog.LotteryLogToolbar
+import com.example.myapplication.compose.lotterylog.SimpleNavBackToolbar
 import com.example.myapplication.compose.lotterytable.LotteryTableToolbar
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
+import com.example.myapplication.compose.settings.PreferenceScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import org.koin.java.KoinJavaComponent
 import timber.log.Timber
@@ -31,6 +33,7 @@ class MainActivity : ComponentActivity() {
     companion object {
         const val SCREEN_NAME_MAIN = "Main"
         const val SCREEN_NAME_LOTTERY_LOG = "lottery_log"
+        const val SCREEN_NAME_PREFERENCE = "preference"
     }
 
     private val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
@@ -85,8 +88,14 @@ fun NavigationScreen() {
         }
         composable(MainActivity.SCREEN_NAME_LOTTERY_LOG) {
             Column {
-                LotteryLogToolbar(navController)
+                SimpleNavBackToolbar(navController, stringResource(id = R.string.lottery_log))
                 LotteryLog()
+            }
+        }
+        composable(MainActivity.SCREEN_NAME_PREFERENCE) {
+            Column {
+                SimpleNavBackToolbar(navController, stringResource(id = R.string.settings))
+                PreferenceScreen({ navController.navigate(MainActivity.SCREEN_NAME_LOTTERY_LOG) })
             }
         }
     }

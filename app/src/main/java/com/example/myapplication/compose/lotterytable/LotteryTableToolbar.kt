@@ -32,6 +32,7 @@ import org.koin.java.KoinJavaComponent
 
 private const val PADDING = 4
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LotteryTableToolbar(navController: NavController = rememberNavController()) {
     val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
@@ -56,11 +57,12 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
                 SortTypeDropdownMenu(viewModel)
                 DisplayOrderDropdownMenu(viewModel)
                 SettingsDropdownMenu(
-                    viewModel
-                ) {
-                    logViewModel.handleUiEvent(LotteryLogUiEvent.RequestData)
-                    navController.navigate(MainActivity.SCREEN_NAME_LOTTERY_LOG)
-                }
+                    viewModel,
+                    {
+                        logViewModel.handleUiEvent(LotteryLogUiEvent.RequestData)
+                        navController.navigate(MainActivity.SCREEN_NAME_LOTTERY_LOG)
+                    },
+                    { navController.navigate(MainActivity.SCREEN_NAME_PREFERENCE) })
             }
             else -> {}
         }
@@ -209,7 +211,8 @@ private fun DisplayOrderDropdownMenu(
 @Composable
 private fun SettingsDropdownMenu(
     viewModel: LotteryTableViewModel,
-    onLotteryDataClick: () -> Unit = {}
+    onLotteryDataClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -230,7 +233,10 @@ private fun SettingsDropdownMenu(
     Box(modifier = Modifier.padding(PADDING.dp)) {
         AppToolbarSettingsText(
             stringResource(id = R.string.settings),
-            Modifier.clickable { expanded = true })
+            Modifier.clickable {
+                onSettingsClick()
+//                expanded = true
+            })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false

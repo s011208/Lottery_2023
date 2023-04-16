@@ -48,4 +48,7 @@
     <string name="back">返回</string>
     <string name="lottery_log">下載紀錄</string>
     <string name="no_lottery_log">沒有下載紀錄</string>
+
+    <string name="settings_lottery_table_display">樂透顯示設定</string>
+    <string name="settings_lottery_data">資料設定</string>
 </resources>

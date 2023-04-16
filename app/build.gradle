@@ -86,6 +86,9 @@ dependencies {
     def nav_version = "2.5.3"
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
+    implementation "com.github.JamalMulla:ComposePrefs3:1.0.3" // Current is 1.0.3
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
     implementation project(path: ':service')
     implementation project(':data')
     implementation project(path: ':analytics')

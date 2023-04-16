@@ -10,13 +10,9 @@ class Preferences(context: Context) {
 
         private const val KEY_LOTTERY_TYPE = "lto_type"
 
-        private const val KEY_FONT_SIZE = "font_size"
-
         private const val KEY_SORT_TYPE = "sort_type"
 
         private const val KEY_DISPLAY_ORDER = "display_order"
-
-        private const val KEY_DAY_NIGHT = "day_night"
     }
 
     private val sharedPreferences =
@@ -28,13 +24,6 @@ class Preferences(context: Context) {
 
     fun setLotteryType(type: LotteryType) =
         sharedPreferences.edit().putString(KEY_LOTTERY_TYPE, type.name).apply()
-
-    fun getFontSize(): FontSize = FontSize.valueOf(
-        sharedPreferences.getString(KEY_FONT_SIZE, FontSize.NORMAL.name) ?: FontSize.NORMAL.name
-    )
-
-    fun setFontSize(fontSize: FontSize) =
-        sharedPreferences.edit().putString(KEY_FONT_SIZE, fontSize.name).apply()
 
     fun getSortType(): SortType = SortType.valueOf(
         sharedPreferences.getString(KEY_SORT_TYPE, SortType.NormalOrder.name)
@@ -51,13 +40,6 @@ class Preferences(context: Context) {
 
     fun setDisplayOrder(order: DisplayOrder) =
         sharedPreferences.edit().putString(KEY_DISPLAY_ORDER, order.name).apply()
-
-    fun getDayNight(): DayNightMode = DayNightMode.valueOf(
-        sharedPreferences.getString(KEY_DAY_NIGHT, DayNightMode.AUTO.name) ?: DayNightMode.AUTO.name
-    )
-
-    fun setDayNight(dayNightMode: DayNightMode) =
-        sharedPreferences.edit().putString(KEY_DAY_NIGHT, dayNightMode.name).apply()
 }
 
 enum class FontSize {

@@ -1,5 +1,6 @@
 package com.example.myapplication.compose.lotterytable.vm
 
+import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.analytics.Analytics
 import com.example.data.LotteryType
 import com.example.myapplication.R
+import com.example.myapplication.compose.appsettings.SETTINGS_KEY_DAY_NIGHT_MODE
+import com.example.myapplication.compose.appsettings.SETTINGS_KEY_FONT_SIZE
+import com.example.myapplication.compose.appsettings.settingsDataStore
+import com.example.service.cache.DayNightMode
 import com.example.service.cache.DisplayOrder
 import com.example.service.cache.FontSize
 import com.example.service.cache.SortType
@@ -22,6 +27,7 @@ class LotteryTableViewModel(
     private val syncUseCase: SyncUseCase,
     private val displayUseCase: DisplayUseCase,
     private val settingsUseCase: SettingsUseCase,
+    context: Context,
 ) : ViewModel(), DefaultLifecycleObserver {
 
     private val _viewModelState: MutableStateFlow<ViewModelState>
@@ -37,13 +43,31 @@ class LotteryTableViewModel(
             ViewModelState(
                 lotteryType = settingsUseCase.getLotteryType(),
                 sortType = settingsUseCase.getSortType(),
-                fontSize = settingsUseCase.getFontSize().toDisplaySize(),
-                fontType = settingsUseCase.getFontSize(),
                 displayOrder = settingsUseCase.getDisplayOrder(),
-                dayNightSettings = settingsUseCase.getDayNight(),
             )
         )
         viewModelState = _viewModelState.asStateFlow()
+
+        viewModelScope.launch {
+            context.settingsDataStore.data
+                .distinctUntilChanged()
+                .collect { preference ->
+                    preference.asMap().forEach { (key, value) ->
+                        when (key.name) {
+                            SETTINGS_KEY_DAY_NIGHT_MODE -> {
+                                viewModelScope.launch {
+                                    changeDayNightSettings(DayNightMode.valueOf(value as String))
+                                }
+                            }
+                            SETTINGS_KEY_FONT_SIZE -> {
+                                viewModelScope.launch {
+                                    changeFontSize(FontSize.valueOf(value as String))
+                                }
+                            }
+                        }
+                    }
+                }
+        }
     }
 
     override fun onCreate(owner: LifecycleOwner) {
@@ -90,17 +114,11 @@ class LotteryTableViewModel(
                 is LotteryTableEvents.ScrollToTop -> {
                     scrollToTop()
                 }
-                is LotteryTableEvents.ChangeFontSize -> {
-                    changeFontSize(event)
-                }
                 is LotteryTableEvents.ChangeDisplayOrder -> {
                     changeDisplayOrder(event)
                 }
                 LotteryTableEvents.ResetData -> {
                     resetData()
-                }
-                is LotteryTableEvents.ChangeDayNightSettings -> {
-                    changeDayNightSettings(event)
                 }
                 else -> {
                     // ignore
@@ -109,10 +127,9 @@ class LotteryTableViewModel(
         }
     }
 
-    private suspend fun changeDayNightSettings(event: LotteryTableEvents.ChangeDayNightSettings) {
-        _eventState.emit(event)
-        _viewModelState.emit(_viewModelState.value.copy(dayNightSettings = event.dayNightSettings))
-        settingsUseCase.setDayNightSettings(event.dayNightSettings)
+    private suspend fun changeDayNightSettings(mode: DayNightMode) {
+        _eventState.emit(LotteryTableEvents.ChangeDayNightSettings(mode))
+        _viewModelState.emit(_viewModelState.value.copy(dayNightSettings = mode))
     }
 
     private suspend fun startSync(source: Source) {
@@ -180,13 +197,12 @@ class LotteryTableViewModel(
         _eventState.emit(LotteryTableEvents.ScrollToTop)
     }
 
-    private suspend fun changeFontSize(event: LotteryTableEvents.ChangeFontSize) {
-        val fontSize = event.fontSize.toDisplaySize()
+    private suspend fun changeFontSize(fontSizeRaw: FontSize) {
+        val fontSize = fontSizeRaw.toDisplaySize()
         _viewModelState.emit(
-            _viewModelState.value.copy(fontSize = fontSize, fontType = event.fontSize)
+            _viewModelState.value.copy(fontSize = fontSize, fontType = fontSizeRaw)
         )
         _eventState.emit(LotteryTableEvents.FontSizeChanged(fontSize))
-        settingsUseCase.setFontSize(event.fontSize)
     }
 
     private suspend fun changeDisplayOrder(event: LotteryTableEvents.ChangeDisplayOrder) {
