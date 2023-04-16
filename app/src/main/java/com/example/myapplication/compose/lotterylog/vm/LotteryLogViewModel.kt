@@ -40,7 +40,8 @@ class LotteryLogViewModel(private val lotteryLogUseCase: LotteryLogUseCase) : Vi
                                         it.state,
                                         it.errorMessage
                                     )
-                                })
+                                }.reversed()
+                        )
                     )
                 }
             }

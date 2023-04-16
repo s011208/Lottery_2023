@@ -69,7 +69,6 @@ class MyApplication : Application() {
     }
 
     private fun startSyncTask(context: Context) {
-        Timber.d("startSyncTask")
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .setRequiresCharging(false)
@@ -86,20 +85,6 @@ class MyApplication : Application() {
 
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork("Sync task", ExistingPeriodicWorkPolicy.REPLACE, syncTask)
-        Timber.d("startSyncTask end")
-
-        // TODO 移到下載的地方
-//        val myWorkRequest = OneTimeWorkRequestBuilder<SyncWorker>()
-//            .setBackoffCriteria(
-//                BackoffPolicy.LINEAR,
-//                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-//                TimeUnit.MILLISECONDS
-//            )
-//            .setInputData(Data.Builder().putString(SyncWorker.SOURCE, Source.ONE_TIME.name).build())
-//            .build()
-//
-//        WorkManager.getInstance(context)
-//            .enqueueUniqueWork("Test", ExistingWorkPolicy.REPLACE, myWorkRequest)
     }
 }
 

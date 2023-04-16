@@ -120,7 +120,6 @@ object LotteryDataMapper {
         val specialNumberCount = lotteryData.specialNumberCount
 
         // header
-        // TODO resource
         headerRowList.add(
             Grid(
                 text = "",

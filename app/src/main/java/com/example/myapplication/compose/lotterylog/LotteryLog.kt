@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.example.myapplication.R
 import com.example.myapplication.compose.lotterylog.vm.LotteryLogViewModel
 import org.koin.java.KoinJavaComponent
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,6 +27,8 @@ fun LotteryLog() {
     val dateFormat = SimpleDateFormat("yyyy/MM/dd hh:mm:ss", Locale.getDefault())
 
     val itemList = state.value.itemList
+
+    Timber.i("log size: ${itemList.size}")
 
     if (itemList.isEmpty()) {
         Box(contentAlignment = Alignment.Center) {

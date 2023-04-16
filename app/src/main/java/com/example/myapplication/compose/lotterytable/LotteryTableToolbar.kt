@@ -17,13 +17,8 @@ import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.compose.UiState
 import com.example.myapplication.compose.ViewModelStateMapper.mapToUiState
-import com.example.myapplication.compose.appsettings.DayNightSettingsDialog
-import com.example.myapplication.compose.appsettings.FontSettingsDialog
-import com.example.myapplication.compose.appsettings.ResetDatabase
 import com.example.myapplication.compose.general.AppToolbarSettingsDropDownText
 import com.example.myapplication.compose.general.AppToolbarSettingsText
-import com.example.myapplication.compose.lotterylog.vm.LotteryLogUiEvent
-import com.example.myapplication.compose.lotterylog.vm.LotteryLogViewModel
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import com.example.service.cache.DisplayOrder
@@ -38,8 +33,6 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
     val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
     val state = viewModel.viewModelState.collectAsState()
     val value = state.value.mapToUiState()
-
-    val logViewModel: LotteryLogViewModel by KoinJavaComponent.inject(LotteryLogViewModel::class.java)
 
     SmallTopAppBar(title = {
         Text(
@@ -56,13 +49,7 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
                 LotteryTypeDropdownMenu(viewModel)
                 SortTypeDropdownMenu(viewModel)
                 DisplayOrderDropdownMenu(viewModel)
-                SettingsDropdownMenu(
-                    viewModel,
-                    {
-                        logViewModel.handleUiEvent(LotteryLogUiEvent.RequestData)
-                        navController.navigate(MainActivity.SCREEN_NAME_LOTTERY_LOG)
-                    },
-                    { navController.navigate(MainActivity.SCREEN_NAME_PREFERENCE) })
+                SettingsDropdownMenu({ navController.navigate(MainActivity.SCREEN_NAME_PREFERENCE) })
             }
             else -> {}
         }
@@ -210,79 +197,15 @@ private fun DisplayOrderDropdownMenu(
 
 @Composable
 private fun SettingsDropdownMenu(
-    viewModel: LotteryTableViewModel,
-    onLotteryDataClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
 ) {
-    var expanded by remember {
-        mutableStateOf(false)
-    }
-
-    var fontSizeDialogOpen = remember {
-        mutableStateOf(false)
-    }
-
-    var resetDatabaseDialogOpen = remember {
-        mutableStateOf(false)
-    }
-
-    var dayNightSettingsDialogOpen = remember {
-        mutableStateOf(false)
-    }
-
     Box(modifier = Modifier.padding(PADDING.dp)) {
         AppToolbarSettingsText(
             stringResource(id = R.string.settings),
             Modifier.clickable {
                 onSettingsClick()
-//                expanded = true
             })
-
-        DropdownMenu(expanded = expanded, onDismissRequest = {
-            expanded = false
-        }) {
-            AppToolbarSettings.values().forEachIndexed { itemIndex, itemValue ->
-                DropdownMenuItem(
-                    onClick = {
-                        when (itemValue) {
-                            AppToolbarSettings.FONT_SIZE -> {
-                                fontSizeDialogOpen.value = true
-                            }
-                            AppToolbarSettings.UPDATE_LTO -> {
-                                viewModel.handleEvent(LotteryTableEvents.UpdateData)
-                            }
-                            AppToolbarSettings.RESET -> {
-                                resetDatabaseDialogOpen.value = true
-                            }
-                            AppToolbarSettings.DAY_NIGHT_MODE -> {
-                                dayNightSettingsDialogOpen.value = true
-                            }
-                            AppToolbarSettings.LOTTERY_LOG -> {
-                                onLotteryDataClick.invoke()
-                            }
-                        }
-                        expanded = false
-                    },
-                    enabled = true,
-                    text = {
-                        AppToolbarSettingsDropDownText(
-                            text = when (itemValue) {
-                                AppToolbarSettings.FONT_SIZE -> stringResource(id = R.string.font_size)
-                                AppToolbarSettings.UPDATE_LTO -> stringResource(id = R.string.update_lto)
-                                AppToolbarSettings.RESET -> stringResource(id = R.string.reset)
-                                AppToolbarSettings.DAY_NIGHT_MODE -> stringResource(id = R.string.day_night_settings)
-                                AppToolbarSettings.LOTTERY_LOG -> stringResource(id = R.string.lottery_log)
-                            }
-                        )
-                    },
-                )
-            }
-        }
     }
-
-    FontSettingsDialog(fontSizeDialogOpen)
-    ResetDatabase(dialogOpen = resetDatabaseDialogOpen)
-    DayNightSettingsDialog(dayNightSettingsDialogOpen)
 }
 
 @Composable
