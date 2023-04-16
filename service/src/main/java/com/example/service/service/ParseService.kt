@@ -6,9 +6,7 @@ import com.example.data.LotteryLog
 import com.example.data.LotteryType
 import com.example.service.cache.log.LotteryLogDatabase
 import com.example.service.cache.lto.LotteryDataDatabase
-import com.example.service.parser.LtoBigParser
-import com.example.service.parser.LtoHkParser
-import com.example.service.parser.LtoParser
+import com.example.service.parser.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -109,6 +107,70 @@ class ParseService {
                     LotteryLog(
                         System.currentTimeMillis(),
                         LotteryType.LtoHK,
+                        LoadingState.ERROR,
+                        result.exceptionOrNull()?.message ?: ""
+                    )
+                )
+            }
+        }
+        return result
+    }
+
+    fun parseLtoList3(): Result<LotteryData> {
+        val result =
+            LtoList3Parser(database.userDao().getLottery(LotteryType.LtoList3.toString())).parse()
+        if (result.isSuccess) {
+            result.onSuccess {
+                CoroutineScope(dispatcher).launch {
+                    database.userDao().insertAll(it)
+                    logDatabase.userDao().insertAll(
+                        LotteryLog(
+                            System.currentTimeMillis(),
+                            LotteryType.LtoList3,
+                            LoadingState.SUCCESS
+                        )
+                    )
+                }
+            }
+        } else {
+            Timber.w(result.exceptionOrNull(), "parseLtoList3 failed")
+            CoroutineScope(dispatcher).launch {
+                logDatabase.userDao().insertAll(
+                    LotteryLog(
+                        System.currentTimeMillis(),
+                        LotteryType.LtoList3,
+                        LoadingState.ERROR,
+                        result.exceptionOrNull()?.message ?: ""
+                    )
+                )
+            }
+        }
+        return result
+    }
+
+    fun parseLtoList4(): Result<LotteryData> {
+        val result =
+            LtoList4Parser(database.userDao().getLottery(LotteryType.LtoList4.toString())).parse()
+        if (result.isSuccess) {
+            result.onSuccess {
+                CoroutineScope(dispatcher).launch {
+                    database.userDao().insertAll(it)
+                    logDatabase.userDao().insertAll(
+                        LotteryLog(
+                            System.currentTimeMillis(),
+                            LotteryType.LtoList4,
+                            LoadingState.SUCCESS
+                        )
+                    )
+                }
+            }
+        } else {
+            Timber.w(result.exceptionOrNull(), "parseLtoList4 failed")
+            CoroutineScope(dispatcher).launch {
+                logDatabase.userDao().insertAll(
+                    LotteryLog(
+                        System.currentTimeMillis(),
+                        LotteryType.LtoList4,
                         LoadingState.ERROR,
                         result.exceptionOrNull()?.message ?: ""
                     )

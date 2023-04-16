@@ -22,6 +22,7 @@ fun LotteryTableMainScreen() {
                 if (value.rowList.isNotEmpty()) {
                     LotteryTable(
                         value.rowList,
+                        value.tableType
                     )
                 } else if (!value.isLoading && !value.isSyncing) {
                     EmptyScreen()

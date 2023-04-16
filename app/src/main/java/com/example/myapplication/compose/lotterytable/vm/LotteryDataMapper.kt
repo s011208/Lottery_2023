@@ -2,11 +2,13 @@ package com.example.myapplication.compose.lotterytable.vm
 
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
+import com.example.data.LotteryType
 import com.example.service.cache.SortType
 import java.text.SimpleDateFormat
 import java.util.*
 
 object LotteryDataMapper {
+    private const val DATE_FORMAT = "yyyy/MM/dd"
 
     private val ADD_TO_TEN_ORDER = listOf(
         1, 10, 29, 38, 47,
@@ -34,28 +36,81 @@ object LotteryDataMapper {
         10, 20, 30, 40, 50, 60
     )
 
-    fun map(lotteryData: LotteryData, sortType: SortType): List<Row> {
-        val rtn = when (sortType) {
-            SortType.NormalOrder -> {
-                makeLotteryData(lotteryData)
+    fun map(lotteryData: LotteryData, sortType: SortType, lotteryType: LotteryType): List<Row> {
+        val rtn =
+            when (lotteryType) {
+                LotteryType.LtoList3, LotteryType.LtoList4 -> {
+                    makeListLotteryData(lotteryData)
+                }
+                else -> {
+                    when (sortType) {
+                        SortType.NormalOrder -> {
+                            makeLotteryData(lotteryData)
+                        }
+                        SortType.AddToTen -> {
+                            val makeLotteryData = makeLotteryData(lotteryData)
+                            val comparator = GridComparator(
+                                ADD_TO_TEN_ORDER,
+                                lotteryData.isSpecialNumberSeparate
+                            )
+                            makeLotteryData.map { row ->
+                                row.copy(
+                                    dataList = row.dataList.sortedWith(
+                                        comparator
+                                    )
+                                )
+                            }
+                        }
+                        SortType.LastDigit -> {
+                            val makeLotteryData = makeLotteryData(lotteryData)
+                            val comparator = GridComparator(
+                                LAST_DIGIT_ORDER,
+                                lotteryData.isSpecialNumberSeparate
+                            )
+                            makeLotteryData.map { row ->
+                                row.copy(
+                                    dataList = row.dataList.sortedWith(
+                                        comparator
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
             }
-            SortType.AddToTen -> {
-                val makeLotteryData = makeLotteryData(lotteryData)
-                val comparator = GridComparator(ADD_TO_TEN_ORDER, lotteryData.isSpecialNumberSeparate)
-                makeLotteryData.map { row -> row.copy(dataList = row.dataList.sortedWith(comparator)) }
-            }
-            SortType.LastDigit -> {
-                val makeLotteryData = makeLotteryData(lotteryData)
-                val comparator = GridComparator(LAST_DIGIT_ORDER, lotteryData.isSpecialNumberSeparate)
-                makeLotteryData.map { row -> row.copy(dataList = row.dataList.sortedWith(comparator)) }
-            }
-        }
 
         return rtn
     }
 
+    private fun makeListLotteryData(lotteryData: LotteryData): MutableList<Row> {
+        val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
+        val rtn = mutableListOf<Row>()
+        lotteryData.dataList.forEach { lotteryRowData ->
+            val dailyLotteryRowList = mutableListOf<Grid>()
+            dailyLotteryRowList.add(
+                Grid(
+                    text = dateFormat.format(lotteryRowData.date),
+                    type = Grid.Type.Date
+                )
+            )
+
+            lotteryRowData.normalNumberList.forEach {
+                dailyLotteryRowList.add(
+                    Grid(
+                        index = it,
+                        text = it.toString(),
+                        visible = true,
+                        type = Grid.Type.Normal
+                    )
+                )
+            }
+            rtn.add(Row(dailyLotteryRowList, Row.Type.LotteryData))
+        }
+        return rtn
+    }
+
     private fun makeLotteryData(lotteryData: LotteryData): MutableList<Row> {
-        val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+        val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
         val monthlyTotalDateFormat = SimpleDateFormat("MM", Locale.getDefault())
         val rtn = mutableListOf<Row>()
 

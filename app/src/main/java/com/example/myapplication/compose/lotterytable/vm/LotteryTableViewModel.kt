@@ -65,7 +65,7 @@ class LotteryTableViewModel(
                 dataList = if (displayOrder == DisplayOrder.ASCEND) {
                     data.dataList
                 } else data.dataList.reversed()
-            ), sortType
+            ), sortType, lotteryType
         )
     }
 
@@ -283,6 +283,38 @@ class LotteryTableViewModel(
                                     it.exceptionOrNull(),
                                     LotteryType.LtoHK,
                                     R.string.failed_to_load_lto_hk,
+                                )
+                            )
+                            it.exceptionOrNull()?.let { throwable ->
+                                analytics.recordException(throwable)
+                            }
+                        }
+                    }
+                },
+                async {
+                    syncUseCase.parseLtoList3().also {
+                        if (it.isFailure) {
+                            _eventState.emit(
+                                LotteryTableEvents.SyncFailed(
+                                    it.exceptionOrNull(),
+                                    LotteryType.LtoList3,
+                                    R.string.failed_to_load_lto_list3,
+                                )
+                            )
+                            it.exceptionOrNull()?.let { throwable ->
+                                analytics.recordException(throwable)
+                            }
+                        }
+                    }
+                },
+                async {
+                    syncUseCase.parseLtoList4().also {
+                        if (it.isFailure) {
+                            _eventState.emit(
+                                LotteryTableEvents.SyncFailed(
+                                    it.exceptionOrNull(),
+                                    LotteryType.LtoList4,
+                                    R.string.failed_to_load_lto_list4,
                                 )
                             )
                             it.exceptionOrNull()?.let { throwable ->

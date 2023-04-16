@@ -24,6 +24,18 @@ class SyncUseCase(val service: ParseService) {
         }
     }
 
+    fun parseLtoList3(): Result<LotteryData> {
+        return service.parseLtoList3().also {
+            Timber.i("parseLtoList3 lotteryData size: ${it.getOrNull()?.dataList?.size}")
+        }
+    }
+
+    fun parseLtoList4(): Result<LotteryData> {
+        return service.parseLtoList4().also {
+            Timber.i("parseLtoList4 lotteryData size: ${it.getOrNull()?.dataList?.size}")
+        }
+    }
+
     fun clearDatabase() {
         Timber.w("clearDatabase")
         service.clearDatabase()

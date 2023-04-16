@@ -35,7 +35,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
                     }
                 }
                 ++currentPage
-                val minDate = lotteryDataList.toList().minOf { it.date }
+                val minDate = lotteryDataList.toList().minOfOrNull { it.date } ?: 0
                 Timber.d("minDate: $minDate, getLastDataDate(): ${getLastDataDate()}")
             } while (lotteryDataList.isNotEmpty() && minDate > getLastDataDate())
         } catch (exception: Throwable) {

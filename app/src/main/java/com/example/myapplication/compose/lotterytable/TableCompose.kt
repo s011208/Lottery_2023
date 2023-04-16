@@ -1,9 +1,11 @@
 package com.example.myapplication.compose
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.LocalTextStyle
@@ -20,17 +22,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.compose.lotterytable.vm.Grid
-import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
-import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
-import com.example.myapplication.compose.lotterytable.vm.Row
+import com.example.myapplication.compose.lotterytable.vm.*
 import org.koin.java.KoinJavaComponent
+import timber.log.Timber
 
 private const val GRID_HORIZONTAL_PADDING = 4
 
 @Composable
 fun LotteryTable(
-    rowList: List<Row>
+    rowList: List<Row>,
+    tableType: TableType,
 ) {
     val horizontalScrollState = rememberScrollState(0)
     val lazyListState = rememberLazyListState(0)
@@ -54,6 +55,30 @@ fun LotteryTable(
             }
         }
     }
+
+    when (tableType) {
+        TableType.NORMAL -> NormalLotteryTable(
+            rowList,
+            horizontalScrollState,
+            fontSize,
+            lazyListState
+        )
+        TableType.LIST -> ListLotteryTable(
+            rowList,
+            horizontalScrollState,
+            fontSize,
+            lazyListState
+        )
+    }
+}
+
+@Composable
+private fun NormalLotteryTable(
+    rowList: List<Row>,
+    horizontalScrollState: ScrollState,
+    fontSize: MutableState<Int>,
+    lazyListState: LazyListState
+) {
     Column {
         if (rowList.isNotEmpty()) {
             val first = rowList.first()
@@ -78,6 +103,30 @@ fun LotteryTable(
         }
     }
 }
+
+@Composable
+private fun ListLotteryTable(
+    rowList: List<Row>,
+    horizontalScrollState: ScrollState,
+    fontSize: MutableState<Int>,
+    lazyListState: LazyListState
+) {
+    Column {
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier.horizontalScroll(horizontalScrollState)
+        ) {
+            rowList.forEachIndexed { index, row ->
+                Timber.v("row: $row")
+                if (index == 0) return@forEachIndexed
+                item {
+                    RowFactory(row, fontSize.value)
+                }
+            }
+        }
+    }
+}
+
 
 @OptIn(ExperimentalTextApi::class)
 @Composable

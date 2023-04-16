@@ -284,6 +284,8 @@ private fun LotteryType.toUiString() = when (this) {
     LotteryType.Lto -> stringResource(id = R.string.lto)
     LotteryType.LtoBig -> stringResource(id = R.string.lto_big)
     LotteryType.LtoHK -> stringResource(id = R.string.lto_hk)
+    LotteryType.LtoList3 -> stringResource(id = R.string.lto_list3)
+    LotteryType.LtoList4 -> stringResource(id = R.string.lto_list4)
 }
 
 enum class AppToolbarSettings {

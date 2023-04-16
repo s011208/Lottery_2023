@@ -8,8 +8,18 @@ import com.example.service.cache.SortType
 
 object ViewModelStateMapper {
     fun ViewModelState.mapToUiState(): UiState {
-        return UiState.Show(rowList, lotteryType, sortType, displayOrder, isLoading, isSyncing)
+        return UiState.Show(
+            rowList, lotteryType, sortType, displayOrder, isLoading, isSyncing,
+            when (lotteryType) {
+                LotteryType.LtoList4, LotteryType.LtoList3 -> TableType.LIST
+                else -> TableType.NORMAL
+            }
+        )
     }
+}
+
+enum class TableType {
+    NORMAL, LIST
 }
 
 sealed class UiState {
@@ -20,5 +30,6 @@ sealed class UiState {
         val displayOrder: DisplayOrder,
         val isLoading: Boolean,
         val isSyncing: Boolean,
+        val tableType: TableType,
     ) : UiState()
 }

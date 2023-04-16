@@ -7,6 +7,8 @@
     <string name="lto">威力彩</string>
     <string name="lto_big">大樂透</string>
     <string name="lto_hk">六合彩</string>
+    <string name="lto_list3">三星彩</string>
+    <string name="lto_list4">四星彩</string>
     <string name="sort_type">排列方式</string>
     <string name="normal_order">一般</string>
     <string name="last_digit">尾數</string>
@@ -35,6 +37,8 @@
     <string name="failed_to_load_lto">下載威力彩失敗</string>
     <string name="failed_to_load_lto_big">下載大樂透失敗</string>
     <string name="failed_to_load_lto_hk">下載六合彩失敗</string>
+    <string name="failed_to_load_lto_list3">下載三星彩失敗</string>
+    <string name="failed_to_load_lto_list4">下載四星彩失敗</string>
 
     <string name="day_night_settings">日夜間模式</string>
     <string name="mode_day">日間模式</string>
