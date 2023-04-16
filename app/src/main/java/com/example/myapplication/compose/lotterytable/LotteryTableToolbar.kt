@@ -34,7 +34,7 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
     val state = viewModel.viewModelState.collectAsState()
     val value = state.value.mapToUiState()
 
-    SmallTopAppBar(title = {
+    TopAppBar(title = {
         Text(
             text = when (value) {
                 is UiState.Show -> state.value.lotteryType.toUiString()

@@ -13,7 +13,7 @@ import com.example.myapplication.R
 @Composable
 fun SimpleNavBackToolbar(navController: NavController = rememberNavController(), title: String) {
 
-    SmallTopAppBar(
+    TopAppBar(
         title = {
             Text(
                 text = title
