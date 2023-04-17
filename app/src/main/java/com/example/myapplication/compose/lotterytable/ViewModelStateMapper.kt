@@ -13,7 +13,11 @@ object ViewModelStateMapper {
             when (lotteryType) {
                 LotteryType.LtoList4, LotteryType.LtoList3 -> TableType.LIST
                 else -> TableType.NORMAL
-            }
+            },
+            when (lotteryType) {
+                LotteryType.LtoList4, LotteryType.LtoList3 -> listTableExtraSpacing
+                else -> normalTableExtraSpacing
+            },
         )
     }
 }
@@ -31,5 +35,6 @@ sealed class UiState {
         val isLoading: Boolean,
         val isSyncing: Boolean,
         val tableType: TableType,
+        val extraSpacing: Int,
     ) : UiState()
 }

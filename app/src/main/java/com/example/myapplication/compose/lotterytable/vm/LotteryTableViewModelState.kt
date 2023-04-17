@@ -15,7 +15,9 @@ data class ViewModelState(
     val fontType: FontSize = FontSize.NORMAL,
     val displayOrder: DisplayOrder = DisplayOrder.DESCEND,
     val isSyncing: Boolean = false,
-    val dayNightSettings: DayNightMode = DayNightMode.AUTO
+    val dayNightSettings: DayNightMode = DayNightMode.AUTO,
+    val normalTableExtraSpacing: Int = 0,
+    val listTableExtraSpacing: Int = 0,
 )
 
 data class Row(

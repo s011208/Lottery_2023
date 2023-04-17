@@ -33,6 +33,7 @@ private const val LIST_LOTTERY_TABLE_FONT_SIZE_RATIO = 1.5f
 fun LotteryTable(
     rowList: List<Row>,
     tableType: TableType,
+    extraSpacing: Int,
 ) {
     val horizontalScrollState = rememberScrollState(0)
     val lazyListState = rememberLazyListState(0)
@@ -62,13 +63,15 @@ fun LotteryTable(
             rowList,
             horizontalScrollState,
             fontSize,
-            lazyListState
+            lazyListState,
+            extraSpacing,
         )
         TableType.LIST -> ListLotteryTable(
             rowList,
             horizontalScrollState,
             fontSize,
-            lazyListState
+            lazyListState,
+            extraSpacing,
         )
     }
 }
@@ -78,15 +81,17 @@ private fun NormalLotteryTable(
     rowList: List<Row>,
     horizontalScrollState: ScrollState,
     fontSize: MutableState<Int>,
-    lazyListState: LazyListState
+    lazyListState: LazyListState,
+    extraSpacing: Int,
 ) {
     Column {
         if (rowList.isNotEmpty()) {
             val first = rowList.first()
             Column(modifier = Modifier.horizontalScroll(horizontalScrollState)) {
                 RowFactory(
-                    first,
-                    fontSize.value,
+                    row = first,
+                    fontSize = fontSize.value,
+                    extraSpacing = extraSpacing,
                 )
             }
         }
@@ -98,7 +103,7 @@ private fun NormalLotteryTable(
             rowList.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
                 item {
-                    RowFactory(row, fontSize.value)
+                    RowFactory(row = row, fontSize = fontSize.value, extraSpacing = extraSpacing)
                 }
             }
         }
@@ -110,7 +115,8 @@ private fun ListLotteryTable(
     rowList: List<Row>,
     horizontalScrollState: ScrollState,
     fontSize: MutableState<Int>,
-    lazyListState: LazyListState
+    lazyListState: LazyListState,
+    extraSpacing: Int,
 ) {
     Column {
         LazyColumn(
@@ -120,7 +126,12 @@ private fun ListLotteryTable(
             rowList.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
                 item {
-                    RowFactory(row, fontSize.value, Modifier, LIST_LOTTERY_TABLE_FONT_SIZE_RATIO)
+                    RowFactory(
+                        row = row,
+                        fontSize = fontSize.value,
+                        fontSizeRatio = LIST_LOTTERY_TABLE_FONT_SIZE_RATIO,
+                        extraSpacing = extraSpacing
+                    )
                 }
             }
         }
@@ -159,29 +170,35 @@ private fun getNumberWidth(fontSize: Int): Dp {
 }
 
 @Composable
-fun RowFactory(row: Row, fontSize: Int, modifier: Modifier = Modifier, fontSizeRatio: Float = 1f) {
+fun RowFactory(
+    row: Row,
+    fontSize: Int,
+    modifier: Modifier = Modifier,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int
+) {
     Row(modifier = modifier) {
-        row.dataList.forEach { grid -> GridFactory(grid, fontSize, fontSizeRatio) }
+        row.dataList.forEach { grid -> GridFactory(grid, fontSize, fontSizeRatio, extraSpacing) }
     }
 }
 
 @Composable
-fun GridFactory(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f) {
+fun GridFactory(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
     when (grid.type) {
-        Grid.Type.Normal -> NormalGrid(grid, fontSize, fontSizeRatio)
-        Grid.Type.Date -> DateGrid(grid, fontSize, fontSizeRatio)
-        Grid.Type.Special -> SpecialGrid(grid, fontSize)
+        Grid.Type.Normal -> NormalGrid(grid, fontSize, fontSizeRatio, extraSpacing)
+        Grid.Type.Date -> DateGrid(grid, fontSize, fontSizeRatio, extraSpacing)
+        Grid.Type.Special -> SpecialGrid(grid, fontSize, fontSizeRatio, extraSpacing)
     }
 }
 
 
 @Composable
-fun DateGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f) {
+fun DateGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getDateWidth(fontSize) * fontSizeRatio),
+            .width(getDateWidth(fontSize) * fontSizeRatio + (2 * extraSpacing).dp),
         text = grid.text,
         color = if (grid.visible) {
             Color.Gray
@@ -193,13 +210,13 @@ fun DateGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f) {
 }
 
 @Composable
-fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f) {
+fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
     Text(
         text = grid.text,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getNumberWidth(fontSize)),
+            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
         color = if (grid.visible) {
             Color.Unspecified
         } else {
@@ -210,12 +227,12 @@ fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f) {
 }
 
 @Composable
-fun SpecialGrid(grid: Grid, fontSize: Int) {
+fun SpecialGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getNumberWidth(fontSize)),
+            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
         text = grid.text,
         color = if (grid.visible) {
             Color.Red

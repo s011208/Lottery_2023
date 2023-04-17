@@ -51,4 +51,6 @@
 
     <string name="settings_lottery_table_display">樂透顯示設定</string>
     <string name="settings_lottery_data">資料設定</string>
+    <string name="settings_normal_table_extra_spacing">大表額外間距</string>
+    <string name="settings_list_table_extra_spacing">三、四星彩額外間距</string>
 </resources>

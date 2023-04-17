@@ -8,9 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.analytics.Analytics
 import com.example.data.LotteryType
 import com.example.myapplication.R
-import com.example.myapplication.compose.appsettings.SETTINGS_KEY_DAY_NIGHT_MODE
-import com.example.myapplication.compose.appsettings.SETTINGS_KEY_FONT_SIZE
-import com.example.myapplication.compose.appsettings.settingsDataStore
+import com.example.myapplication.compose.appsettings.*
 import com.example.service.cache.DayNightMode
 import com.example.service.cache.DisplayOrder
 import com.example.service.cache.FontSize
@@ -62,6 +60,16 @@ class LotteryTableViewModel(
                             SETTINGS_KEY_FONT_SIZE -> {
                                 viewModelScope.launch {
                                     changeFontSize(FontSize.valueOf(value as String))
+                                }
+                            }
+                            SETTINGS_EXTRA_SPACING_NORMAL_TABLE -> {
+                                viewModelScope.launch {
+                                    changeExtraSpacingNormalTable((value as Float).toInt())
+                                }
+                            }
+                            SETTINGS_EXTRA_SPACING_LIST_TABLE -> {
+                                viewModelScope.launch {
+                                    changeExtraSpacingListTable((value as Float).toInt())
                                 }
                             }
                         }
@@ -203,6 +211,18 @@ class LotteryTableViewModel(
             _viewModelState.value.copy(fontSize = fontSize, fontType = fontSizeRaw)
         )
         _eventState.emit(LotteryTableEvents.FontSizeChanged(fontSize))
+    }
+
+    private suspend fun changeExtraSpacingNormalTable(extraSpacing: Int) {
+        _viewModelState.emit(
+            _viewModelState.value.copy(normalTableExtraSpacing = extraSpacing)
+        )
+    }
+
+    private suspend fun changeExtraSpacingListTable(extraSpacing: Int) {
+        _viewModelState.emit(
+            _viewModelState.value.copy(listTableExtraSpacing = extraSpacing)
+        )
     }
 
     private suspend fun changeDisplayOrder(event: LotteryTableEvents.ChangeDisplayOrder) {

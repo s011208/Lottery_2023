@@ -9,10 +9,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.myapplication.R
-import com.example.myapplication.compose.appsettings.ResetDatabase
-import com.example.myapplication.compose.appsettings.SETTINGS_KEY_DAY_NIGHT_MODE
-import com.example.myapplication.compose.appsettings.SETTINGS_KEY_FONT_SIZE
-import com.example.myapplication.compose.appsettings.settingsDataStore
+import com.example.myapplication.compose.appsettings.*
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import com.example.service.cache.DayNightMode
@@ -20,6 +17,7 @@ import com.example.service.cache.FontSize
 import com.jamal.composeprefs3.ui.GroupHeader
 import com.jamal.composeprefs3.ui.PrefsScreen
 import com.jamal.composeprefs3.ui.prefs.ListPref
+import com.jamal.composeprefs3.ui.prefs.SliderPref
 import com.jamal.composeprefs3.ui.prefs.TextPref
 import org.koin.java.KoinJavaComponent
 
@@ -63,6 +61,22 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                         DayNightMode.NIGHT.toString() to stringResource(id = R.string.mode_night),
                         DayNightMode.AUTO.toString() to stringResource(id = R.string.mode_system),
                     )
+                )
+
+                SliderPref(
+                    key = SETTINGS_EXTRA_SPACING_NORMAL_TABLE,
+                    title = stringResource(id = R.string.settings_normal_table_extra_spacing),
+                    valueRange = 0f..100f,
+                    showValue = true,
+                    steps = 99
+                )
+
+                SliderPref(
+                    key = SETTINGS_EXTRA_SPACING_LIST_TABLE,
+                    title = stringResource(id = R.string.settings_list_table_extra_spacing),
+                    valueRange = 0f..100f,
+                    showValue = true,
+                    steps = 99
                 )
             }
         }
