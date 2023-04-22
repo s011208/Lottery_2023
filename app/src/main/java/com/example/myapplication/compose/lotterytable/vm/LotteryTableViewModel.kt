@@ -194,6 +194,7 @@ class LotteryTableViewModel(
                 rowList = rowList
             )
         )
+        _eventState.emit(event)
         settingsUseCase.setLotteryType(event.type)
     }
 

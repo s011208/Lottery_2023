@@ -1,14 +1,12 @@
 package com.example.myapplication.compose
 
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -40,6 +38,9 @@ fun LotteryTable(
     val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
     val fontSize: MutableState<Int> =
         remember { mutableStateOf(viewModel.viewModelState.value.fontSize) }
+    val clickedDate: MutableState<String> = remember {
+        mutableStateOf(UNDEF)
+    }
 
     LaunchedEffect("Table") {
         viewModel.eventStateSharedFlow.collect { myEvent ->
@@ -53,6 +54,9 @@ fun LotteryTable(
                 is LotteryTableEvents.FontSizeChanged -> {
                     fontSize.value = myEvent.fontSize
                 }
+                is LotteryTableEvents.ChangeLotteryType -> {
+                    clickedDate.value = UNDEF
+                }
                 else -> {}
             }
         }
@@ -65,6 +69,7 @@ fun LotteryTable(
             fontSize,
             lazyListState,
             extraSpacing,
+            clickedDate,
         )
         TableType.LIST -> ListLotteryTable(
             rowList,
@@ -72,6 +77,7 @@ fun LotteryTable(
             fontSize,
             lazyListState,
             extraSpacing,
+            clickedDate,
         )
     }
 }
@@ -83,6 +89,7 @@ private fun NormalLotteryTable(
     fontSize: MutableState<Int>,
     lazyListState: LazyListState,
     extraSpacing: Int,
+    clickedDate: MutableState<String>,
 ) {
     Column {
         if (rowList.isNotEmpty()) {
@@ -103,7 +110,12 @@ private fun NormalLotteryTable(
             rowList.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
                 item {
-                    RowFactory(row = row, fontSize = fontSize.value, extraSpacing = extraSpacing)
+                    RowFactory(
+                        row = row,
+                        fontSize = fontSize.value,
+                        extraSpacing = extraSpacing,
+                        clickedDate = clickedDate
+                    )
                 }
             }
         }
@@ -117,6 +129,7 @@ private fun ListLotteryTable(
     fontSize: MutableState<Int>,
     lazyListState: LazyListState,
     extraSpacing: Int,
+    clickedDate: MutableState<String>,
 ) {
     Column {
         LazyColumn(
@@ -130,7 +143,8 @@ private fun ListLotteryTable(
                         row = row,
                         fontSize = fontSize.value,
                         fontSizeRatio = LIST_LOTTERY_TABLE_FONT_SIZE_RATIO,
-                        extraSpacing = extraSpacing
+                        extraSpacing = extraSpacing,
+                        clickedDate = clickedDate,
                     )
                 }
             }
@@ -190,12 +204,36 @@ fun RowFactory(
     fontSize: Int,
     modifier: Modifier = Modifier,
     fontSizeRatio: Float = 1f,
-    extraSpacing: Int
+    extraSpacing: Int,
+    clickedDate: MutableState<String> = remember {
+        mutableStateOf(UNDEF)
+    }
 ) {
-    Row(modifier = modifier) {
+    val rowDate = row.dataList.firstOrNull { it.type == Grid.Type.Date }?.text ?: UNKNOWN
+
+    Row(
+        modifier = modifier
+            .clickable {
+                if (clickedDate.value == rowDate) {
+                    clickedDate.value = UNDEF
+                } else {
+                    clickedDate.value = rowDate
+                }
+            }
+            .background(
+                if (clickedDate.value == rowDate) {
+                    MaterialTheme.colorScheme.secondary.copy(alpha = .3f)
+                } else {
+                    MaterialTheme.colorScheme.background
+                }
+            )
+    ) {
         row.dataList.forEach { grid -> GridFactory(grid, fontSize, fontSizeRatio, extraSpacing) }
     }
 }
+
+private const val UNDEF = "UNDEF"
+private const val UNKNOWN = "UNKNOWN"
 
 @Composable
 fun GridFactory(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
