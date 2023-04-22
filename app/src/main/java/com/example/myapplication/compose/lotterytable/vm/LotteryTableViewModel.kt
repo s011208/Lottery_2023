@@ -54,27 +54,46 @@ class LotteryTableViewModel(
                         when (key.name) {
                             SETTINGS_KEY_DAY_NIGHT_MODE -> {
                                 viewModelScope.launch {
-                                    changeDayNightSettings(DayNightMode.valueOf(value as String))
+                                    val current = DayNightMode.valueOf(value as String)
+                                    if (_viewModelState.value.dayNightSettings != current) {
+                                        changeDayNightSettings(current)
+                                    }
                                 }
                             }
                             SETTINGS_KEY_FONT_SIZE -> {
                                 viewModelScope.launch {
-                                    changeFontSize(FontSize.valueOf(value as String))
+                                    val current = FontSize.valueOf(value as String)
+                                    if (_viewModelState.value.fontType != current) {
+                                        changeFontSize(current)
+                                    }
                                 }
                             }
                             SETTINGS_EXTRA_SPACING_NORMAL_TABLE -> {
                                 viewModelScope.launch {
-                                    changeExtraSpacingNormalTable((value as Float).toInt())
+                                    val current = (value as Float).toInt()
+                                    if (_viewModelState.value.normalTableExtraSpacing != current) {
+                                        changeExtraSpacingNormalTable(current)
+                                    }
                                 }
                             }
                             SETTINGS_EXTRA_SPACING_LIST_TABLE -> {
                                 viewModelScope.launch {
-                                    changeExtraSpacingListTable((value as Float).toInt())
+                                    val current = (value as Float).toInt()
+                                    if (_viewModelState.value.listTableExtraSpacing != current) {
+                                        changeExtraSpacingListTable(current)
+                                    }
                                 }
                             }
                             SETTINGS_SHOW_DIVIDE_LINE -> {
                                 viewModelScope.launch {
-                                    _viewModelState.emit(_viewModelState.value.copy(showDivideLine = value as Boolean))
+                                    val current = value as Boolean
+                                    if (_viewModelState.value.showDivideLine != current) {
+                                        _viewModelState.emit(
+                                            _viewModelState.value.copy(
+                                                showDivideLine = current
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }

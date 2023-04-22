@@ -287,7 +287,7 @@ fun RowFactory(
 @Composable
 private fun MonthlyTotalDivider(modifier: Modifier = Modifier) {
     Divider(
-        color = MaterialTheme.colorScheme.secondary,
+        color = MaterialTheme.colorScheme.inversePrimary,
         thickness = 1.dp,
         modifier = modifier
     )

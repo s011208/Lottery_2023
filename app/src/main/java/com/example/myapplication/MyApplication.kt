@@ -6,13 +6,17 @@ import android.content.Context
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.room.Room
 import androidx.work.*
 import com.example.analytics.Analytics
+import com.example.myapplication.compose.appsettings.SETTINGS_KEY_DAY_NIGHT_MODE
+import com.example.myapplication.compose.appsettings.settingsDataStore
 import com.example.myapplication.compose.lotterylog.vm.LotteryLogViewModel
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import com.example.myapplication.compose.lotterytable.vm.Source
 import com.example.myapplication.compose.possibility.vm.PossibilityScreenViewModel
+import com.example.service.cache.DayNightMode
 import com.example.service.cache.Preferences
 import com.example.service.cache.log.LotteryLogDatabase
 import com.example.service.cache.lto.LotteryDataDatabase
@@ -21,6 +25,10 @@ import com.example.service.usecase.DisplayUseCase
 import com.example.service.usecase.LotteryLogUseCase
 import com.example.service.usecase.SettingsUseCase
 import com.example.service.usecase.SyncUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
@@ -56,6 +64,15 @@ class MyApplication : Application() {
             (getSystemService(Context.UI_MODE_SERVICE) as UiModeManager).setApplicationNightMode(
                 UiModeManager.MODE_NIGHT_YES
             )
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val dayNightSettings = settingsDataStore.data.stateIn(this).value[stringPreferencesKey(
+                SETTINGS_KEY_DAY_NIGHT_MODE
+            )]
+            if (dayNightSettings != null) {
+                Utils.setMode(this@MyApplication, DayNightMode.valueOf(dayNightSettings))
+            }
         }
     }
 
