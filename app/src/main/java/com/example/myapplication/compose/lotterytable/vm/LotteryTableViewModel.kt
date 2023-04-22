@@ -220,6 +220,8 @@ class LotteryTableViewModel(
         )
         _eventState.emit(event)
         settingsUseCase.setLotteryType(event.type)
+
+        analytics.trackLotteryTypeClick(lotteryType.name)
     }
 
     private suspend fun scrollToBottom() {
@@ -272,6 +274,8 @@ class LotteryTableViewModel(
             )
         )
         settingsUseCase.setDisplayOrder(event.order)
+
+        analytics.trackSortingType(sortType.name)
     }
 
     private suspend fun resetData() {
