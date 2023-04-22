@@ -24,6 +24,7 @@ fun LotteryTableMainScreen() {
                         value.rowList,
                         value.tableType,
                         value.extraSpacing,
+                        value.showDivideLine,
                     )
                 } else if (!value.isLoading && !value.isSyncing) {
                     EmptyScreen()

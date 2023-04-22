@@ -5,12 +5,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Divider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -32,6 +34,7 @@ fun LotteryTable(
     rowList: List<Row>,
     tableType: TableType,
     extraSpacing: Int,
+    showDivider: Boolean,
 ) {
     val horizontalScrollState = rememberScrollState(0)
     val lazyListState = rememberLazyListState(0)
@@ -70,6 +73,7 @@ fun LotteryTable(
             lazyListState,
             extraSpacing,
             clickedDate,
+            showDivider,
         )
         TableType.LIST -> ListLotteryTable(
             rowList,
@@ -78,6 +82,7 @@ fun LotteryTable(
             lazyListState,
             extraSpacing,
             clickedDate,
+            showDivider,
         )
     }
 }
@@ -90,7 +95,12 @@ private fun NormalLotteryTable(
     lazyListState: LazyListState,
     extraSpacing: Int,
     clickedDate: MutableState<String>,
+    showDivider: Boolean,
 ) {
+    var width by remember { mutableStateOf(0) }
+    val density = LocalDensity.current
+    val widthDp = remember(width, density) { with(density) { width.toDp() } }
+
     Column {
         if (rowList.isNotEmpty()) {
             val first = rowList.first()
@@ -99,13 +109,18 @@ private fun NormalLotteryTable(
                     row = first,
                     fontSize = fontSize.value,
                     extraSpacing = extraSpacing,
+                    widthDp = widthDp,
                 )
             }
         }
 
         LazyColumn(
             state = lazyListState,
-            modifier = Modifier.horizontalScroll(horizontalScrollState)
+            modifier = Modifier
+                .horizontalScroll(horizontalScrollState)
+                .onSizeChanged {
+                    width = it.width
+                }
         ) {
             rowList.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
@@ -114,7 +129,9 @@ private fun NormalLotteryTable(
                         row = row,
                         fontSize = fontSize.value,
                         extraSpacing = extraSpacing,
-                        clickedDate = clickedDate
+                        clickedDate = clickedDate,
+                        showDivider = showDivider,
+                        widthDp = widthDp,
                     )
                 }
             }
@@ -130,11 +147,20 @@ private fun ListLotteryTable(
     lazyListState: LazyListState,
     extraSpacing: Int,
     clickedDate: MutableState<String>,
+    showDivider: Boolean,
 ) {
+    var width by remember { mutableStateOf(0) }
+    val density = LocalDensity.current
+    val widthDp = remember(width, density) { with(density) { width.toDp() } }
+
     Column {
         LazyColumn(
             state = lazyListState,
-            modifier = Modifier.horizontalScroll(horizontalScrollState)
+            modifier = Modifier
+                .horizontalScroll(horizontalScrollState)
+                .onSizeChanged {
+                    width = it.width
+                }
         ) {
             rowList.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
@@ -145,6 +171,8 @@ private fun ListLotteryTable(
                         fontSizeRatio = LIST_LOTTERY_TABLE_FONT_SIZE_RATIO,
                         extraSpacing = extraSpacing,
                         clickedDate = clickedDate,
+                        showDivider = showDivider,
+                        widthDp = widthDp,
                     )
                 }
             }
@@ -207,29 +235,62 @@ fun RowFactory(
     extraSpacing: Int,
     clickedDate: MutableState<String> = remember {
         mutableStateOf(UNDEF)
-    }
+    },
+    showDivider: Boolean = false,
+    widthDp: Dp = 0.dp,
 ) {
     val rowDate = row.dataList.firstOrNull { it.type == Grid.Type.Date }?.text ?: UNKNOWN
+    val canShowDivider = showDivider && row.type == Row.Type.MonthlyTotal
+    val canShowBottomDivider = row.type == Row.Type.Header
 
-    Row(
-        modifier = modifier
-            .clickable {
-                if (clickedDate.value == rowDate) {
-                    clickedDate.value = UNDEF
-                } else {
-                    clickedDate.value = rowDate
+    Column {
+        if (canShowDivider) {
+            MonthlyTotalDivider(modifier.width(widthDp))
+        }
+
+        Row(
+            modifier = modifier
+                .clickable {
+                    if (row.type == Row.Type.Header) {
+                        return@clickable
+                    }
+                    if (clickedDate.value == rowDate) {
+                        clickedDate.value = UNDEF
+                    } else {
+                        clickedDate.value = rowDate
+                    }
                 }
+                .background(
+                    if (clickedDate.value == rowDate) {
+                        MaterialTheme.colorScheme.secondary.copy(alpha = .3f)
+                    } else {
+                        MaterialTheme.colorScheme.background
+                    }
+                )
+        ) {
+            row.dataList.forEach { grid ->
+                GridFactory(
+                    grid,
+                    fontSize,
+                    fontSizeRatio,
+                    extraSpacing
+                )
             }
-            .background(
-                if (clickedDate.value == rowDate) {
-                    MaterialTheme.colorScheme.secondary.copy(alpha = .3f)
-                } else {
-                    MaterialTheme.colorScheme.background
-                }
-            )
-    ) {
-        row.dataList.forEach { grid -> GridFactory(grid, fontSize, fontSizeRatio, extraSpacing) }
+        }
+
+        if (canShowDivider || canShowBottomDivider) {
+            MonthlyTotalDivider(modifier.width(widthDp))
+        }
     }
+}
+
+@Composable
+private fun MonthlyTotalDivider(modifier: Modifier = Modifier) {
+    Divider(
+        color = MaterialTheme.colorScheme.secondary,
+        thickness = 1.dp,
+        modifier = modifier
+    )
 }
 
 private const val UNDEF = "UNDEF"

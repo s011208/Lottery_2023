@@ -18,6 +18,7 @@ data class ViewModelState(
     val dayNightSettings: DayNightMode = DayNightMode.AUTO,
     val normalTableExtraSpacing: Int = 0,
     val listTableExtraSpacing: Int = 0,
+    val showDivideLine: Boolean = false,
 )
 
 data class Row(

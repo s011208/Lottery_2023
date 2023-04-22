@@ -16,11 +16,13 @@ import com.example.service.cache.DayNightMode
 import com.example.service.cache.FontSize
 import com.jamal.composeprefs3.ui.GroupHeader
 import com.jamal.composeprefs3.ui.PrefsScreen
+import com.jamal.composeprefs3.ui.prefs.CheckBoxPref
 import com.jamal.composeprefs3.ui.prefs.ListPref
 import com.jamal.composeprefs3.ui.prefs.SliderPref
 import com.jamal.composeprefs3.ui.prefs.TextPref
 import org.koin.java.KoinJavaComponent
 
+// https://github.com/JamalMulla/ComposePrefs3/
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
@@ -77,6 +79,11 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                     valueRange = 0f..100f,
                     showValue = true,
                     steps = 99
+                )
+
+                CheckBoxPref(
+                    key = SETTINGS_SHOW_DIVIDE_LINE,
+                    title = stringResource(id = R.string.settings_show_divide_line),
                 )
             }
         }

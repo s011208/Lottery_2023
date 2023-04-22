@@ -72,6 +72,11 @@ class LotteryTableViewModel(
                                     changeExtraSpacingListTable((value as Float).toInt())
                                 }
                             }
+                            SETTINGS_SHOW_DIVIDE_LINE -> {
+                                viewModelScope.launch {
+                                    _viewModelState.emit(_viewModelState.value.copy(showDivideLine = value as Boolean))
+                                }
+                            }
                         }
                     }
                 }

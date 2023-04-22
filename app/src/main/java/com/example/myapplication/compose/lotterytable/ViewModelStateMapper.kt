@@ -18,6 +18,7 @@ object ViewModelStateMapper {
                 LotteryType.LtoList4, LotteryType.LtoList3 -> listTableExtraSpacing
                 else -> normalTableExtraSpacing
             },
+            showDivideLine,
         )
     }
 }
@@ -36,5 +37,6 @@ sealed class UiState {
         val isSyncing: Boolean,
         val tableType: TableType,
         val extraSpacing: Int,
+        val showDivideLine: Boolean,
     ) : UiState()
 }
