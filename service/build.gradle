@@ -51,6 +51,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
     implementation "io.insert-koin:koin-android:3.3.3"
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
     implementation project(':data')
     implementation project(path: ':analytics')
 }

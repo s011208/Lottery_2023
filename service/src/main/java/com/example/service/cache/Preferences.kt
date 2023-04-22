@@ -2,6 +2,7 @@ package com.example.service.cache
 
 import android.content.Context
 import com.example.data.LotteryType
+import com.example.myapplication.compose.appsettings.settingsDataStore
 
 class Preferences(context: Context) {
 
@@ -17,6 +18,8 @@ class Preferences(context: Context) {
 
     private val sharedPreferences =
         context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+
+    private val settingsPreferences = context.settingsDataStore.data
 
     fun getLotteryType(): LotteryType = LotteryType.valueOf(
         sharedPreferences.getString(KEY_LOTTERY_TYPE, LotteryType.Lto.name) ?: LotteryType.Lto.name

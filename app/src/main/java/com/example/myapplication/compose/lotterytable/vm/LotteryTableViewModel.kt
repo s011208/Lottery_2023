@@ -393,7 +393,7 @@ class LotteryTableViewModel(
     }
 }
 
-private fun FontSize.toDisplaySize(): Int = when (this) {
+fun FontSize.toDisplaySize(): Int = when (this) {
     FontSize.EXTRA_SMALL -> 12
     FontSize.SMALL -> 14
     FontSize.NORMAL -> 16

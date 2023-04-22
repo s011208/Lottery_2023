@@ -53,4 +53,9 @@
     <string name="settings_lottery_data">資料設定</string>
     <string name="settings_normal_table_extra_spacing">大表額外間距</string>
     <string name="settings_list_table_extra_spacing">三、四星彩額外間距</string>
+
+    <string name="possibility">機率</string>
+    <string name="choose_number">選擇期數</string>
+    <string name="choose_number_dialog_title">選擇計算期數</string>
+    <string name="choose_number_title">近 %1$s 期</string>
 </resources>

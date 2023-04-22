@@ -169,6 +169,21 @@ private fun getNumberWidth(fontSize: Int): Dp {
     return with(density) { textSize.width.toDp() } + GRID_HORIZONTAL_PADDING.dp
 }
 
+@OptIn(ExperimentalTextApi::class)
+@Composable
+private fun getPossibilityNumberWidth(fontSize: Int): Dp {
+    val textMeasurer = rememberTextMeasurer()
+    val textLayoutResult: TextLayoutResult =
+        textMeasurer.measure(
+            text = AnnotatedString(".00"),
+            style = LocalTextStyle.current.copy(fontSize = fontSize.sp)
+        )
+    val textSize = textLayoutResult.size
+    val density = LocalDensity.current
+
+    return with(density) { textSize.width.toDp() } + GRID_HORIZONTAL_PADDING.dp
+}
+
 @Composable
 fun RowFactory(
     row: Row,
@@ -188,6 +203,18 @@ fun GridFactory(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpaci
         Grid.Type.Normal -> NormalGrid(grid, fontSize, fontSizeRatio, extraSpacing)
         Grid.Type.Date -> DateGrid(grid, fontSize, fontSizeRatio, extraSpacing)
         Grid.Type.Special -> SpecialGrid(grid, fontSize, fontSizeRatio, extraSpacing)
+        Grid.Type.NormalPossibility -> NormalPossibilityGrid(
+            grid,
+            fontSize,
+            fontSizeRatio,
+            extraSpacing
+        )
+        Grid.Type.SpecialPossibility -> SpecialPossibilityGrid(
+            grid,
+            fontSize,
+            fontSizeRatio,
+            extraSpacing
+        )
     }
 }
 
@@ -227,12 +254,52 @@ fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacin
 }
 
 @Composable
+fun NormalPossibilityGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
+    Text(
+        text = grid.text,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .border(width = 1.dp, Color.Black)
+            .width(getPossibilityNumberWidth(fontSize) + (2 * extraSpacing).dp),
+        color = if (grid.visible) {
+            Color.Unspecified
+        } else {
+            Color.Transparent
+        },
+        fontSize = fontSize.sp * fontSizeRatio
+    )
+}
+
+
+@Composable
 fun SpecialGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
             .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
+        text = grid.text,
+        color = if (grid.visible) {
+            Color.Red
+        } else {
+            Color.Transparent
+        },
+        fontSize = fontSize.sp
+    )
+}
+
+@Composable
+fun SpecialPossibilityGrid(
+    grid: Grid,
+    fontSize: Int,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int
+) {
+    Text(
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .border(width = 1.dp, Color.Black)
+            .width(getPossibilityNumberWidth(fontSize) + (2 * extraSpacing).dp),
         text = grid.text,
         color = if (grid.visible) {
             Color.Red

@@ -25,6 +25,7 @@ import com.example.myapplication.compose.lotterylog.vm.LotteryLogViewModel
 import com.example.myapplication.compose.lotterytable.LotteryTableToolbar
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
+import com.example.myapplication.compose.possibility.PossibilityScreen
 import com.example.myapplication.compose.settings.PreferenceScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import org.koin.java.KoinJavaComponent
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
         const val SCREEN_NAME_MAIN = "Main"
         const val SCREEN_NAME_LOTTERY_LOG = "lottery_log"
         const val SCREEN_NAME_PREFERENCE = "preference"
+        const val SCREEN_NAME_POSSIBILITY = "possibility"
     }
 
     private val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
@@ -103,6 +105,12 @@ fun NavigationScreen() {
                     logViewModel.handleUiEvent(LotteryLogUiEvent.RequestData)
                     navController.navigate(MainActivity.SCREEN_NAME_LOTTERY_LOG)
                 }
+            }
+        }
+        composable(MainActivity.SCREEN_NAME_POSSIBILITY) {
+            Column {
+                SimpleNavBackToolbar(navController, stringResource(id = R.string.possibility))
+                PossibilityScreen()
             }
         }
     }

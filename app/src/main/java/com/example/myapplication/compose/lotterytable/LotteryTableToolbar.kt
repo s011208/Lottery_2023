@@ -49,11 +49,18 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
                 LotteryTypeDropdownMenu(viewModel)
                 SortTypeDropdownMenu(viewModel)
                 DisplayOrderDropdownMenu(viewModel)
+                StartPossibilityScreen({ navController.navigate(MainActivity.SCREEN_NAME_POSSIBILITY) })
                 SettingsDropdownMenu({ navController.navigate(MainActivity.SCREEN_NAME_PREFERENCE) })
             }
             else -> {}
         }
     })
+}
+
+@Composable
+fun StartPossibilityScreen(event: () -> Unit) {
+    AppToolbarSettingsText(text = stringResource(id = R.string.possibility),
+        Modifier.clickable { event() })
 }
 
 @Composable

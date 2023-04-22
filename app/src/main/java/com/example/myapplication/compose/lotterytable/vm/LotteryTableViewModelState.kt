@@ -36,6 +36,6 @@ data class Grid(
     val type: Type
 ) {
     enum class Type {
-        Normal, Date, Special
+        Normal, Date, Special, NormalPossibility, SpecialPossibility,
     }
 }

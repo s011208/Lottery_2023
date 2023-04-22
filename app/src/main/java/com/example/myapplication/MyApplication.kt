@@ -12,6 +12,7 @@ import com.example.analytics.Analytics
 import com.example.myapplication.compose.lotterylog.vm.LotteryLogViewModel
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import com.example.myapplication.compose.lotterytable.vm.Source
+import com.example.myapplication.compose.possibility.vm.PossibilityScreenViewModel
 import com.example.service.cache.Preferences
 import com.example.service.cache.log.LotteryLogDatabase
 import com.example.service.cache.lto.LotteryDataDatabase
@@ -112,4 +113,5 @@ val myModule = module {
     single { Analytics() }
     single { LotteryLogUseCase() }
     single { LotteryLogViewModel(get()) }
+    single { PossibilityScreenViewModel(get(), get()) }
 }
