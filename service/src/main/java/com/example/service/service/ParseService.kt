@@ -6,7 +6,11 @@ import com.example.data.LotteryLog
 import com.example.data.LotteryType
 import com.example.service.cache.log.LotteryLogDatabase
 import com.example.service.cache.lto.LotteryDataDatabase
-import com.example.service.parser.*
+import com.example.service.parser.LtoBigParser
+import com.example.service.parser.LtoHkParser
+import com.example.service.parser.LtoList3Parser
+import com.example.service.parser.LtoList4Parser
+import com.example.service.parser.LtoParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -21,7 +25,7 @@ class ParseService {
 
     private val dispatcher = Executors.newFixedThreadPool(1).asCoroutineDispatcher()
 
-    fun parseLto(): Result<LotteryData> {
+    fun parseLto(taskId: String = ""): Result<LotteryData> {
         val result = LtoParser(database.userDao().getLottery(LotteryType.Lto.toString())).parse()
         if (result.isSuccess) {
             result.onSuccess {
@@ -29,9 +33,10 @@ class ParseService {
                     database.userDao().insertAll(it)
                     logDatabase.userDao().insertAll(
                         LotteryLog(
-                            System.currentTimeMillis(),
-                            LotteryType.Lto,
-                            LoadingState.SUCCESS
+                            timeStamp = System.currentTimeMillis(),
+                            type = LotteryType.Lto,
+                            state = LoadingState.SUCCESS,
+                            taskId = taskId,
                         )
                     )
                 }
@@ -41,10 +46,11 @@ class ParseService {
             CoroutineScope(dispatcher).launch {
                 logDatabase.userDao().insertAll(
                     LotteryLog(
-                        System.currentTimeMillis(),
-                        LotteryType.Lto,
-                        LoadingState.ERROR,
-                        result.exceptionOrNull()?.message ?: ""
+                        timeStamp = System.currentTimeMillis(),
+                        type = LotteryType.Lto,
+                        state = LoadingState.ERROR,
+                        errorMessage = result.exceptionOrNull()?.message ?: "",
+                        taskId = taskId,
                     )
                 )
             }
@@ -52,7 +58,7 @@ class ParseService {
         return result
     }
 
-    fun parseLtoBig(): Result<LotteryData> {
+    fun parseLtoBig(taskId: String = ""): Result<LotteryData> {
         val result =
             LtoBigParser(database.userDao().getLottery(LotteryType.LtoBig.toString())).parse()
         if (result.isSuccess) {
@@ -61,9 +67,10 @@ class ParseService {
                     database.userDao().insertAll(it)
                     logDatabase.userDao().insertAll(
                         LotteryLog(
-                            System.currentTimeMillis(),
-                            LotteryType.LtoBig,
-                            LoadingState.SUCCESS
+                            timeStamp = System.currentTimeMillis(),
+                            type = LotteryType.LtoBig,
+                            state = LoadingState.SUCCESS,
+                            taskId = taskId,
                         )
                     )
                 }
@@ -73,10 +80,11 @@ class ParseService {
             CoroutineScope(dispatcher).launch {
                 logDatabase.userDao().insertAll(
                     LotteryLog(
-                        System.currentTimeMillis(),
-                        LotteryType.LtoBig,
-                        LoadingState.ERROR,
-                        result.exceptionOrNull()?.message ?: ""
+                        timeStamp = System.currentTimeMillis(),
+                        type = LotteryType.LtoBig,
+                        state = LoadingState.ERROR,
+                        errorMessage = result.exceptionOrNull()?.message ?: "",
+                        taskId = taskId,
                     )
                 )
             }
@@ -84,7 +92,7 @@ class ParseService {
         return result
     }
 
-    fun parseLtoHk(): Result<LotteryData> {
+    fun parseLtoHk(taskId: String = ""): Result<LotteryData> {
         val result =
             LtoHkParser(database.userDao().getLottery(LotteryType.LtoHK.toString())).parse()
         if (result.isSuccess) {
@@ -93,9 +101,10 @@ class ParseService {
                     database.userDao().insertAll(it)
                     logDatabase.userDao().insertAll(
                         LotteryLog(
-                            System.currentTimeMillis(),
-                            LotteryType.LtoHK,
-                            LoadingState.SUCCESS
+                            timeStamp = System.currentTimeMillis(),
+                            type = LotteryType.LtoHK,
+                            state = LoadingState.SUCCESS,
+                            taskId = taskId,
                         )
                     )
                 }
@@ -105,10 +114,11 @@ class ParseService {
             CoroutineScope(dispatcher).launch {
                 logDatabase.userDao().insertAll(
                     LotteryLog(
-                        System.currentTimeMillis(),
-                        LotteryType.LtoHK,
-                        LoadingState.ERROR,
-                        result.exceptionOrNull()?.message ?: ""
+                        timeStamp = System.currentTimeMillis(),
+                        type = LotteryType.LtoHK,
+                        state = LoadingState.ERROR,
+                        errorMessage = result.exceptionOrNull()?.message ?: "",
+                        taskId = taskId,
                     )
                 )
             }
@@ -116,7 +126,7 @@ class ParseService {
         return result
     }
 
-    fun parseLtoList3(): Result<LotteryData> {
+    fun parseLtoList3(taskId: String = ""): Result<LotteryData> {
         val result =
             LtoList3Parser(database.userDao().getLottery(LotteryType.LtoList3.toString())).parse()
         if (result.isSuccess) {
@@ -125,9 +135,10 @@ class ParseService {
                     database.userDao().insertAll(it)
                     logDatabase.userDao().insertAll(
                         LotteryLog(
-                            System.currentTimeMillis(),
-                            LotteryType.LtoList3,
-                            LoadingState.SUCCESS
+                            timeStamp = System.currentTimeMillis(),
+                            type = LotteryType.LtoList3,
+                            state = LoadingState.SUCCESS,
+                            taskId = taskId,
                         )
                     )
                 }
@@ -137,10 +148,11 @@ class ParseService {
             CoroutineScope(dispatcher).launch {
                 logDatabase.userDao().insertAll(
                     LotteryLog(
-                        System.currentTimeMillis(),
-                        LotteryType.LtoList3,
-                        LoadingState.ERROR,
-                        result.exceptionOrNull()?.message ?: ""
+                        timeStamp = System.currentTimeMillis(),
+                        type = LotteryType.LtoList3,
+                        state = LoadingState.ERROR,
+                        errorMessage = result.exceptionOrNull()?.message ?: "",
+                        taskId = taskId,
                     )
                 )
             }
@@ -148,7 +160,7 @@ class ParseService {
         return result
     }
 
-    fun parseLtoList4(): Result<LotteryData> {
+    fun parseLtoList4(taskId: String = ""): Result<LotteryData> {
         val result =
             LtoList4Parser(database.userDao().getLottery(LotteryType.LtoList4.toString())).parse()
         if (result.isSuccess) {
@@ -157,9 +169,10 @@ class ParseService {
                     database.userDao().insertAll(it)
                     logDatabase.userDao().insertAll(
                         LotteryLog(
-                            System.currentTimeMillis(),
-                            LotteryType.LtoList4,
-                            LoadingState.SUCCESS
+                            timeStamp = System.currentTimeMillis(),
+                            type = LotteryType.LtoList4,
+                            state = LoadingState.SUCCESS,
+                            taskId = taskId,
                         )
                     )
                 }
@@ -169,10 +182,11 @@ class ParseService {
             CoroutineScope(dispatcher).launch {
                 logDatabase.userDao().insertAll(
                     LotteryLog(
-                        System.currentTimeMillis(),
-                        LotteryType.LtoList4,
-                        LoadingState.ERROR,
-                        result.exceptionOrNull()?.message ?: ""
+                        timeStamp = System.currentTimeMillis(),
+                        type = LotteryType.LtoList4,
+                        state = LoadingState.ERROR,
+                        errorMessage = result.exceptionOrNull()?.message ?: "",
+                        taskId = taskId,
                     )
                 )
             }

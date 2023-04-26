@@ -8,7 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.analytics.Analytics
 import com.example.data.LotteryType
 import com.example.myapplication.R
-import com.example.myapplication.compose.appsettings.*
+import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LIST_TABLE
+import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_NORMAL_TABLE
+import com.example.myapplication.compose.appsettings.SETTINGS_KEY_DAY_NIGHT_MODE
+import com.example.myapplication.compose.appsettings.SETTINGS_KEY_FONT_SIZE
+import com.example.myapplication.compose.appsettings.SETTINGS_SHOW_DIVIDE_LINE
+import com.example.myapplication.compose.appsettings.settingsDataStore
 import com.example.service.cache.DayNightMode
 import com.example.service.cache.DisplayOrder
 import com.example.service.cache.FontSize
@@ -16,10 +21,20 @@ import com.example.service.cache.SortType
 import com.example.service.usecase.DisplayUseCase
 import com.example.service.usecase.SettingsUseCase
 import com.example.service.usecase.SyncUseCase
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.java.KoinJavaComponent
 import timber.log.Timber
+import java.util.Calendar
 
 class LotteryTableViewModel(
     private val syncUseCase: SyncUseCase,
@@ -307,9 +322,10 @@ class LotteryTableViewModel(
         _eventState.emit(LotteryTableEvents.SyncingProgress)
         _viewModelState.emit(_viewModelState.value.copy(isSyncing = true))
         withContext(Dispatchers.IO) {
+            val taskId = Calendar.getInstance().time.toString()
             awaitAll(
                 async {
-                    syncUseCase.parseLto().also {
+                    syncUseCase.parseLto(taskId).also {
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(
@@ -325,7 +341,7 @@ class LotteryTableViewModel(
                     }
                 },
                 async {
-                    syncUseCase.parseLtoBig().also { it ->
+                    syncUseCase.parseLtoBig(taskId).also { it ->
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(
@@ -341,7 +357,7 @@ class LotteryTableViewModel(
                     }
                 },
                 async {
-                    syncUseCase.parseLtoHk().also {
+                    syncUseCase.parseLtoHk(taskId).also {
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(
@@ -357,7 +373,7 @@ class LotteryTableViewModel(
                     }
                 },
                 async {
-                    syncUseCase.parseLtoList3().also {
+                    syncUseCase.parseLtoList3(taskId).also {
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(
@@ -373,7 +389,7 @@ class LotteryTableViewModel(
                     }
                 },
                 async {
-                    syncUseCase.parseLtoList4().also {
+                    syncUseCase.parseLtoList4(taskId).also {
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(

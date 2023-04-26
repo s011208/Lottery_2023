@@ -62,4 +62,5 @@
     <string name="settings_app_data">應用程式資訊</string>
     <string name="settings_app_version_name">版本名稱</string>
     <string name="settings_app_version_code">版本號碼</string>
+    <string name="clear_data">清除資料</string>
 </resources>

@@ -8,7 +8,8 @@ data class LotteryLog(
     val timeStamp: Long,
     val type: LotteryType,
     @ColumnInfo val state: LoadingState,
-    @ColumnInfo val errorMessage: String = ""
+    @ColumnInfo val errorMessage: String = "",
+    @ColumnInfo val taskId: String = ""
 )
 
 enum class LoadingState {

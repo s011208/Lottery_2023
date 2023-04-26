@@ -20,8 +20,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.compose.LotteryTableMainScreen
 import com.example.myapplication.compose.lotterylog.LotteryLog
 import com.example.myapplication.compose.lotterylog.SimpleNavBackToolbar
-import com.example.myapplication.compose.lotterylog.vm.LotteryLogUiEvent
-import com.example.myapplication.compose.lotterylog.vm.LotteryLogViewModel
 import com.example.myapplication.compose.lotterytable.LotteryTableToolbar
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
@@ -83,7 +81,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavigationScreen() {
     val navController = rememberNavController()
-    val logViewModel: LotteryLogViewModel by KoinJavaComponent.inject(LotteryLogViewModel::class.java)
 
     NavHost(navController = navController, startDestination = MainActivity.SCREEN_NAME_MAIN) {
         composable(MainActivity.SCREEN_NAME_MAIN) {
@@ -102,7 +99,6 @@ fun NavigationScreen() {
             Column {
                 SimpleNavBackToolbar(navController, stringResource(id = R.string.settings))
                 PreferenceScreen {
-                    logViewModel.handleUiEvent(LotteryLogUiEvent.RequestData)
                     navController.navigate(MainActivity.SCREEN_NAME_LOTTERY_LOG)
                 }
             }
