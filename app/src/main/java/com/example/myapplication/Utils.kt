@@ -28,3 +28,5 @@ object Utils {
         }
     }
 }
+
+data class ImmutableListWrapper<T>(val wrapper: List<T>)

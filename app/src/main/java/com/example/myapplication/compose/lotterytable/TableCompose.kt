@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.ImmutableListWrapper
 import com.example.myapplication.compose.lotterytable.vm.*
 import org.koin.java.KoinJavaComponent
 
@@ -31,7 +32,7 @@ private const val LIST_LOTTERY_TABLE_FONT_SIZE_RATIO = 1.5f
 
 @Composable
 fun LotteryTable(
-    rowList: List<Row>,
+    rowListWrapper: ImmutableListWrapper<Row>,
     tableType: TableType,
     extraSpacing: Int,
     showDivider: Boolean,
@@ -49,17 +50,21 @@ fun LotteryTable(
         viewModel.eventStateSharedFlow.collect { myEvent ->
             when (myEvent) {
                 LotteryTableEvents.ScrollToBottom -> {
-                    lazyListState.scrollToItem(rowList.size)
+                    lazyListState.scrollToItem(rowListWrapper.wrapper.size)
                 }
+
                 LotteryTableEvents.ScrollToTop -> {
                     lazyListState.scrollToItem(0)
                 }
+
                 is LotteryTableEvents.FontSizeChanged -> {
                     fontSize.value = myEvent.fontSize
                 }
+
                 is LotteryTableEvents.ChangeLotteryType -> {
                     clickedDate.value = UNDEF
                 }
+
                 else -> {}
             }
         }
@@ -67,7 +72,7 @@ fun LotteryTable(
 
     when (tableType) {
         TableType.NORMAL -> NormalLotteryTable(
-            rowList,
+            rowListWrapper,
             horizontalScrollState,
             fontSize,
             lazyListState,
@@ -75,8 +80,9 @@ fun LotteryTable(
             clickedDate,
             showDivider,
         )
+
         TableType.LIST -> ListLotteryTable(
-            rowList,
+            rowListWrapper,
             horizontalScrollState,
             fontSize,
             lazyListState,
@@ -89,7 +95,7 @@ fun LotteryTable(
 
 @Composable
 private fun NormalLotteryTable(
-    rowList: List<Row>,
+    rowListWrapper: ImmutableListWrapper<Row>,
     horizontalScrollState: ScrollState,
     fontSize: MutableState<Int>,
     lazyListState: LazyListState,
@@ -102,8 +108,8 @@ private fun NormalLotteryTable(
     val widthDp = remember(width, density) { with(density) { width.toDp() } }
 
     Column {
-        if (rowList.isNotEmpty()) {
-            val first = rowList.first()
+        if (rowListWrapper.wrapper.isNotEmpty()) {
+            val first = rowListWrapper.wrapper.first()
             Column(modifier = Modifier.horizontalScroll(horizontalScrollState)) {
                 RowFactory(
                     row = first,
@@ -122,7 +128,7 @@ private fun NormalLotteryTable(
                     width = it.width
                 }
         ) {
-            rowList.forEachIndexed { index, row ->
+            rowListWrapper.wrapper.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
                 item {
                     RowFactory(
@@ -141,7 +147,7 @@ private fun NormalLotteryTable(
 
 @Composable
 private fun ListLotteryTable(
-    rowList: List<Row>,
+    rowListWrapper: ImmutableListWrapper<Row>,
     horizontalScrollState: ScrollState,
     fontSize: MutableState<Int>,
     lazyListState: LazyListState,
@@ -162,7 +168,7 @@ private fun ListLotteryTable(
                     width = it.width
                 }
         ) {
-            rowList.forEachIndexed { index, row ->
+            rowListWrapper.wrapper.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
                 item {
                     RowFactory(
@@ -239,48 +245,112 @@ fun RowFactory(
     showDivider: Boolean = false,
     widthDp: Dp = 0.dp,
 ) {
-    val rowDate = row.dataList.firstOrNull { it.type == Grid.Type.Date }?.text ?: UNKNOWN
     val canShowDivider = showDivider && row.type == Row.Type.MonthlyTotal
     val canShowBottomDivider = row.type == Row.Type.Header
 
-    Column {
-        if (canShowDivider) {
-            MonthlyTotalDivider(modifier.width(widthDp))
-        }
+    if (canShowDivider) {
+        RowFactoryWithTopAndBottomDivider(
+            row,
+            fontSize,
+            modifier,
+            fontSizeRatio,
+            extraSpacing,
+            clickedDate,
+            widthDp
+        )
+    } else if (canShowBottomDivider) {
+        RowFactoryWithBottomDivider(
+            row,
+            fontSize,
+            modifier,
+            fontSizeRatio,
+            extraSpacing,
+            clickedDate,
+            widthDp
+        )
+    } else {
+        RowFactoryWithoutDivider(row, fontSize, modifier, fontSizeRatio, extraSpacing, clickedDate)
+    }
+}
 
-        Row(
-            modifier = modifier
-                .clickable {
-                    if (row.type == Row.Type.Header) {
-                        return@clickable
-                    }
-                    if (clickedDate.value == rowDate) {
-                        clickedDate.value = UNDEF
-                    } else {
-                        clickedDate.value = rowDate
-                    }
+@Composable
+fun RowFactoryWithoutDivider(
+    row: Row,
+    fontSize: Int,
+    modifier: Modifier = Modifier,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int,
+    clickedDate: MutableState<String> = remember {
+        mutableStateOf(UNDEF)
+    },
+) {
+    val rowDate = row.dataList.firstOrNull { it.type == Grid.Type.Date }?.text ?: UNKNOWN
+
+    Row(
+        modifier = modifier
+            .clickable {
+                if (row.type == Row.Type.Header) {
+                    return@clickable
                 }
-                .background(
-                    if (clickedDate.value == rowDate) {
-                        MaterialTheme.colorScheme.secondary.copy(alpha = .3f)
-                    } else {
-                        MaterialTheme.colorScheme.background
-                    }
-                )
-        ) {
-            row.dataList.forEach { grid ->
-                GridFactory(
-                    grid,
-                    fontSize,
-                    fontSizeRatio,
-                    extraSpacing
-                )
+                if (clickedDate.value == rowDate) {
+                    clickedDate.value = UNDEF
+                } else {
+                    clickedDate.value = rowDate
+                }
             }
+            .background(
+                if (clickedDate.value == rowDate) {
+                    MaterialTheme.colorScheme.secondary.copy(alpha = .3f)
+                } else {
+                    MaterialTheme.colorScheme.background
+                }
+            )
+    ) {
+        row.dataList.forEach { grid ->
+            GridFactory(
+                grid,
+                fontSize,
+                fontSizeRatio,
+                extraSpacing
+            )
         }
+    }
+}
 
-        if (canShowDivider || canShowBottomDivider) {
-            MonthlyTotalDivider(modifier.width(widthDp))
-        }
+@Composable
+fun RowFactoryWithBottomDivider(
+    row: Row,
+    fontSize: Int,
+    modifier: Modifier = Modifier,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int,
+    clickedDate: MutableState<String> = remember {
+        mutableStateOf(UNDEF)
+    },
+    widthDp: Dp = 0.dp,
+) {
+    Column {
+        RowFactoryWithoutDivider(row, fontSize, modifier, fontSizeRatio, extraSpacing, clickedDate)
+        MonthlyTotalDivider(modifier.width(widthDp))
+    }
+}
+
+@Composable
+fun RowFactoryWithTopAndBottomDivider(
+    row: Row,
+    fontSize: Int,
+    modifier: Modifier = Modifier,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int,
+    clickedDate: MutableState<String> = remember {
+        mutableStateOf(UNDEF)
+    },
+    widthDp: Dp = 0.dp,
+) {
+    Column {
+        MonthlyTotalDivider(modifier.width(widthDp))
+        RowFactoryWithoutDivider(row, fontSize, modifier, fontSizeRatio, extraSpacing, clickedDate)
+        MonthlyTotalDivider(modifier.width(widthDp))
     }
 }
 
@@ -308,6 +378,7 @@ fun GridFactory(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpaci
             fontSizeRatio,
             extraSpacing
         )
+
         Grid.Type.SpecialPossibility -> SpecialPossibilityGrid(
             grid,
             fontSize,

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import com.example.myapplication.ImmutableListWrapper
 import com.example.myapplication.R
 import com.example.myapplication.compose.ViewModelStateMapper.mapToUiState
 import com.example.myapplication.compose.general.LoadingView
@@ -21,7 +22,7 @@ fun LotteryTableMainScreen() {
             Box {
                 if (value.rowList.isNotEmpty()) {
                     LotteryTable(
-                        value.rowList,
+                        ImmutableListWrapper(value.rowList),
                         value.tableType,
                         value.extraSpacing,
                         value.showDivideLine,
