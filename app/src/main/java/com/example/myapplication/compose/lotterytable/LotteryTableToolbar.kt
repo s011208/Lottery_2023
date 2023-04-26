@@ -93,7 +93,7 @@ private fun LotteryTypeDropdownMenu(
         DropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
-            LotteryType.values().forEachIndexed { itemIndex, itemValue ->
+            LotteryType.values().forEachIndexed { _, itemValue ->
                 DropdownMenuItem(onClick = {
                     viewModel.handleEvent(LotteryTableEvents.ChangeLotteryType(itemValue))
                     expanded = false
@@ -133,7 +133,7 @@ private fun SortTypeDropdownMenu(
         DropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
-            SortType.values().forEachIndexed { itemIndex, itemValue ->
+            SortType.values().forEachIndexed { _, itemValue ->
                 DropdownMenuItem(onClick = {
                     viewModel.handleEvent(LotteryTableEvents.ChangeSortType(itemValue))
                     expanded = false
@@ -177,7 +177,7 @@ private fun DisplayOrderDropdownMenu(
         DropdownMenu(expanded = expanded, onDismissRequest = {
             expanded = false
         }) {
-            DisplayOrder.values().forEachIndexed { itemIndex, itemValue ->
+            DisplayOrder.values().forEachIndexed { _, itemValue ->
                 DropdownMenuItem(onClick = {
                     viewModel.handleEvent(LotteryTableEvents.ChangeDisplayOrder(itemValue))
                     expanded = false

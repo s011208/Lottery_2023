@@ -59,4 +59,7 @@
     <string name="choose_number">選擇期數</string>
     <string name="choose_number_dialog_title">選擇計算期數</string>
     <string name="choose_number_title">近 %1$s 期</string>
+    <string name="settings_app_data">應用程式資訊</string>
+    <string name="settings_app_version_name">版本名稱</string>
+    <string name="settings_app_version_code">版本號碼</string>
 </resources>

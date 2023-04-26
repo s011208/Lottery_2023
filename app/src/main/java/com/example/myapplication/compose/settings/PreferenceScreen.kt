@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.example.myapplication.BuildConfig
 import com.example.myapplication.R
 import com.example.myapplication.compose.appsettings.*
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
@@ -111,6 +112,26 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                 TextPref(title = stringResource(id = R.string.lottery_log), onClick = {
                     onLotteryDataClick()
                 }, enabled = true)
+            }
+        }
+
+        prefsGroup({
+            GroupHeader(
+                title = stringResource(id = R.string.settings_app_data),
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }) {
+            prefsItem {
+                TextPref(
+                    title = stringResource(id = R.string.settings_app_version_name),
+                    summary = BuildConfig.VERSION_NAME
+                )
+            }
+            prefsItem {
+                TextPref(
+                    title = stringResource(id = R.string.settings_app_version_code),
+                    summary = BuildConfig.VERSION_CODE.toString()
+                )
             }
         }
     }

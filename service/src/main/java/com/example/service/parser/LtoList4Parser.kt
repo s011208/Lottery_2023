@@ -23,7 +23,7 @@ class LtoList4Parser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData) 
 
         val rtn = ArrayList<LotteryRowData>()
 
-        var date: Long = 0
+        var date: Long
         var numberList: List<Int>
         for (i in IGNORE_COLUMN until tds.size step 3) {
             try {

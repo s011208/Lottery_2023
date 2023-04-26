@@ -42,6 +42,7 @@ fun LotteryTableMainScreen() {
                 }
             }
         }
+
         else -> {}
     }
 }

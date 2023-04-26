@@ -22,7 +22,7 @@ object Utils {
                 DayNightMode.NIGHT -> UiModeManager.MODE_NIGHT_YES
                 DayNightMode.AUTO -> UiModeManager.MODE_NIGHT_AUTO
             }
-            (context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager).setApplicationNightMode(
+            (context.applicationContext.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager).setApplicationNightMode(
                 localMode
             )
         }

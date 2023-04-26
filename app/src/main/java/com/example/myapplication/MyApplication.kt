@@ -8,7 +8,12 @@ import android.os.Build.VERSION_CODES
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.room.Room
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.analytics.Analytics
 import com.example.myapplication.compose.appsettings.SETTINGS_KEY_DAY_NIGHT_MODE
 import com.example.myapplication.compose.appsettings.settingsDataStore
@@ -102,7 +107,7 @@ class MyApplication : Application() {
 
 
         WorkManager.getInstance(context)
-            .enqueueUniquePeriodicWork("Sync task", ExistingPeriodicWorkPolicy.REPLACE, syncTask)
+            .enqueueUniquePeriodicWork("Sync task", ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, syncTask)
     }
 }
 
