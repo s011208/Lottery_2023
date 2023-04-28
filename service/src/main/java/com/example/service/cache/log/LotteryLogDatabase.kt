@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.data.LotteryLog
 
-@Database(entities = [LotteryLog::class], version = 3, exportSchema = false)
+@Database(entities = [LotteryLog::class], version = 4, exportSchema = false)
 abstract class LotteryLogDatabase : RoomDatabase() {
     abstract fun userDao(): LotteryLogDao
 }

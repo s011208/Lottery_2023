@@ -75,6 +75,7 @@ class LotteryTableViewModel(
                                     }
                                 }
                             }
+
                             SETTINGS_KEY_FONT_SIZE -> {
                                 viewModelScope.launch {
                                     val current = FontSize.valueOf(value as String)
@@ -83,6 +84,7 @@ class LotteryTableViewModel(
                                     }
                                 }
                             }
+
                             SETTINGS_EXTRA_SPACING_NORMAL_TABLE -> {
                                 viewModelScope.launch {
                                     val current = (value as Float).toInt()
@@ -91,6 +93,7 @@ class LotteryTableViewModel(
                                     }
                                 }
                             }
+
                             SETTINGS_EXTRA_SPACING_LIST_TABLE -> {
                                 viewModelScope.launch {
                                     val current = (value as Float).toInt()
@@ -99,6 +102,7 @@ class LotteryTableViewModel(
                                     }
                                 }
                             }
+
                             SETTINGS_SHOW_DIVIDE_LINE -> {
                                 viewModelScope.launch {
                                     val current = value as Boolean
@@ -146,27 +150,35 @@ class LotteryTableViewModel(
                 is LotteryTableEvents.StartSync -> {
                     startSync(event.source)
                 }
+
                 LotteryTableEvents.UpdateData -> {
                     updateData()
                 }
+
                 is LotteryTableEvents.ChangeSortType -> {
                     changeSortType(event)
                 }
+
                 is LotteryTableEvents.ChangeLotteryType -> {
                     changeLotteryType(event)
                 }
+
                 is LotteryTableEvents.ScrollToBottom -> {
                     scrollToBottom()
                 }
+
                 is LotteryTableEvents.ScrollToTop -> {
                     scrollToTop()
                 }
+
                 is LotteryTableEvents.ChangeDisplayOrder -> {
                     changeDisplayOrder(event)
                 }
+
                 LotteryTableEvents.ResetData -> {
                     resetData()
                 }
+
                 else -> {
                     // ignore
                 }
@@ -325,7 +337,7 @@ class LotteryTableViewModel(
             val taskId = Calendar.getInstance().time.toString()
             awaitAll(
                 async {
-                    syncUseCase.parseLto(taskId).also {
+                    syncUseCase.parse(taskId, source.name, LotteryType.Lto).also {
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(
@@ -341,7 +353,7 @@ class LotteryTableViewModel(
                     }
                 },
                 async {
-                    syncUseCase.parseLtoBig(taskId).also { it ->
+                    syncUseCase.parse(taskId, source.name, LotteryType.LtoBig).also { it ->
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(
@@ -357,7 +369,7 @@ class LotteryTableViewModel(
                     }
                 },
                 async {
-                    syncUseCase.parseLtoHk(taskId).also {
+                    syncUseCase.parse(taskId, source.name, LotteryType.LtoHK).also {
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(
@@ -373,7 +385,7 @@ class LotteryTableViewModel(
                     }
                 },
                 async {
-                    syncUseCase.parseLtoList3(taskId).also {
+                    syncUseCase.parse(taskId, source.name, LotteryType.LtoList3).also {
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(
@@ -389,7 +401,7 @@ class LotteryTableViewModel(
                     }
                 },
                 async {
-                    syncUseCase.parseLtoList4(taskId).also {
+                    syncUseCase.parse(taskId, source.name, LotteryType.LtoList4).also {
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(

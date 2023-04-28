@@ -11,6 +11,7 @@ import com.example.service.parser.LtoHkParser
 import com.example.service.parser.LtoList3Parser
 import com.example.service.parser.LtoList4Parser
 import com.example.service.parser.LtoParser
+import com.example.service.parser.Parser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -25,42 +26,23 @@ class ParseService {
 
     private val dispatcher = Executors.newFixedThreadPool(1).asCoroutineDispatcher()
 
-    fun parseLto(taskId: String = ""): Result<LotteryData> {
-        val result = LtoParser(database.userDao().getLottery(LotteryType.Lto.toString())).parse()
-        if (result.isSuccess) {
-            result.onSuccess {
-                CoroutineScope(dispatcher).launch {
-                    database.userDao().insertAll(it)
-                    logDatabase.userDao().insertAll(
-                        LotteryLog(
-                            timeStamp = System.currentTimeMillis(),
-                            type = LotteryType.Lto,
-                            state = LoadingState.SUCCESS,
-                            taskId = taskId,
-                        )
-                    )
-                }
-            }
-        } else {
-            Timber.w(result.exceptionOrNull(), "parseLto failed")
-            CoroutineScope(dispatcher).launch {
-                logDatabase.userDao().insertAll(
-                    LotteryLog(
-                        timeStamp = System.currentTimeMillis(),
-                        type = LotteryType.Lto,
-                        state = LoadingState.ERROR,
-                        errorMessage = result.exceptionOrNull()?.message ?: "",
-                        taskId = taskId,
-                    )
-                )
-            }
+    private fun getLotteryParser(lotteryType: LotteryType): Parser {
+        val lotteryData = database.userDao().getLottery(lotteryType.toString())
+        return when (lotteryType) {
+            LotteryType.Lto -> LtoParser(lotteryData)
+            LotteryType.LtoBig -> LtoBigParser(lotteryData)
+            LotteryType.LtoHK -> LtoHkParser(lotteryData)
+            LotteryType.LtoList3 -> LtoList3Parser(lotteryData)
+            LotteryType.LtoList4 -> LtoList4Parser(lotteryData)
         }
-        return result
     }
 
-    fun parseLtoBig(taskId: String = ""): Result<LotteryData> {
-        val result =
-            LtoBigParser(database.userDao().getLottery(LotteryType.LtoBig.toString())).parse()
+    fun parse(
+        taskId: String = "",
+        syncSource: String = "",
+        lotteryType: LotteryType
+    ): Result<LotteryData> {
+        val result = getLotteryParser(lotteryType).parse()
         if (result.isSuccess) {
             result.onSuccess {
                 CoroutineScope(dispatcher).launch {
@@ -68,125 +50,25 @@ class ParseService {
                     logDatabase.userDao().insertAll(
                         LotteryLog(
                             timeStamp = System.currentTimeMillis(),
-                            type = LotteryType.LtoBig,
+                            type = lotteryType,
                             state = LoadingState.SUCCESS,
                             taskId = taskId,
+                            source = syncSource,
                         )
                     )
                 }
             }
         } else {
-            Timber.w(result.exceptionOrNull(), "parseLto failed")
+            Timber.w(result.exceptionOrNull(), "parse${lotteryType.name} failed")
             CoroutineScope(dispatcher).launch {
                 logDatabase.userDao().insertAll(
                     LotteryLog(
                         timeStamp = System.currentTimeMillis(),
-                        type = LotteryType.LtoBig,
+                        type = lotteryType,
                         state = LoadingState.ERROR,
                         errorMessage = result.exceptionOrNull()?.message ?: "",
                         taskId = taskId,
-                    )
-                )
-            }
-        }
-        return result
-    }
-
-    fun parseLtoHk(taskId: String = ""): Result<LotteryData> {
-        val result =
-            LtoHkParser(database.userDao().getLottery(LotteryType.LtoHK.toString())).parse()
-        if (result.isSuccess) {
-            result.onSuccess {
-                CoroutineScope(dispatcher).launch {
-                    database.userDao().insertAll(it)
-                    logDatabase.userDao().insertAll(
-                        LotteryLog(
-                            timeStamp = System.currentTimeMillis(),
-                            type = LotteryType.LtoHK,
-                            state = LoadingState.SUCCESS,
-                            taskId = taskId,
-                        )
-                    )
-                }
-            }
-        } else {
-            Timber.w(result.exceptionOrNull(), "parseLto failed")
-            CoroutineScope(dispatcher).launch {
-                logDatabase.userDao().insertAll(
-                    LotteryLog(
-                        timeStamp = System.currentTimeMillis(),
-                        type = LotteryType.LtoHK,
-                        state = LoadingState.ERROR,
-                        errorMessage = result.exceptionOrNull()?.message ?: "",
-                        taskId = taskId,
-                    )
-                )
-            }
-        }
-        return result
-    }
-
-    fun parseLtoList3(taskId: String = ""): Result<LotteryData> {
-        val result =
-            LtoList3Parser(database.userDao().getLottery(LotteryType.LtoList3.toString())).parse()
-        if (result.isSuccess) {
-            result.onSuccess {
-                CoroutineScope(dispatcher).launch {
-                    database.userDao().insertAll(it)
-                    logDatabase.userDao().insertAll(
-                        LotteryLog(
-                            timeStamp = System.currentTimeMillis(),
-                            type = LotteryType.LtoList3,
-                            state = LoadingState.SUCCESS,
-                            taskId = taskId,
-                        )
-                    )
-                }
-            }
-        } else {
-            Timber.w(result.exceptionOrNull(), "parseLtoList3 failed")
-            CoroutineScope(dispatcher).launch {
-                logDatabase.userDao().insertAll(
-                    LotteryLog(
-                        timeStamp = System.currentTimeMillis(),
-                        type = LotteryType.LtoList3,
-                        state = LoadingState.ERROR,
-                        errorMessage = result.exceptionOrNull()?.message ?: "",
-                        taskId = taskId,
-                    )
-                )
-            }
-        }
-        return result
-    }
-
-    fun parseLtoList4(taskId: String = ""): Result<LotteryData> {
-        val result =
-            LtoList4Parser(database.userDao().getLottery(LotteryType.LtoList4.toString())).parse()
-        if (result.isSuccess) {
-            result.onSuccess {
-                CoroutineScope(dispatcher).launch {
-                    database.userDao().insertAll(it)
-                    logDatabase.userDao().insertAll(
-                        LotteryLog(
-                            timeStamp = System.currentTimeMillis(),
-                            type = LotteryType.LtoList4,
-                            state = LoadingState.SUCCESS,
-                            taskId = taskId,
-                        )
-                    )
-                }
-            }
-        } else {
-            Timber.w(result.exceptionOrNull(), "parseLtoList4 failed")
-            CoroutineScope(dispatcher).launch {
-                logDatabase.userDao().insertAll(
-                    LotteryLog(
-                        timeStamp = System.currentTimeMillis(),
-                        type = LotteryType.LtoList4,
-                        state = LoadingState.ERROR,
-                        errorMessage = result.exceptionOrNull()?.message ?: "",
-                        taskId = taskId,
+                        source = syncSource,
                     )
                 )
             }

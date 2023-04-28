@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.LoadingState
 import com.example.data.LotteryLog
 import com.example.data.LotteryType
+import com.example.myapplication.compose.lotterytable.vm.Source
 import com.example.service.usecase.LotteryLogUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,13 +18,14 @@ class LotteryLogViewModel(private val lotteryLogUseCase: LotteryLogUseCase) : Vi
     data class TaskGroup(
         val timeStamp: String,
         val itemList: List<DisplayItem>,
+        val source: String,
     )
 
     data class DisplayItem(
         val type: LotteryType,
         val timeStamp: Long,
         val result: LoadingState,
-        val message: String
+        val message: String,
     )
 
     data class ViewModelState(val taskGroupLList: List<TaskGroup> = listOf())
@@ -51,9 +53,9 @@ class LotteryLogViewModel(private val lotteryLogUseCase: LotteryLogUseCase) : Vi
                                 it.type,
                                 it.timeStamp,
                                 it.state,
-                                it.errorMessage
+                                it.errorMessage,
                             )
-                        })
+                        }, value.firstOrNull()?.source ?: Source.UNKNOWN.toString())
                         taskGroup.itemList.sortedBy { it.type }
                         rtn.add(taskGroup)
                     }

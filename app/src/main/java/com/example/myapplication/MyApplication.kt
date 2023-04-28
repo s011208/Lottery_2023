@@ -30,6 +30,12 @@ import com.example.service.usecase.DisplayUseCase
 import com.example.service.usecase.LotteryLogUseCase
 import com.example.service.usecase.SettingsUseCase
 import com.example.service.usecase.SyncUseCase
+import com.google.firebase.FirebaseApp
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.stateIn
@@ -61,8 +67,6 @@ class MyApplication : Application() {
             modules(myModule)
         }
 
-        startSyncTask(this)
-
         if (VERSION.SDK_INT <= VERSION_CODES.R) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
@@ -79,6 +83,13 @@ class MyApplication : Application() {
                 Utils.setMode(this@MyApplication, DayNightMode.valueOf(dayNightSettings))
             }
         }
+
+        initFirebase()
+    }
+
+    private fun initFirebase() {
+        FirebaseApp.initializeApp(this)
+        fetchRemoveConfigAndRunTask()
     }
 
     private fun initTimber() {
@@ -91,14 +102,14 @@ class MyApplication : Application() {
         }
     }
 
-    private fun startSyncTask(context: Context) {
+    private fun scheduleSyncTask(context: Context, interval: Long) {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .setRequiresCharging(false)
             .build()
 
         val syncTask = PeriodicWorkRequestBuilder<SyncWorker>(
-            6, TimeUnit.HOURS, // repeatInterval (the period cycle)
+            interval, TimeUnit.HOURS, // repeatInterval (the period cycle)
             15, TimeUnit.MINUTES
         ) // flexInterval
             .setInputData(Data.Builder().putString(SyncWorker.SOURCE, Source.PERIODIC.name).build())
@@ -107,7 +118,30 @@ class MyApplication : Application() {
 
 
         WorkManager.getInstance(context)
-            .enqueueUniquePeriodicWork("Sync task", ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, syncTask)
+            .enqueueUniquePeriodicWork(
+                "Sync task",
+                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                syncTask
+            )
+    }
+
+    private fun fetchRemoveConfigAndRunTask() {
+        val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+        val configSettings: FirebaseRemoteConfigSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.setDefaultsAsync(mapOf("periodic_sync_duration" to 3))
+
+        remoteConfig.fetchAndActivate().addOnCompleteListener {
+            if (it.isSuccessful) {
+                Timber.i("periodic_sync_duration: ${remoteConfig.getLong("periodic_sync_duration")}")
+                scheduleSyncTask(this, remoteConfig.getLong("periodic_sync_duration"))
+            } else {
+                Timber.w("Failed to fetch remote config")
+            }
+        }
     }
 }
 

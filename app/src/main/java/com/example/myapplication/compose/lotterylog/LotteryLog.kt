@@ -59,11 +59,16 @@ fun LotteryLog() {
                 content = {
                     item {
                         state.value.taskGroupLList.forEach { groupList ->
-                            Text(
-                                text = groupList.timeStamp,
-                                modifier = Modifier.width(800.dp).padding(top = 16.dp)
-                            )
-                            Divider(modifier = Modifier.width(800.dp))
+                            Row {
+                                Text(
+                                    text = groupList.timeStamp,
+                                    modifier = Modifier
+                                        .width(600.dp)
+                                        .padding(top = 16.dp))
+
+                                Text(text = groupList.source)
+                            }
+                            Divider(modifier = Modifier.width(600.dp))
                             groupList.itemList.forEach { item ->
                                 Row {
                                     Text(

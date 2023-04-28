@@ -6,6 +6,10 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
+static def versionNameDate() {
+    return new Date().format("yyyy-MM-dd")
+}
+
 android {
     namespace 'com.example.myapplication'
     compileSdk 33
@@ -15,7 +19,7 @@ android {
         minSdk 30
         targetSdk 33
         versionCode 1
-        versionName "0.0.1"
+        versionName versionNameDate()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -82,6 +86,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:31.3.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-config-ktx'
 
     def nav_version = "2.5.3"
     implementation "androidx.navigation:navigation-compose:$nav_version"
