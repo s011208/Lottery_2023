@@ -1,4 +1,4 @@
-package com.example.myapplication.compose
+package com.example.myapplication.compose.lotterytable
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -7,8 +7,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.example.myapplication.ImmutableListWrapper
 import com.example.myapplication.R
-import com.example.myapplication.compose.ViewModelStateMapper.mapToUiState
 import com.example.myapplication.compose.general.LoadingView
+import com.example.myapplication.compose.lotterytable.ViewModelStateMapper.mapToUiState
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import org.koin.java.KoinJavaComponent.inject
 

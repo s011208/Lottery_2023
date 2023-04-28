@@ -1,4 +1,4 @@
-package com.example.myapplication.compose
+package com.example.myapplication.compose.lotterytable
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*

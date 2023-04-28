@@ -7,7 +7,7 @@ import com.example.data.LotteryType
 import org.koin.java.KoinJavaComponent
 import timber.log.Timber
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
     companion object {
@@ -21,27 +21,26 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
     val analytics: Analytics by KoinJavaComponent.inject(Analytics::class.java)
 
     fun parse(): Result<LotteryData> {
-        val lotteryDataList = mutableSetOf<LotteryRowData>()
-
+        val cacheLotteryDataSet = cacheLotteryData?.dataList?.toMutableSet() ?: mutableSetOf()
+        var previousMinDate = Long.MAX_VALUE
+        var currentMinDate = 0L
         try {
             do {
-                Timber.d(
-                    "type: ${getType()}, url: ${getUrl()}"
-                )
-                lotteryDataList.addAll(parseInternal(getUrl()))
-                if (cacheLotteryData != null) {
-                    val cacheLotteryDataSet = cacheLotteryData.dataList.toMutableSet()
-                    if (!cacheLotteryDataSet.addAll(lotteryDataList)) {
-                        // merge and finish
-                        lotteryDataList.clear()
-                        lotteryDataList.addAll(cacheLotteryDataSet)
-                        break
-                    }
+                Timber.d("type: ${getType()}, url: ${getUrl()}")
+
+                val newDataRows = parseInternal(getUrl())
+                currentMinDate =
+                    previousMinDate.coerceAtMost(newDataRows.minOfOrNull { it.date } ?: 0)
+                previousMinDate = currentMinDate
+
+                if (!cacheLotteryDataSet.addAll(newDataRows)) {
+                    // merge and finish
+                    Timber.w("${getType()}: break parse")
+                    break
                 }
                 ++currentPage
-                val minDate = lotteryDataList.toList().minOfOrNull { it.date } ?: 0
-                Timber.d("minDate: $minDate, getLastDataDate(): ${getLastDataDate()}")
-            } while (lotteryDataList.isNotEmpty() && minDate > getLastDataDate())
+                Timber.d("minDate: $currentMinDate, getLastDataDate(): ${getLotteryLastDataDate()}, data size: ${cacheLotteryDataSet.size}")
+            } while (newDataRows.isNotEmpty() && currentMinDate > getLotteryLastDataDate())
         } catch (exception: Throwable) {
             Timber.w(exception, "exception")
             return Result.failure(exception)
@@ -49,7 +48,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
 
         return Result.success(
             LotteryData(
-                dataList = lotteryDataList.toMutableList()
+                dataList = cacheLotteryDataSet.toMutableList()
                     .also { it.sortByDescending { lotteryRowData -> lotteryRowData.date } },
                 type = getType(),
                 normalNumberCount = getNormalCount(),
@@ -65,7 +64,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
 
     internal abstract fun parseInternal(url: String): List<LotteryRowData>
 
-    internal abstract fun getLastDataDate(): Long
+    internal abstract fun getLotteryLastDataDate(): Long
 
     internal abstract fun getType(): LotteryType
 

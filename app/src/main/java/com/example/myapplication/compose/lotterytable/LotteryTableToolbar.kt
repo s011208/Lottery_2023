@@ -15,10 +15,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.data.LotteryType
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
-import com.example.myapplication.compose.UiState
-import com.example.myapplication.compose.ViewModelStateMapper.mapToUiState
 import com.example.myapplication.compose.general.AppToolbarSettingsDropDownText
 import com.example.myapplication.compose.general.AppToolbarSettingsText
+import com.example.myapplication.compose.lotterytable.ViewModelStateMapper.mapToUiState
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableEvents
 import com.example.myapplication.compose.lotterytable.vm.LotteryTableViewModel
 import com.example.service.cache.DisplayOrder

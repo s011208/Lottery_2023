@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.compose.LotteryTableMainScreen
+import com.example.myapplication.compose.lotterytable.LotteryTableMainScreen
 import com.example.myapplication.compose.lotterylog.LotteryLog
 import com.example.myapplication.compose.lotterylog.SimpleNavBackToolbar
 import com.example.myapplication.compose.lotterytable.LotteryTableToolbar

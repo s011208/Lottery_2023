@@ -1,4 +1,4 @@
-package com.example.myapplication.compose
+package com.example.myapplication.compose.lotterytable
 
 import com.example.data.LotteryType
 import com.example.myapplication.compose.lotterytable.vm.Row

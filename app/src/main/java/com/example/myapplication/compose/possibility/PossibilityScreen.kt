@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.data.LotteryType
 import com.example.myapplication.R
-import com.example.myapplication.compose.RowFactory
+import com.example.myapplication.compose.lotterytable.RowFactory
 import com.example.myapplication.compose.possibility.vm.PossibilityItem
 import com.example.myapplication.compose.possibility.vm.PossibilityScreenViewModel
 import com.example.myapplication.compose.possibility.vm.PossibilityUiEvent

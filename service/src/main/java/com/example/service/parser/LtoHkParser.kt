@@ -45,7 +45,7 @@ class LtoHkParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData) {
         return rtn
     }
 
-    override fun getLastDataDate(): Long = LAST_DATA_DATE
+    override fun getLotteryLastDataDate(): Long = LAST_DATA_DATE
 
     override fun getType(): LotteryType = LotteryType.LtoHK
 
