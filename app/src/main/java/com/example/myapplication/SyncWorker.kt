@@ -68,7 +68,7 @@ class SyncWorker(context: Context, params: WorkerParameters) :
         return if (result == SUCCESS) {
             Result.success()
         } else {
-            Result.failure()
+            Result.retry()
         }
     }
 

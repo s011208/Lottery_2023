@@ -106,7 +106,7 @@ class MyApplication : Application(), Configuration.Provider {
     private fun scheduleSyncTask(context: Context, interval: Long) {
         val syncTask = PeriodicWorkRequestBuilder<SyncWorker>(
             interval, TimeUnit.HOURS, // repeatInterval (the period cycle)
-//            15, TimeUnit.MINUTES
+            30, TimeUnit.MINUTES
         )
             .setInputData(Data.Builder().putString(SyncWorker.SOURCE, Source.PERIODIC.name).build())
             .build()
@@ -115,7 +115,7 @@ class MyApplication : Application(), Configuration.Provider {
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork(
                 "Sync lottery periodic task",
-                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 syncTask
             )
     }
