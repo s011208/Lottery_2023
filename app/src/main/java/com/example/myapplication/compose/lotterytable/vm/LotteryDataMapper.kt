@@ -5,7 +5,8 @@ import com.example.data.LotteryRowData
 import com.example.data.LotteryType
 import com.example.service.cache.SortType
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 object LotteryDataMapper {
     private const val DATE_FORMAT = "yyyy/MM/dd"
@@ -42,38 +43,19 @@ object LotteryDataMapper {
                 LotteryType.LtoList3, LotteryType.LtoList4 -> {
                     makeListLotteryData(lotteryData)
                 }
+
                 else -> {
                     when (sortType) {
                         SortType.NormalOrder -> {
-                            makeLotteryData(lotteryData)
+                            createNormalOrderLotteryData(lotteryData)
                         }
+
                         SortType.AddToTen -> {
-                            val makeLotteryData = makeLotteryData(lotteryData)
-                            val comparator = GridComparator(
-                                ADD_TO_TEN_ORDER,
-                                lotteryData.isSpecialNumberSeparate
-                            )
-                            makeLotteryData.map { row ->
-                                row.copy(
-                                    dataList = row.dataList.sortedWith(
-                                        comparator
-                                    )
-                                )
-                            }
+                            createAddToTenLotteryData(lotteryData)
                         }
+
                         SortType.LastDigit -> {
-                            val makeLotteryData = makeLotteryData(lotteryData)
-                            val comparator = GridComparator(
-                                LAST_DIGIT_ORDER,
-                                lotteryData.isSpecialNumberSeparate
-                            )
-                            makeLotteryData.map { row ->
-                                row.copy(
-                                    dataList = row.dataList.sortedWith(
-                                        comparator
-                                    )
-                                )
-                            }
+                            createLastDigitLotteryData(lotteryData)
                         }
                     }
                 }
@@ -81,6 +63,95 @@ object LotteryDataMapper {
 
         return rtn
     }
+
+    private fun createLastDigitLotteryData(lotteryData: LotteryData): List<Row> {
+        val makeLotteryData = makeLotteryData(lotteryData)
+        val comparator = GridComparator(
+            LAST_DIGIT_ORDER,
+            lotteryData.isSpecialNumberSeparate
+        )
+        return makeLotteryData.map { row ->
+            row.copy(
+                dataList = row.dataList.sortedWith(
+                    comparator
+                )
+            )
+        }.map { row ->
+            row.copy(dataList = row.dataList.map { grid ->
+                if (grid.type == Grid.Type.Normal) {
+                    if (lotteryData.normalNumberCount - 10 < grid.index) {
+                        grid.copy(type = Grid.Type.NormalLast)
+                    } else {
+                        grid
+                    }
+                } else if (grid.type == Grid.Type.Special) {
+                    if (lotteryData.isSpecialNumberSeparate && grid.index == lotteryData.specialNumberCount) {
+                        grid.copy(type = Grid.Type.SpecialLast)
+                    } else if (!lotteryData.isSpecialNumberSeparate && lotteryData.normalNumberCount - 10 < grid.index) {
+                        grid.copy(type = Grid.Type.SpecialLast)
+                    } else {
+                        grid
+                    }
+                } else {
+                    grid
+                }
+            })
+        }
+    }
+
+    private fun createAddToTenLotteryData(lotteryData: LotteryData): List<Row> {
+        val makeLotteryData = makeLotteryData(lotteryData)
+        val comparator = GridComparator(
+            ADD_TO_TEN_ORDER,
+            lotteryData.isSpecialNumberSeparate
+        )
+        return makeLotteryData.map { row ->
+            row.copy(
+                dataList = row.dataList.sortedWith(
+                    comparator
+                )
+            )
+        }.map { row ->
+            row.copy(dataList = row.dataList.map { grid ->
+                if (grid.type == Grid.Type.Normal) {
+                    if (lotteryData.normalNumberCount - 10 < grid.index) {
+                        grid.copy(type = Grid.Type.NormalLast)
+                    } else {
+                        grid
+                    }
+                } else if (grid.type == Grid.Type.Special) {
+                    if (lotteryData.isSpecialNumberSeparate && grid.index == lotteryData.specialNumberCount) {
+                        grid.copy(type = Grid.Type.SpecialLast)
+                    } else if (!lotteryData.isSpecialNumberSeparate && lotteryData.normalNumberCount - 10 < grid.index) {
+                        grid.copy(type = Grid.Type.SpecialLast)
+                    } else {
+                        grid
+                    }
+                } else {
+                    grid
+                }
+            })
+        }
+    }
+
+    private fun createNormalOrderLotteryData(lotteryData: LotteryData) =
+        makeLotteryData(lotteryData)
+            .map { row ->
+                row.copy(dataList = row.dataList.map { grid ->
+                    if (grid.index % 10 == 9 ||
+                        (grid.index == lotteryData.normalNumberCount && grid.type == Grid.Type.Normal) ||
+                        (lotteryData.isSpecialNumberSeparate && grid.index == lotteryData.specialNumberCount && grid.type == Grid.Type.Special)
+                    ) {
+                        if (grid.type == Grid.Type.Normal || !lotteryData.isSpecialNumberSeparate) {
+                            grid.copy(type = Grid.Type.NormalLast)
+                        } else {
+                            grid.copy(type = Grid.Type.SpecialLast)
+                        }
+                    } else {
+                        grid
+                    }
+                })
+        }
 
     private fun makeListLotteryData(lotteryData: LotteryData): MutableList<Row> {
         val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
@@ -158,8 +229,8 @@ object LotteryDataMapper {
                 lotteryData.dataList.first().date.getMonth()
             }
         val monthlyRowData = mutableListOf<LotteryRowData>()
-        var monthlyTotalNormalMap = mutableMapOf<Int, Int>()
-        var monthlyTotalSpecialMap = mutableMapOf<Int, Int>()
+        val monthlyTotalNormalMap = mutableMapOf<Int, Int>()
+        val monthlyTotalSpecialMap = mutableMapOf<Int, Int>()
 
         // data
         lotteryData.dataList.forEach { lotteryRowData ->
@@ -329,7 +400,7 @@ private class GridComparator(
         if (p0.type == p1.type ||
             (!isSpecialNumberSeparate && p0.type != Grid.Type.Date && p1.type != Grid.Type.Date)
         ) {
-            return if (p0.type == Grid.Type.Normal || p0.type == Grid.Type.Special) {
+            return if (p0.type == Grid.Type.Normal || p0.type == Grid.Type.Special || p0.type == Grid.Type.NormalLast || p0.type == Grid.Type.SpecialLast) {
                 orderList.indexOf(p0.index).compareTo(orderList.indexOf(p1.index))
             } else {
                 0
@@ -341,6 +412,10 @@ private class GridComparator(
         if (p1.type == Grid.Type.Normal) return 1
         if (p0.type == Grid.Type.Special) return 1
         if (p1.type == Grid.Type.Special) return -1
+        if (p0.type == Grid.Type.NormalLast) return -1
+        if (p1.type == Grid.Type.NormalLast) return 1
+        if (p0.type == Grid.Type.SpecialLast) return 1
+        if (p1.type == Grid.Type.SpecialLast) return -1
 
         return 0
     }

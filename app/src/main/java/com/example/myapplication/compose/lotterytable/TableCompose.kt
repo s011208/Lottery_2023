@@ -385,6 +385,9 @@ fun GridFactory(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpaci
             fontSizeRatio,
             extraSpacing
         )
+
+        Grid.Type.NormalLast -> NormalLastGrid(grid, fontSize, fontSizeRatio, extraSpacing)
+        Grid.Type.SpecialLast -> SpecialLastGrid(grid, fontSize, fontSizeRatio, extraSpacing)
     }
 }
 
@@ -424,6 +427,23 @@ fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacin
 }
 
 @Composable
+fun NormalLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
+    Text(
+        text = grid.text,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .border(width = 1.dp, Color.Black)
+            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
+        color = if (grid.visible) {
+            Color.Unspecified
+        } else {
+            Color.Transparent
+        },
+        fontSize = fontSize.sp * fontSizeRatio
+    )
+}
+
+@Composable
 fun NormalPossibilityGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
     Text(
         text = grid.text,
@@ -443,6 +463,23 @@ fun NormalPossibilityGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, 
 
 @Composable
 fun SpecialGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
+    Text(
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .border(width = 1.dp, Color.Black)
+            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
+        text = grid.text,
+        color = if (grid.visible) {
+            Color.Red
+        } else {
+            Color.Transparent
+        },
+        fontSize = fontSize.sp
+    )
+}
+
+@Composable
+fun SpecialLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier

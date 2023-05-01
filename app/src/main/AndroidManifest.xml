@@ -16,6 +16,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
+        android:largeHeap="true"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
@@ -34,6 +35,18 @@
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="location|microphone"
             tools:node="merge" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <!-- If you are using androidx.startup to initialize other components -->
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
     </application>
 
 </manifest>
