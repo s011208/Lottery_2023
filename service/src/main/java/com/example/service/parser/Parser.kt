@@ -48,7 +48,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
 
         return Result.success(
             LotteryData(
-                dataList = cacheLotteryDataSet.toMutableList()
+                dataList = cacheLotteryDataSet.distinctBy { it.date }.toMutableList()
                     .also { it.sortByDescending { lotteryRowData -> lotteryRowData.date } },
                 type = getType(),
                 normalNumberCount = getNormalCount(),
