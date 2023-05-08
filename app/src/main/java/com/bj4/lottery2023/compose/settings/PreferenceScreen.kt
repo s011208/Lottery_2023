@@ -76,8 +76,26 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                 )
 
                 SliderPref(
-                    key = SETTINGS_EXTRA_SPACING_NORMAL_TABLE,
-                    title = stringResource(id = R.string.settings_normal_table_extra_spacing),
+                    key = SETTINGS_EXTRA_SPACING_LTO_TABLE,
+                    title = stringResource(id = R.string.settings_lto_table_extra_spacing),
+                    valueRange = 0f..100f,
+                    showValue = true,
+                    steps = 99,
+                    defaultValue = 3f,
+                )
+
+                SliderPref(
+                    key = SETTINGS_EXTRA_SPACING_LTO_BIG_TABLE,
+                    title = stringResource(id = R.string.settings_lto_big_table_extra_spacing),
+                    valueRange = 0f..100f,
+                    showValue = true,
+                    steps = 99,
+                    defaultValue = 2f,
+                )
+
+                SliderPref(
+                    key = SETTINGS_EXTRA_SPACING_LTO_HK_TABLE,
+                    title = stringResource(id = R.string.settings_lto_hk_table_extra_spacing),
                     valueRange = 0f..100f,
                     showValue = true,
                     steps = 99,

@@ -3,16 +3,16 @@ package com.bj4.lottery2023.compose.possibility.vm
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bj4.lottery2023.compose.lotterytable.vm.Grid
+import com.bj4.lottery2023.compose.lotterytable.vm.Row
+import com.bj4.lottery2023.compose.lotterytable.vm.toDisplaySize
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
 import com.example.data.LotteryType
 import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LIST_TABLE
-import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_NORMAL_TABLE
+import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LTO_TABLE
 import com.example.myapplication.compose.appsettings.SETTINGS_KEY_FONT_SIZE
 import com.example.myapplication.compose.appsettings.settingsDataStore
-import com.bj4.lottery2023.compose.lotterytable.vm.Grid
-import com.bj4.lottery2023.compose.lotterytable.vm.Row
-import com.bj4.lottery2023.compose.lotterytable.vm.toDisplaySize
 import com.example.service.cache.FontSize
 import com.example.service.usecase.DisplayUseCase
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +50,7 @@ class PossibilityScreenViewModel(
                                     )
                                 }
                             }
-                            SETTINGS_EXTRA_SPACING_NORMAL_TABLE -> {
+                            SETTINGS_EXTRA_SPACING_LTO_TABLE -> {
                                 viewModelScope.launch {
                                     _viewModelState.emit(
                                         _viewModelState.value.copy(

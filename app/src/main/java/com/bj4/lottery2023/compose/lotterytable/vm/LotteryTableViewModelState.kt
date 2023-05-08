@@ -16,7 +16,7 @@ data class ViewModelState(
     val displayOrder: DisplayOrder = DisplayOrder.DESCEND,
     val isSyncing: Boolean = false,
     val dayNightSettings: DayNightMode = DayNightMode.AUTO,
-    val normalTableExtraSpacing: Int = 0,
+    val normalTableExtraSpacing: Int = 3,
     val listTableExtraSpacing: Int = 0,
     val showDivideLine: Boolean = false,
 )

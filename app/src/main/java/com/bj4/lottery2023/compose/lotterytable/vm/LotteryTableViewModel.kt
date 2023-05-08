@@ -1,6 +1,7 @@
 package com.bj4.lottery2023.compose.lotterytable.vm
 
 import android.content.Context
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
@@ -9,7 +10,9 @@ import com.bj4.lottery2023.R
 import com.example.analytics.Analytics
 import com.example.data.LotteryType
 import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LIST_TABLE
-import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_NORMAL_TABLE
+import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LTO_BIG_TABLE
+import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LTO_HK_TABLE
+import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LTO_TABLE
 import com.example.myapplication.compose.appsettings.SETTINGS_KEY_DAY_NIGHT_MODE
 import com.example.myapplication.compose.appsettings.SETTINGS_KEY_FONT_SIZE
 import com.example.myapplication.compose.appsettings.SETTINGS_SHOW_DIVIDE_LINE
@@ -30,6 +33,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.java.KoinJavaComponent
@@ -51,6 +55,8 @@ class LotteryTableViewModel(
 
     private val analytics: Analytics by KoinJavaComponent.inject(Analytics::class.java)
 
+    private val settingsDataStoreFlow = context.settingsDataStore.data
+
     init {
         _viewModelState = MutableStateFlow(
             ViewModelState(
@@ -62,7 +68,7 @@ class LotteryTableViewModel(
         viewModelState = _viewModelState.asStateFlow()
 
         viewModelScope.launch {
-            context.settingsDataStore.data
+            settingsDataStoreFlow
                 .distinctUntilChanged()
                 .collect { preference ->
                     preference.asMap().forEach { (key, value) ->
@@ -85,10 +91,34 @@ class LotteryTableViewModel(
                                 }
                             }
 
-                            SETTINGS_EXTRA_SPACING_NORMAL_TABLE -> {
+                            SETTINGS_EXTRA_SPACING_LTO_TABLE -> {
                                 viewModelScope.launch {
                                     val current = (value as Float).toInt()
-                                    if (_viewModelState.value.normalTableExtraSpacing != current) {
+                                    if (_viewModelState.value.normalTableExtraSpacing != current &&
+                                        _viewModelState.value.lotteryType == LotteryType.Lto
+                                    ) {
+                                        changeExtraSpacingNormalTable(current)
+                                    }
+                                }
+                            }
+
+                            SETTINGS_EXTRA_SPACING_LTO_BIG_TABLE -> {
+                                viewModelScope.launch {
+                                    val current = (value as Float).toInt()
+                                    if (_viewModelState.value.normalTableExtraSpacing != current &&
+                                        _viewModelState.value.lotteryType == LotteryType.LtoBig
+                                    ) {
+                                        changeExtraSpacingNormalTable(current)
+                                    }
+                                }
+                            }
+
+                            SETTINGS_EXTRA_SPACING_LTO_HK_TABLE -> {
+                                viewModelScope.launch {
+                                    val current = (value as Float).toInt()
+                                    if (_viewModelState.value.normalTableExtraSpacing != current &&
+                                        _viewModelState.value.lotteryType == LotteryType.LtoHK
+                                    ) {
                                         changeExtraSpacingNormalTable(current)
                                     }
                                 }
@@ -246,7 +276,45 @@ class LotteryTableViewModel(
             _viewModelState.value.copy(
                 isLoading = false,
                 lotteryType = event.type,
-                rowList = rowList
+                rowList = rowList,
+                normalTableExtraSpacing = when (lotteryType) {
+                    LotteryType.Lto -> {
+                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                            floatPreferencesKey(
+                                SETTINGS_EXTRA_SPACING_LTO_TABLE
+                            )
+                        )?.toInt() ?: 3
+                    }
+
+                    LotteryType.LtoBig ->{
+                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                            floatPreferencesKey(
+                                SETTINGS_EXTRA_SPACING_LTO_BIG_TABLE
+                            )
+                        )?.toInt() ?: 2
+                    }
+                    LotteryType.LtoHK -> {
+                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                            floatPreferencesKey(
+                                SETTINGS_EXTRA_SPACING_LTO_HK_TABLE
+                            )
+                        )?.toInt() ?: 2
+                    }
+                    LotteryType.LtoList3 -> {
+                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                            floatPreferencesKey(
+                                SETTINGS_EXTRA_SPACING_LIST_TABLE
+                            )
+                        )?.toInt() ?: 10
+                    }
+                    LotteryType.LtoList4 -> {
+                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                            floatPreferencesKey(
+                                SETTINGS_EXTRA_SPACING_LIST_TABLE
+                            )
+                        )?.toInt() ?: 10
+                    }
+                }
             )
         )
         _eventState.emit(event)
