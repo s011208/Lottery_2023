@@ -4,8 +4,8 @@ import androidx.annotation.StringRes
 import com.example.data.LotteryType
 import com.example.service.cache.DayNightMode
 import com.example.service.cache.DisplayOrder
-import com.example.service.cache.SortType
 import com.example.service.cache.FontSize
+import com.example.service.cache.SortType
 
 sealed class LotteryTableEvents {
 
@@ -40,4 +40,6 @@ sealed class LotteryTableEvents {
     object UpdateData : LotteryTableEvents()
 
     object ResetData : LotteryTableEvents()
+
+    object DropData : LotteryTableEvents()
 }

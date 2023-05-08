@@ -179,6 +179,10 @@ class LotteryTableViewModel(
                     resetData()
                 }
 
+                LotteryTableEvents.DropData -> {
+                    dropData()
+                }
+
                 else -> {
                     // ignore
                 }
@@ -324,6 +328,25 @@ class LotteryTableViewModel(
         )
         syncData(Source.UI)
         reloadLotteryUiData()
+    }
+
+    private suspend fun dropData() {
+        val lotteryType = _viewModelState.value.lotteryType
+        val sortType = _viewModelState.value.sortType
+        val displayOrder = _viewModelState.value.displayOrder
+        val rowList: List<Row>
+        withContext(Dispatchers.IO) {
+            syncUseCase.clearDatabase()
+//            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
+        }
+        _viewModelState.emit(
+            _viewModelState.value.copy(
+                isLoading = false,
+                lotteryType = lotteryType,
+                sortType = sortType,
+                rowList = listOf()
+            )
+        )
     }
 
     private suspend fun syncData(source: Source) {

@@ -8,12 +8,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.bj4.lottery2023.compose.appsettings.ResetDatabase
 import com.bj4.lottery2023.BuildConfig
 import com.bj4.lottery2023.R
-import com.example.myapplication.compose.appsettings.*
+import com.bj4.lottery2023.compose.appsettings.DropDatabase
+import com.bj4.lottery2023.compose.appsettings.ResetDatabase
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableEvents
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableViewModel
+import com.example.myapplication.compose.appsettings.*
 import com.example.service.cache.DayNightMode
 import com.example.service.cache.FontSize
 import com.jamal.composeprefs3.ui.GroupHeader
@@ -35,7 +36,12 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
         mutableStateOf(false)
     }
 
+    val dropDatabaseDialogOpen = remember {
+        mutableStateOf(false)
+    }
+
     ResetDatabase(dialogOpen = resetDatabaseDialogOpen)
+    DropDatabase(dialogOpen = dropDatabaseDialogOpen)
 
     PrefsScreen(LocalContext.current.settingsDataStore) {
         prefsGroup({
@@ -54,7 +60,8 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                         FontSize.NORMAL.toString() to stringResource(id = R.string.normal),
                         FontSize.LARGE.toString() to stringResource(id = R.string.large),
                         FontSize.EXTRA_LARGE.toString() to stringResource(id = R.string.x_large),
-                    )
+                    ),
+                    defaultValue = FontSize.NORMAL.toString(),
                 )
 
                 ListPref(
@@ -64,7 +71,8 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                         DayNightMode.DAY.toString() to stringResource(id = R.string.mode_day),
                         DayNightMode.NIGHT.toString() to stringResource(id = R.string.mode_night),
                         DayNightMode.AUTO.toString() to stringResource(id = R.string.mode_system),
-                    )
+                    ),
+                    defaultValue = DayNightMode.AUTO.toString(),
                 )
 
                 SliderPref(
@@ -72,7 +80,8 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                     title = stringResource(id = R.string.settings_normal_table_extra_spacing),
                     valueRange = 0f..100f,
                     showValue = true,
-                    steps = 99
+                    steps = 99,
+                    defaultValue = 2f,
                 )
 
                 SliderPref(
@@ -80,7 +89,8 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                     title = stringResource(id = R.string.settings_list_table_extra_spacing),
                     valueRange = 0f..100f,
                     showValue = true,
-                    steps = 99
+                    steps = 99,
+                    defaultValue = 10f,
                 )
 
                 CheckBoxPref(
@@ -106,6 +116,12 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
             prefsItem {
                 TextPref(title = stringResource(id = R.string.reset), onClick = {
                     resetDatabaseDialogOpen.value = true
+                }, enabled = true)
+            }
+
+            prefsItem {
+                TextPref(title = stringResource(id = R.string.drop), onClick = {
+                    dropDatabaseDialogOpen.value = true
                 }, enabled = true)
             }
 
