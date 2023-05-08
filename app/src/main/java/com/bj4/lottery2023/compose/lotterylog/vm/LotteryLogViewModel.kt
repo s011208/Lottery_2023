@@ -2,16 +2,17 @@ package com.bj4.lottery2023.compose.lotterylog.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bj4.lottery2023.compose.lotterytable.vm.Source
 import com.example.data.LoadingState
 import com.example.data.LotteryLog
 import com.example.data.LotteryType
-import com.bj4.lottery2023.compose.lotterytable.vm.Source
 import com.example.service.usecase.LotteryLogUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class LotteryLogViewModel(private val lotteryLogUseCase: LotteryLogUseCase) : ViewModel() {
 
@@ -48,7 +49,8 @@ class LotteryLogViewModel(private val lotteryLogUseCase: LotteryLogUseCase) : Vi
                                 .also { it.add(log) }
                     }
                     mappingMap.forEach { (key, value) ->
-                        val taskGroup = TaskGroup(key, value.map {
+                        val calendar = Calendar.getInstance().also { it.timeInMillis = key.toLong() }
+                        val taskGroup = TaskGroup(calendar.time.toString(), value.map {
                             DisplayItem(
                                 it.type,
                                 it.timeStamp,

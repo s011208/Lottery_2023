@@ -334,7 +334,7 @@ class LotteryTableViewModel(
         _eventState.emit(LotteryTableEvents.SyncingProgress)
         _viewModelState.emit(_viewModelState.value.copy(isSyncing = true))
         withContext(Dispatchers.IO) {
-            val taskId = Calendar.getInstance().time.toString()
+            val taskId = Calendar.getInstance().time.time.toString()
             awaitAll(
                 async {
                     syncUseCase.parse(taskId, source.name, LotteryType.Lto).also {
