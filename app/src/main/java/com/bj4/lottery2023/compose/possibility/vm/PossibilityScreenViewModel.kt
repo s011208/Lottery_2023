@@ -101,16 +101,17 @@ class PossibilityScreenViewModel(
         val rtn = mutableListOf<PossibilityItem>()
         LotteryType.values().forEach { lotteryType ->
             val data = displayUseCase.getLotteryData(lotteryType) ?: return@forEach
-            val subList = data.dataList.subList(0, count)
+            val realCount = count.coerceAtMost(data.dataList.size)
+            val subList = data.dataList.subList(0,realCount)
             when (lotteryType) {
                 LotteryType.Lto -> {
-                    rtn.add(getNormalLtoPossibility(subList, data, count))
+                    rtn.add(getNormalLtoPossibility(subList, data, realCount))
                 }
                 LotteryType.LtoBig -> {
-                    rtn.add(getNormalLtoPossibility(subList, data, count))
+                    rtn.add(getNormalLtoPossibility(subList, data, realCount))
                 }
                 LotteryType.LtoHK -> {
-                    rtn.add(getNormalLtoPossibility(subList, data, count))
+                    rtn.add(getNormalLtoPossibility(subList, data, realCount))
                 }
                 LotteryType.LtoList3 -> {
 

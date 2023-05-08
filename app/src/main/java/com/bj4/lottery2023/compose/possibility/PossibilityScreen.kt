@@ -2,7 +2,6 @@ package com.bj4.lottery2023.compose.possibility
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
@@ -18,15 +18,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.data.LotteryType
 import com.bj4.lottery2023.R
 import com.bj4.lottery2023.compose.lotterytable.RowFactory
 import com.bj4.lottery2023.compose.possibility.vm.PossibilityItem
 import com.bj4.lottery2023.compose.possibility.vm.PossibilityScreenViewModel
 import com.bj4.lottery2023.compose.possibility.vm.PossibilityUiEvent
+import com.example.data.LotteryType
 import org.koin.java.KoinJavaComponent
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -64,7 +65,7 @@ fun PossibilityScreen() {
 @Composable
 fun Dialogs(dialogOpen: Boolean, onDialogClose: () -> Unit) {
     val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
-
+    val inputValue = remember { mutableStateOf(TextFieldValue()) }
     if (dialogOpen) {
         Dialog(onDismissRequest = {
             onDialogClose()
@@ -85,33 +86,61 @@ fun Dialogs(dialogOpen: Boolean, onDialogClose: () -> Unit) {
                         color = MaterialTheme.colorScheme.secondary
                     )
 
-                    LazyColumn(
-                        content = {
-                            for (count in 5..200 step 5) {
-                                item {
-                                    Text(
-                                        text = count.toString(),
-                                        modifier = Modifier
-                                            .fillParentMaxWidth()
-                                            .align(Alignment.CenterHorizontally)
-                                            .padding(8.dp)
-                                            .clickable {
-                                                viewModel.handle(
-                                                    PossibilityUiEvent.ChangeNumberOfRows(
-                                                        count
-                                                    )
-                                                )
-                                                onDialogClose()
-                                            },
-                                        fontSize = 24.sp
-                                    )
-                                }
-                            }
-                        }, modifier = Modifier
-                            .fillMaxWidth()
+                    TextField(
+                        value = inputValue.value,
+                        onValueChange = { inputValue.value = it },
+                        placeholder = { Text(text = stringResource(id = R.string.enter_number_count_hint)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 1,
+                        singleLine = true,
                     )
+
+                    Button(onClick = {
+                        onDialogClose()
+                        val count = try {
+                            inputValue.value.text.trim().toInt()
+                        } catch (e: NumberFormatException) {
+                            0
+                        }
+//                        Timber.e("${inputValue.value.text}, count: count$count")
+                        if (count <= 0) return@Button
+                        viewModel.handle(
+                            PossibilityUiEvent.ChangeNumberOfRows(count)
+                        )
+                        inputValue.value = TextFieldValue("")
+                    }, modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally)) {
+                        Text(text = stringResource(id = android.R.string.ok))
+                    }
+
+//                    LazyColumn(
+//                        content = {
+//                            for (count in 5..200 step 5) {
+//                                item {
+//                                    Text(
+//                                        text = count.toString(),
+//                                        modifier = Modifier
+//                                            .fillParentMaxWidth()
+//                                            .align(Alignment.CenterHorizontally)
+//                                            .padding(8.dp)
+//                                            .clickable {
+//                                                viewModel.handle(
+//                                                    PossibilityUiEvent.ChangeNumberOfRows(
+//                                                        count
+//                                                    )
+//                                                )
+//                                                onDialogClose()
+//                                            },
+//                                        fontSize = 24.sp
+//                                    )
+//                                }
+//                            }
+//                        }, modifier = Modifier
+//                            .fillMaxWidth()
+//                    )
                 }
             }
+
         }
     }
 }
@@ -177,6 +206,7 @@ fun PossibilityColumn(
                     LotteryType.LtoList3, LotteryType.LtoList4 -> {
                         listExtraSpacing
                     }
+
                     else -> {
                         normalExtraSpacing
                     }
