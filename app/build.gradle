@@ -11,11 +11,11 @@ static def versionNameDate() {
 }
 
 android {
-    namespace 'com.example.myapplication'
+    namespace 'com.bj4.lottery2023'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.myapplication.lottery2023"
+        applicationId "com.bj4.lottery2023"
         minSdk 30
         targetSdk 33
         versionCode 1
