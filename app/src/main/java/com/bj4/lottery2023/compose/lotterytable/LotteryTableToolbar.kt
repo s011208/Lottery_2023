@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bj4.lottery2023.MainActivity
+import com.bj4.lottery2023.R
 import com.bj4.lottery2023.compose.general.AppToolbarSettingsDropDownText
 import com.bj4.lottery2023.compose.general.AppToolbarSettingsText
 import com.bj4.lottery2023.compose.lotterytable.ViewModelStateMapper.mapToUiState
@@ -220,6 +221,7 @@ private fun LotteryType.toUiString() = when (this) {
     LotteryType.LtoHK -> stringResource(id = com.bj4.lottery2023.R.string.lto_hk)
     LotteryType.LtoList3 -> stringResource(id = com.bj4.lottery2023.R.string.lto_list3)
     LotteryType.LtoList4 -> stringResource(id = com.bj4.lottery2023.R.string.lto_list4)
+    LotteryType.Lto539 -> stringResource(id = R.string.lto_539)
 }
 
 enum class AppToolbarSettings {

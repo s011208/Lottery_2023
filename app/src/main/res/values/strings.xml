@@ -9,6 +9,7 @@
     <string name="lto_hk">六合彩</string>
     <string name="lto_list3">三星彩</string>
     <string name="lto_list4">四星彩</string>
+    <string name="lto_539">今彩539</string>
     <string name="sort_type">排列方式</string>
     <string name="normal_order">一般</string>
     <string name="last_digit">尾數</string>
@@ -41,6 +42,7 @@
     <string name="failed_to_load_lto_hk">下載六合彩失敗</string>
     <string name="failed_to_load_lto_list3">下載三星彩失敗</string>
     <string name="failed_to_load_lto_list4">下載四星彩失敗</string>
+    <string name="failed_to_load_lto_539">下載今彩539失敗</string>
 
     <string name="day_night_settings">日夜間模式</string>
     <string name="mode_day">日間模式</string>
@@ -56,6 +58,7 @@
     <string name="settings_lto_table_extra_spacing">威力彩額外間距</string>
     <string name="settings_lto_big_table_extra_spacing">大樂透額外間距</string>
     <string name="settings_lto_hk_table_extra_spacing">六合彩額外間距</string>
+    <string name="settings_lto_539_table_extra_spacing">今彩539額外間距</string>
     <string name="settings_list_table_extra_spacing">三、四星彩額外間距</string>
     <string name="settings_show_divide_line">顯示月份分隔線</string>
 

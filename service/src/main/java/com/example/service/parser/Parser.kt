@@ -23,7 +23,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
     fun parse(): Result<LotteryData> {
         val cacheLotteryDataSet = cacheLotteryData?.dataList?.toMutableSet() ?: mutableSetOf()
         var previousMinDate = Long.MAX_VALUE
-        var currentMinDate = 0L
+        var currentMinDate: Long
         try {
             do {
                 Timber.d("type: ${getType()}, url: ${getUrl()}")

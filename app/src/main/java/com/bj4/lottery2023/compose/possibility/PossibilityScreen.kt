@@ -109,7 +109,9 @@ fun Dialogs(dialogOpen: Boolean, onDialogClose: () -> Unit) {
                             PossibilityUiEvent.ChangeNumberOfRows(count)
                         )
                         inputValue.value = TextFieldValue("")
-                    }, modifier = Modifier.padding(8.dp).align(Alignment.CenterHorizontally)) {
+                    }, modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally)) {
                         Text(text = stringResource(id = android.R.string.ok))
                     }
 
@@ -196,6 +198,7 @@ fun PossibilityColumn(
                 LotteryType.LtoHK -> stringResource(id = R.string.lto_hk)
                 LotteryType.LtoList3 -> stringResource(id = R.string.lto_list3)
                 LotteryType.LtoList4 -> stringResource(id = R.string.lto_list4)
+                LotteryType.Lto539 -> stringResource(id = R.string.lto_539)
             },
             color = MaterialTheme.colorScheme.secondary,
         )

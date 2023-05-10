@@ -6,6 +6,7 @@ import com.example.data.LotteryLog
 import com.example.data.LotteryType
 import com.example.service.cache.log.LotteryLogDatabase
 import com.example.service.cache.lto.LotteryDataDatabase
+import com.example.service.parser.Lto539Parser
 import com.example.service.parser.LtoBigParser
 import com.example.service.parser.LtoHkParser
 import com.example.service.parser.LtoList3Parser
@@ -34,6 +35,7 @@ class ParseService {
             LotteryType.LtoHK -> LtoHkParser(lotteryData)
             LotteryType.LtoList3 -> LtoList3Parser(lotteryData)
             LotteryType.LtoList4 -> LtoList4Parser(lotteryData)
+            LotteryType.Lto539 -> Lto539Parser(lotteryData)
         }
     }
 

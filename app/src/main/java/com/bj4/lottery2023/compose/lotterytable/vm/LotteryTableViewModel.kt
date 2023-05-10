@@ -10,6 +10,7 @@ import com.bj4.lottery2023.R
 import com.example.analytics.Analytics
 import com.example.data.LotteryType
 import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LIST_TABLE
+import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LTO_539_TABLE
 import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LTO_BIG_TABLE
 import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LTO_HK_TABLE
 import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LTO_TABLE
@@ -96,6 +97,17 @@ class LotteryTableViewModel(
                                     val current = (value as Float).toInt()
                                     if (_viewModelState.value.normalTableExtraSpacing != current &&
                                         _viewModelState.value.lotteryType == LotteryType.Lto
+                                    ) {
+                                        changeExtraSpacingNormalTable(current)
+                                    }
+                                }
+                            }
+
+                            SETTINGS_EXTRA_SPACING_LTO_539_TABLE -> {
+                                viewModelScope.launch {
+                                    val current = (value as Float).toInt()
+                                    if (_viewModelState.value.normalTableExtraSpacing != current &&
+                                        _viewModelState.value.lotteryType == LotteryType.Lto539
                                     ) {
                                         changeExtraSpacingNormalTable(current)
                                     }
@@ -300,6 +312,13 @@ class LotteryTableViewModel(
                             )
                         )?.toInt() ?: 2
                     }
+                    LotteryType.Lto539 ->{
+                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                            floatPreferencesKey(
+                                SETTINGS_EXTRA_SPACING_LTO_539_TABLE
+                            )
+                        )?.toInt() ?: 4
+                    }
                     LotteryType.LtoList3 -> {
                         settingsDataStoreFlow.stateIn(viewModelScope).value.get(
                             floatPreferencesKey(
@@ -499,6 +518,22 @@ class LotteryTableViewModel(
                                     it.exceptionOrNull(),
                                     LotteryType.LtoList4,
                                     R.string.failed_to_load_lto_list4,
+                                )
+                            )
+                            it.exceptionOrNull()?.let { throwable ->
+                                analytics.recordException(throwable)
+                            }
+                        }
+                    }
+                },
+                async {
+                    syncUseCase.parse(taskId, source.name, LotteryType.Lto539).also {
+                        if (it.isFailure) {
+                            _eventState.emit(
+                                LotteryTableEvents.SyncFailed(
+                                    it.exceptionOrNull(),
+                                    LotteryType.Lto539,
+                                    R.string.failed_to_load_lto_539,
                                 )
                             )
                             it.exceptionOrNull()?.let { throwable ->

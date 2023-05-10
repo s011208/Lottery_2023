@@ -239,7 +239,7 @@ object LotteryDataMapper {
                 lotteryRowData.normalNumberList == null ||
                 lotteryRowData.normalNumberList.isEmpty() ||
                 lotteryRowData.specialNumberList == null ||
-                lotteryRowData.specialNumberList.isEmpty()
+                (lotteryRowData.specialNumberList.isEmpty() && lotteryData.type != LotteryType.Lto539)
             ) {
                 // safe check for unexpected data
                 return@forEach

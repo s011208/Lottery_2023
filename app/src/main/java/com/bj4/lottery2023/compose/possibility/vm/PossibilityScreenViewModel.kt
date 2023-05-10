@@ -50,6 +50,7 @@ class PossibilityScreenViewModel(
                                     )
                                 }
                             }
+
                             SETTINGS_EXTRA_SPACING_LTO_TABLE -> {
                                 viewModelScope.launch {
                                     _viewModelState.emit(
@@ -59,6 +60,7 @@ class PossibilityScreenViewModel(
                                     )
                                 }
                             }
+
                             SETTINGS_EXTRA_SPACING_LIST_TABLE -> {
                                 viewModelScope.launch {
                                     _viewModelState.emit(
@@ -85,13 +87,19 @@ class PossibilityScreenViewModel(
                     _viewModelState.emit(_viewModelState.value.copy(itemList = newList))
                 }
             }
+
             is PossibilityUiEvent.ChangeNumberOfRows -> {
                 viewModelScope.launch {
                     val newList: List<PossibilityItem>
                     withContext(Dispatchers.IO) {
                         newList = loadData(event.number)
                     }
-                    _viewModelState.emit(_viewModelState.value.copy(itemList = newList, count = event.number))
+                    _viewModelState.emit(
+                        _viewModelState.value.copy(
+                            itemList = newList,
+                            count = event.number
+                        )
+                    )
                 }
             }
         }
@@ -102,21 +110,31 @@ class PossibilityScreenViewModel(
         LotteryType.values().forEach { lotteryType ->
             val data = displayUseCase.getLotteryData(lotteryType) ?: return@forEach
             val realCount = count.coerceAtMost(data.dataList.size)
-            val subList = data.dataList.subList(0,realCount)
+            val subList = data.dataList.subList(0, realCount)
             when (lotteryType) {
                 LotteryType.Lto -> {
                     rtn.add(getNormalLtoPossibility(subList, data, realCount))
                 }
+
                 LotteryType.LtoBig -> {
                     rtn.add(getNormalLtoPossibility(subList, data, realCount))
                 }
+
                 LotteryType.LtoHK -> {
                     rtn.add(getNormalLtoPossibility(subList, data, realCount))
                 }
+
                 LotteryType.LtoList3 -> {
 
                 }
-                LotteryType.LtoList4 -> {}
+
+                LotteryType.LtoList4 -> {
+
+                }
+
+                LotteryType.Lto539 -> {
+                    rtn.add(getNormalLtoPossibility(subList, data, realCount))
+                }
             }
         }
         return rtn

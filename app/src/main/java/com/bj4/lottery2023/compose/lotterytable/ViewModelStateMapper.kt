@@ -1,18 +1,18 @@
 package com.bj4.lottery2023.compose.lotterytable
 
-import com.example.data.LotteryType
 import com.bj4.lottery2023.compose.lotterytable.vm.Row
 import com.bj4.lottery2023.compose.lotterytable.vm.ViewModelState
+import com.example.data.LotteryType
 import com.example.service.cache.DisplayOrder
 import com.example.service.cache.SortType
 
 object ViewModelStateMapper {
     fun ViewModelState.mapToUiState(): UiState {
-        return com.bj4.lottery2023.compose.lotterytable.UiState.Show(
+        return UiState.Show(
             rowList, lotteryType, sortType, displayOrder, isLoading, isSyncing,
             when (lotteryType) {
-                LotteryType.LtoList4, LotteryType.LtoList3 -> com.bj4.lottery2023.compose.lotterytable.TableType.LIST
-                else -> com.bj4.lottery2023.compose.lotterytable.TableType.NORMAL
+                LotteryType.LtoList4, LotteryType.LtoList3 -> TableType.LIST
+                else -> TableType.NORMAL
             },
             when (lotteryType) {
                 LotteryType.LtoList4, LotteryType.LtoList3 -> listTableExtraSpacing
