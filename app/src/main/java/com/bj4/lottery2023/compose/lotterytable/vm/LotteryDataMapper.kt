@@ -151,7 +151,7 @@ object LotteryDataMapper {
                         grid
                     }
                 })
-        }
+            }
 
     private fun makeListLotteryData(lotteryData: LotteryData): MutableList<Row> {
         val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
@@ -180,6 +180,7 @@ object LotteryDataMapper {
         return rtn
     }
 
+    @Suppress("SENSELESS_COMPARISON")
     private fun makeLotteryData(lotteryData: LotteryData): MutableList<Row> {
         val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
         val monthlyTotalDateFormat = SimpleDateFormat("MM", Locale.getDefault())
@@ -234,6 +235,16 @@ object LotteryDataMapper {
 
         // data
         lotteryData.dataList.forEach { lotteryRowData ->
+            if (lotteryRowData.date <= 0 ||
+                lotteryRowData.normalNumberList == null ||
+                lotteryRowData.normalNumberList.isEmpty() ||
+                lotteryRowData.specialNumberList == null ||
+                lotteryRowData.specialNumberList.isEmpty()
+            ) {
+                // safe check for unexpected data
+                return@forEach
+            }
+
             // check monthly total
             val currentMonth = lotteryRowData.date.getMonth()
             if (previousMonth == lotteryRowData.date.getMonth()) {
