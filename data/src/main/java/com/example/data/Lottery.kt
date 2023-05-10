@@ -25,7 +25,7 @@ data class LotteryData(
 )
 
 enum class LotteryType {
-    Lto, LtoBig, LtoHK, LtoList3, LtoList4, Lto539,
+    Lto, LtoBig, LtoHK, Lto539, LtoList3, LtoList4,
 }
 
 class LotteryDataConverter {
@@ -39,16 +39,6 @@ class LotteryDataConverter {
     @TypeConverter
     fun stringToLotteryRowDataList(stringList: String): List<LotteryRowData> {
         return getList(stringList, LotteryRowData::class.java)
-    }
-
-    @TypeConverter
-    fun listIntToString(list: List<Int>): String {
-        return gson.toJson(list)
-    }
-
-    @TypeConverter
-    fun stringToListInt(stringList: String): List<Int> {
-        return getList(stringList, Int::class.java)
     }
 
     private fun <T> getList(jsonArray: String?, clazz: Class<T>?): List<T> {

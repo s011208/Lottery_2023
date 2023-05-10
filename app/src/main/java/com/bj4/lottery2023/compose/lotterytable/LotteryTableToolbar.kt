@@ -37,7 +37,6 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
         Text(
             text = when (value) {
                 is UiState.Show -> state.value.lotteryType.toUiString()
-                else -> ""
             }
         )
     }, actions = {
@@ -51,26 +50,25 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
                 StartPossibilityScreen({ navController.navigate(MainActivity.SCREEN_NAME_POSSIBILITY) })
                 SettingsDropdownMenu({ navController.navigate(MainActivity.SCREEN_NAME_PREFERENCE) })
             }
-            else -> {}
         }
     })
 }
 
 @Composable
 fun StartPossibilityScreen(event: () -> Unit) {
-    AppToolbarSettingsText(text = stringResource(id = com.bj4.lottery2023.R.string.possibility),
+    AppToolbarSettingsText(text = stringResource(id = R.string.possibility),
         Modifier.clickable { event() })
 }
 
 @Composable
 fun ScrollToBottom(viewModel: LotteryTableViewModel) {
-    AppToolbarSettingsText(text = stringResource(id = com.bj4.lottery2023.R.string.scroll_to_bottom),
+    AppToolbarSettingsText(text = stringResource(id = R.string.scroll_to_bottom),
         Modifier.clickable { viewModel.handleEvent(LotteryTableEvents.ScrollToBottom) })
 }
 
 @Composable
 fun ScrollToTop(viewModel: LotteryTableViewModel) {
-    AppToolbarSettingsText(text = stringResource(id = com.bj4.lottery2023.R.string.scroll_to_top),
+    AppToolbarSettingsText(text = stringResource(id = R.string.scroll_to_top),
         Modifier.clickable { viewModel.handleEvent(LotteryTableEvents.ScrollToTop) })
 }
 
@@ -86,7 +84,7 @@ private fun LotteryTypeDropdownMenu(
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
         AppToolbarSettingsText(
-            stringResource(id = com.bj4.lottery2023.R.string.lottery_type),
+            stringResource(id = R.string.lottery_type),
             Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
@@ -104,7 +102,7 @@ private fun LotteryTypeDropdownMenu(
                     {
                         Icon(
                             Icons.Rounded.Check,
-                            stringResource(id = com.bj4.lottery2023.R.string.check_icon_description),
+                            stringResource(id = R.string.check_icon_description),
                             modifier = Modifier.padding(start = 4.dp)
                         )
                     }
@@ -126,7 +124,7 @@ private fun SortTypeDropdownMenu(
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
         AppToolbarSettingsText(
-            stringResource(id = com.bj4.lottery2023.R.string.sort_type),
+            stringResource(id = R.string.sort_type),
             Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
@@ -139,16 +137,16 @@ private fun SortTypeDropdownMenu(
                 }, enabled = true, text = {
                     AppToolbarSettingsDropDownText(
                         text = when (itemValue) {
-                            SortType.NormalOrder -> stringResource(id = com.bj4.lottery2023.R.string.normal_order)
-                            SortType.AddToTen -> stringResource(id = com.bj4.lottery2023.R.string.add_to_ten)
-                            SortType.LastDigit -> stringResource(id = com.bj4.lottery2023.R.string.last_digit)
+                            SortType.NormalOrder -> stringResource(id = R.string.normal_order)
+                            SortType.AddToTen -> stringResource(id = R.string.add_to_ten)
+                            SortType.LastDigit -> stringResource(id = R.string.last_digit)
                         }
                     )
                 }, trailingIcon = if (type == itemValue) {
                     {
                         Icon(
                             Icons.Rounded.Check,
-                            stringResource(id = com.bj4.lottery2023.R.string.check_icon_description),
+                            stringResource(id = R.string.check_icon_description),
                             modifier = Modifier.padding(start = 4.dp)
                         )
                     }
@@ -170,7 +168,7 @@ private fun DisplayOrderDropdownMenu(
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
         AppToolbarSettingsText(
-            stringResource(id = com.bj4.lottery2023.R.string.display_order),
+            stringResource(id = R.string.display_order),
             Modifier.clickable { expanded = true })
 
         DropdownMenu(expanded = expanded, onDismissRequest = {
@@ -183,15 +181,15 @@ private fun DisplayOrderDropdownMenu(
                 }, enabled = true, text = {
                     AppToolbarSettingsDropDownText(
                         text = when (itemValue) {
-                            DisplayOrder.DESCEND -> stringResource(id = com.bj4.lottery2023.R.string.descend)
-                            DisplayOrder.ASCEND -> stringResource(id = com.bj4.lottery2023.R.string.ascend)
+                            DisplayOrder.DESCEND -> stringResource(id = R.string.descend)
+                            DisplayOrder.ASCEND -> stringResource(id = R.string.ascend)
                         }
                     )
                 }, trailingIcon = if (type == itemValue) {
                     {
                         Icon(
                             Icons.Rounded.Check,
-                            stringResource(id = com.bj4.lottery2023.R.string.check_icon_description),
+                            stringResource(id = R.string.check_icon_description),
                             modifier = Modifier.padding(start = 4.dp)
                         )
                     }
@@ -207,7 +205,7 @@ private fun SettingsDropdownMenu(
 ) {
     Box(modifier = Modifier.padding(PADDING.dp)) {
         AppToolbarSettingsText(
-            stringResource(id = com.bj4.lottery2023.R.string.settings),
+            stringResource(id = R.string.settings),
             Modifier.clickable {
                 onSettingsClick()
             })
@@ -216,14 +214,10 @@ private fun SettingsDropdownMenu(
 
 @Composable
 private fun LotteryType.toUiString() = when (this) {
-    LotteryType.Lto -> stringResource(id = com.bj4.lottery2023.R.string.lto)
-    LotteryType.LtoBig -> stringResource(id = com.bj4.lottery2023.R.string.lto_big)
-    LotteryType.LtoHK -> stringResource(id = com.bj4.lottery2023.R.string.lto_hk)
-    LotteryType.LtoList3 -> stringResource(id = com.bj4.lottery2023.R.string.lto_list3)
-    LotteryType.LtoList4 -> stringResource(id = com.bj4.lottery2023.R.string.lto_list4)
+    LotteryType.Lto -> stringResource(id = R.string.lto)
+    LotteryType.LtoBig -> stringResource(id = R.string.lto_big)
+    LotteryType.LtoHK -> stringResource(id = R.string.lto_hk)
     LotteryType.Lto539 -> stringResource(id = R.string.lto_539)
-}
-
-enum class AppToolbarSettings {
-    FONT_SIZE, UPDATE_LTO, RESET, DAY_NIGHT_MODE, LOTTERY_LOG
+    LotteryType.LtoList3 -> stringResource(id = R.string.lto_list3)
+    LotteryType.LtoList4 -> stringResource(id = R.string.lto_list4)
 }

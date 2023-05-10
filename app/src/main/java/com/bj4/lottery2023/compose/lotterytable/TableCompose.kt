@@ -22,10 +22,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableViewModel
 import com.bj4.lottery2023.ImmutableListWrapper
 import com.bj4.lottery2023.compose.lotterytable.vm.Grid
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableEvents
+import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableViewModel
 import com.bj4.lottery2023.compose.lotterytable.vm.Row
 import org.koin.java.KoinJavaComponent
 
@@ -463,6 +463,7 @@ fun NormalPossibilityGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, 
     )
 }
 
+private val SPECIAL_COLOR = Color.Blue
 
 @Composable
 fun SpecialGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
@@ -473,7 +474,7 @@ fun SpecialGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpaci
             .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
         text = grid.text,
         color = if (grid.visible) {
-            Color.Red
+            SPECIAL_COLOR
         } else {
             Color.Transparent
         },
@@ -490,7 +491,7 @@ fun SpecialLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraS
             .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
         text = grid.text,
         color = if (grid.visible) {
-            Color.Red
+            SPECIAL_COLOR
         } else {
             Color.Transparent
         },
@@ -512,7 +513,7 @@ fun SpecialPossibilityGrid(
             .width(getPossibilityNumberWidth(fontSize) + (2 * extraSpacing).dp),
         text = grid.text,
         color = if (grid.visible) {
-            Color.Red
+            SPECIAL_COLOR
         } else {
             Color.Transparent
         },
