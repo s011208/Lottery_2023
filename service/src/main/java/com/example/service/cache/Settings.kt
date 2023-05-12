@@ -17,3 +17,7 @@ const val SETTINGS_EXTRA_SPACING_LTO_HK_TABLE = "extra_spacing_lto_hk_table"
 const val SETTINGS_EXTRA_SPACING_LTO_539_TABLE = "extra_spacing_lto_539_table"
 const val SETTINGS_EXTRA_SPACING_LIST_TABLE = "extra_spacing_list_table"
 const val SETTINGS_SHOW_DIVIDE_LINE = "show_divide_line"
+
+const val SETTINGS_EXTRA_SPACING_PLUS_MINUS = "extra_spacing_p_m"
+const val SETTINGS_FONT_SIZE_PLUS_MINUS = "font_size_p_m"
+const val SETTINGS_SHOW_DIVIDE_LINE_PLUS_MINUS = "show_divide_line_p_m"

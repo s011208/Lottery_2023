@@ -1,5 +1,6 @@
 package com.bj4.lottery2023.compose.plusminus.vm
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bj4.lottery2023.ImmutableListWrapper
@@ -8,6 +9,11 @@ import com.bj4.lottery2023.compose.general.Row
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
 import com.example.data.LotteryType
+import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_PLUS_MINUS
+import com.example.myapplication.compose.appsettings.SETTINGS_FONT_SIZE_PLUS_MINUS
+import com.example.myapplication.compose.appsettings.SETTINGS_SHOW_DIVIDE_LINE_PLUS_MINUS
+import com.example.myapplication.compose.appsettings.settingsDataStore
+import com.example.service.cache.FontSize
 import com.example.service.usecase.DisplayUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,21 +21,30 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlusMinusViewModel(
-    private val displayUseCase: DisplayUseCase
+    private val displayUseCase: DisplayUseCase,
+    context: Context,
 ) : ViewModel() {
+
+    private val settingsDataStoreFlow = context.settingsDataStore.data
 
     companion object {
         private const val DATE_FORMAT = "yyyy/MM/dd"
     }
 
     private val _viewModelState: MutableStateFlow<State> = MutableStateFlow(
-        State()
+        State(
+            fontSize = FontSize.NORMAL.toFontSize(),
+            spacing = 20,
+            showDivideLine = false,
+        )
     )
     val viewModelState: StateFlow<State> = _viewModelState.asStateFlow()
 
@@ -39,6 +54,37 @@ class PlusMinusViewModel(
     init {
         viewModelScope.launch {
             loadLotteryData(lotteryType = LotteryType.Lto539, deltaValue = 0)
+        }
+
+        viewModelScope.launch {
+            settingsDataStoreFlow
+                .distinctUntilChanged()
+                .collect { preference ->
+                    preference.asMap().forEach { (key, value) ->
+                        Timber.e("key: $key")
+                        when (key.name) {
+                            SETTINGS_EXTRA_SPACING_PLUS_MINUS -> {
+                                viewModelScope.launch {
+                                    changeExtraSpacing((value as Float).toInt())
+                                }
+                            }
+
+                            SETTINGS_SHOW_DIVIDE_LINE_PLUS_MINUS -> {
+                                viewModelScope.launch {
+                                    changeShowDivideLine(value as Boolean)
+                                }
+                            }
+
+                            SETTINGS_FONT_SIZE_PLUS_MINUS -> {
+                                viewModelScope.launch {
+                                    changeFontSize(FontSize.valueOf(value as String))
+                                }
+                            }
+
+                            else -> {}
+                        }
+                    }
+                }
         }
     }
 
@@ -63,6 +109,44 @@ class PlusMinusViewModel(
                 }
             }
         }
+    }
+
+    private suspend fun changeShowDivideLine(show: Boolean) {
+        viewModelScope.launch {
+            _viewModelState.emit(
+                _viewModelState.value.copy(
+                    showDivideLine = show
+                )
+            )
+        }
+    }
+
+    private suspend fun changeExtraSpacing(spacing: Int) {
+        viewModelScope.launch {
+            _viewModelState.emit(
+                _viewModelState.value.copy(
+                    spacing = spacing
+                )
+            )
+        }
+    }
+
+    private suspend fun changeFontSize(fontSize: FontSize) {
+        viewModelScope.launch {
+            _viewModelState.emit(
+                _viewModelState.value.copy(
+                    fontSize = fontSize.toFontSize()
+                )
+            )
+        }
+    }
+
+    private fun FontSize.toFontSize() = when (this) {
+        FontSize.EXTRA_SMALL -> 20
+        FontSize.SMALL -> 24
+        FontSize.NORMAL -> 28
+        FontSize.LARGE -> 32
+        FontSize.EXTRA_LARGE -> 36
     }
 
     private suspend fun changeLotteryType(newLotteryType: LotteryType) {
@@ -98,7 +182,7 @@ class PlusMinusViewModel(
         }
         viewModelScope.launch {
             _viewModelState.emit(
-                State(
+                _viewModelState.value.copy(
                     lotteryType = lotteryType,
                     deltaValue = deltaValue,
                     rowListWrapper = ImmutableListWrapper(rtn)
@@ -188,7 +272,8 @@ class PlusMinusViewModel(
         val deltaValue: Int = 0,
         val fontSize: Int = 30,
         val spacing: Int = 20,
-        val rowListWrapper: ImmutableListWrapper<Row> = ImmutableListWrapper(listOf())
+        val rowListWrapper: ImmutableListWrapper<Row> = ImmutableListWrapper(listOf()),
+        val showDivideLine: Boolean = false,
     )
 }
 

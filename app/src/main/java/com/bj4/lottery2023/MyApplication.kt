@@ -178,5 +178,5 @@ val myModule = module {
     single { LotteryLogUseCase() }
     single { LotteryLogViewModel(get()) }
     single { PossibilityScreenViewModel(get(), get()) }
-    single { PlusMinusViewModel(get()) }
+    single { PlusMinusViewModel(get(), get()) }
 }

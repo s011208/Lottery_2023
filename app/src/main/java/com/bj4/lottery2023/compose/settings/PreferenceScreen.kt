@@ -64,17 +64,6 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                     defaultValue = FontSize.NORMAL.toString(),
                 )
 
-                ListPref(
-                    key = SETTINGS_KEY_DAY_NIGHT_MODE,
-                    title = stringResource(id = R.string.day_night_settings),
-                    entries = mapOf(
-                        DayNightMode.DAY.toString() to stringResource(id = R.string.mode_day),
-                        DayNightMode.NIGHT.toString() to stringResource(id = R.string.mode_night),
-                        DayNightMode.AUTO.toString() to stringResource(id = R.string.mode_system),
-                    ),
-                    defaultValue = DayNightMode.AUTO.toString(),
-                )
-
                 SliderPref(
                     key = SETTINGS_EXTRA_SPACING_LTO_TABLE,
                     title = stringResource(id = R.string.settings_lto_table_extra_spacing),
@@ -126,6 +115,64 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                 )
             }
         }
+
+        prefsGroup({
+            GroupHeader(
+                title = stringResource(id = R.string.settings_plus_minus_display),
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }) {
+            prefsItem {
+                ListPref(
+                    key = SETTINGS_FONT_SIZE_PLUS_MINUS,
+                    title = stringResource(id = R.string.font_size),
+                    entries = mapOf(
+                        FontSize.EXTRA_SMALL.toString() to stringResource(id = R.string.x_small),
+                        FontSize.SMALL.toString() to stringResource(id = R.string.small),
+                        FontSize.NORMAL.toString() to stringResource(id = R.string.normal),
+                        FontSize.LARGE.toString() to stringResource(id = R.string.large),
+                        FontSize.EXTRA_LARGE.toString() to stringResource(id = R.string.x_large),
+                    ),
+                    defaultValue = FontSize.NORMAL.toString(),
+                )
+
+                SliderPref(
+                    key = SETTINGS_EXTRA_SPACING_PLUS_MINUS,
+                    title = stringResource(id = R.string.settings_plus_minus_extra_spacing),
+                    valueRange = 0f..100f,
+                    showValue = true,
+                    steps = 99,
+                    defaultValue = 20f,
+                )
+
+                CheckBoxPref(
+                    key = SETTINGS_SHOW_DIVIDE_LINE_PLUS_MINUS,
+                    title = stringResource(id = R.string.settings_show_divide_line),
+                    defaultChecked = false,
+                )
+            }
+        }
+
+        prefsGroup({
+            GroupHeader(
+                title = stringResource(id = R.string.settings_app),
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }) {
+            prefsItem {
+                ListPref(
+                    key = SETTINGS_KEY_DAY_NIGHT_MODE,
+                    title = stringResource(id = R.string.day_night_settings),
+                    entries = mapOf(
+                        DayNightMode.DAY.toString() to stringResource(id = R.string.mode_day),
+                        DayNightMode.NIGHT.toString() to stringResource(id = R.string.mode_night),
+                        DayNightMode.AUTO.toString() to stringResource(id = R.string.mode_system),
+                    ),
+                    defaultValue = DayNightMode.AUTO.toString(),
+                )
+            }
+        }
+
 
         prefsGroup({
             GroupHeader(
