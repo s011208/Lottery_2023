@@ -1,5 +1,7 @@
 package com.bj4.lottery2023.compose.lotterytable.vm
 
+import com.bj4.lottery2023.compose.general.Grid
+import com.bj4.lottery2023.compose.general.Row
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
 import com.example.data.LotteryType

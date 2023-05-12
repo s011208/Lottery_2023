@@ -17,12 +17,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.bj4.lottery2023.compose.lotterytable.LotteryTableMainScreen
-import com.bj4.lottery2023.compose.lotterylog.LotteryLog
 import com.bj4.lottery2023.compose.general.SimpleNavBackToolbar
+import com.bj4.lottery2023.compose.lotterylog.LotteryLog
+import com.bj4.lottery2023.compose.lotterytable.LotteryTableMainScreen
 import com.bj4.lottery2023.compose.lotterytable.LotteryTableToolbar
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableEvents
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableViewModel
+import com.bj4.lottery2023.compose.plusminus.PlusMinusScreen
+import com.bj4.lottery2023.compose.plusminus.PlusMinusToolbar
 import com.bj4.lottery2023.compose.possibility.PossibilityScreen
 import com.bj4.lottery2023.compose.settings.PreferenceScreen
 import com.bj4.lottery2023.ui.theme.MyApplicationTheme
@@ -36,6 +38,7 @@ class MainActivity : ComponentActivity() {
         const val SCREEN_NAME_LOTTERY_LOG = "lottery_log"
         const val SCREEN_NAME_PREFERENCE = "preference"
         const val SCREEN_NAME_POSSIBILITY = "possibility"
+        const val SCREEN_NAME_PLUS_MINUS = "plus_minus"
     }
 
     private val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
@@ -107,6 +110,12 @@ fun NavigationScreen() {
             Column {
                 SimpleNavBackToolbar(navController, stringResource(id = R.string.possibility))
                 PossibilityScreen()
+            }
+        }
+        composable(MainActivity.SCREEN_NAME_PLUS_MINUS) {
+            Column {
+                PlusMinusToolbar(navController)
+                PlusMinusScreen()
             }
         }
     }

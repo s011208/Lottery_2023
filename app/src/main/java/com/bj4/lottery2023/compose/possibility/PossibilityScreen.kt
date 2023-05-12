@@ -31,7 +31,6 @@ import com.example.data.LotteryType
 import org.koin.java.KoinJavaComponent
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PossibilityScreen() {
     val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
@@ -114,32 +113,6 @@ fun Dialogs(dialogOpen: Boolean, onDialogClose: () -> Unit) {
                         .align(Alignment.CenterHorizontally)) {
                         Text(text = stringResource(id = android.R.string.ok))
                     }
-
-//                    LazyColumn(
-//                        content = {
-//                            for (count in 5..200 step 5) {
-//                                item {
-//                                    Text(
-//                                        text = count.toString(),
-//                                        modifier = Modifier
-//                                            .fillParentMaxWidth()
-//                                            .align(Alignment.CenterHorizontally)
-//                                            .padding(8.dp)
-//                                            .clickable {
-//                                                viewModel.handle(
-//                                                    PossibilityUiEvent.ChangeNumberOfRows(
-//                                                        count
-//                                                    )
-//                                                )
-//                                                onDialogClose()
-//                                            },
-//                                        fontSize = 24.sp
-//                                    )
-//                                }
-//                            }
-//                        }, modifier = Modifier
-//                            .fillMaxWidth()
-//                    )
                 }
             }
 

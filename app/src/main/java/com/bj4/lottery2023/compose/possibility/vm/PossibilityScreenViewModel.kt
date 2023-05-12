@@ -3,8 +3,8 @@ package com.bj4.lottery2023.compose.possibility.vm
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bj4.lottery2023.compose.lotterytable.vm.Grid
-import com.bj4.lottery2023.compose.lotterytable.vm.Row
+import com.bj4.lottery2023.compose.general.Grid
+import com.bj4.lottery2023.compose.general.Row
 import com.bj4.lottery2023.compose.lotterytable.vm.toDisplaySize
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData

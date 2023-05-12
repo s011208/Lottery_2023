@@ -47,8 +47,9 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
                 LotteryTypeDropdownMenu(viewModel)
                 SortTypeDropdownMenu(viewModel)
                 DisplayOrderDropdownMenu(viewModel)
-                StartPossibilityScreen({ navController.navigate(MainActivity.SCREEN_NAME_POSSIBILITY) })
-                SettingsDropdownMenu({ navController.navigate(MainActivity.SCREEN_NAME_PREFERENCE) })
+                StartPlusMinusScreen { navController.navigate(MainActivity.SCREEN_NAME_PLUS_MINUS) }
+                StartPossibilityScreen { navController.navigate(MainActivity.SCREEN_NAME_POSSIBILITY) }
+                StartSettingsScreen { navController.navigate(MainActivity.SCREEN_NAME_PREFERENCE) }
             }
         }
     })
@@ -57,6 +58,12 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
 @Composable
 fun StartPossibilityScreen(event: () -> Unit) {
     AppToolbarSettingsText(text = stringResource(id = R.string.possibility),
+        Modifier.clickable { event() })
+}
+
+@Composable
+fun StartPlusMinusScreen(event: () -> Unit) {
+    AppToolbarSettingsText(text = stringResource(id = R.string.plus_minus),
         Modifier.clickable { event() })
 }
 
@@ -200,7 +207,7 @@ private fun DisplayOrderDropdownMenu(
 }
 
 @Composable
-private fun SettingsDropdownMenu(
+private fun StartSettingsScreen(
     onSettingsClick: () -> Unit = {},
 ) {
     Box(modifier = Modifier.padding(PADDING.dp)) {

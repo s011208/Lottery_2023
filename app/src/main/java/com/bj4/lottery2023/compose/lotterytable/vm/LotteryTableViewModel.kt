@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bj4.lottery2023.R
+import com.bj4.lottery2023.compose.general.Row
 import com.example.analytics.Analytics
 import com.example.data.LotteryType
 import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LIST_TABLE

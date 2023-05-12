@@ -62,6 +62,7 @@
     <string name="settings_list_table_extra_spacing">三、四星彩額外間距</string>
     <string name="settings_show_divide_line">顯示月份分隔線</string>
 
+    <string name="plus_minus">加減</string>
     <string name="possibility">機率</string>
     <string name="choose_number">選擇期數</string>
     <string name="choose_number_dialog_title">選擇計算期數</string>

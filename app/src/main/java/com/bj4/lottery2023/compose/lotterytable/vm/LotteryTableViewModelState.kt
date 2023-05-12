@@ -1,5 +1,6 @@
 package com.bj4.lottery2023.compose.lotterytable.vm
 
+import com.bj4.lottery2023.compose.general.Row
 import com.example.data.LotteryType
 import com.example.service.cache.DayNightMode
 import com.example.service.cache.DisplayOrder
@@ -20,23 +21,3 @@ data class ViewModelState(
     val listTableExtraSpacing: Int = 0,
     val showDivideLine: Boolean = false,
 )
-
-data class Row(
-    val dataList: List<Grid>,
-    val type: Type
-) {
-    enum class Type {
-        MonthlyTotal, Header, LotteryData
-    }
-}
-
-data class Grid(
-    val index: Int = -1,
-    val text: String = "",
-    val visible: Boolean = true,
-    val type: Type
-) {
-    enum class Type {
-        Normal, Date, Special, NormalPossibility, SpecialPossibility, NormalLast, SpecialLast,
-    }
-}

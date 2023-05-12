@@ -13,13 +13,14 @@ import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.analytics.Analytics
-import com.example.myapplication.compose.appsettings.SETTINGS_KEY_DAY_NIGHT_MODE
-import com.example.myapplication.compose.appsettings.settingsDataStore
 import com.bj4.lottery2023.compose.lotterylog.vm.LotteryLogViewModel
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableViewModel
 import com.bj4.lottery2023.compose.lotterytable.vm.Source
+import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusViewModel
 import com.bj4.lottery2023.compose.possibility.vm.PossibilityScreenViewModel
+import com.example.analytics.Analytics
+import com.example.myapplication.compose.appsettings.SETTINGS_KEY_DAY_NIGHT_MODE
+import com.example.myapplication.compose.appsettings.settingsDataStore
 import com.example.service.cache.DayNightMode
 import com.example.service.cache.Preferences
 import com.example.service.cache.log.LotteryLogDatabase
@@ -177,4 +178,5 @@ val myModule = module {
     single { LotteryLogUseCase() }
     single { LotteryLogViewModel(get()) }
     single { PossibilityScreenViewModel(get(), get()) }
+    single { PlusMinusViewModel(get()) }
 }
