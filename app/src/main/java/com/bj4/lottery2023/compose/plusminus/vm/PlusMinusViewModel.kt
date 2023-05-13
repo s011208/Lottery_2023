@@ -345,7 +345,7 @@ class PlusMinusViewModel(
     }
 
     data class State(
-        val lotteryType: LotteryType = LotteryType.Lto,
+        val lotteryType: LotteryType = LotteryType.Lto539,
         val deltaValue: Int = 0,
         val fontSize: Int = 30,
         val spacing: Int = 20,
