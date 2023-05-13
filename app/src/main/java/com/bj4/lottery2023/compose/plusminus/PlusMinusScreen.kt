@@ -1,11 +1,14 @@
 package com.bj4.lottery2023.compose.plusminus
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,7 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.bj4.lottery2023.compose.SPECIAL_COLOR
 import com.bj4.lottery2023.compose.general.GridFactory
+import com.bj4.lottery2023.compose.general.Row
 import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusEvent
 import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusViewModel
 import org.koin.java.KoinJavaComponent
@@ -47,7 +52,8 @@ fun PlusMinusScreen() {
             stateValue = state.value,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             fontSize = state.value.fontSize,
-            extraSpacing = state.value.spacing
+            extraSpacing = state.value.spacing,
+            showDivider = state.value.showDivideLine,
         )
 
         PlusMinusGroup(
@@ -82,12 +88,21 @@ fun PlusMinusTable(
     modifier: Modifier,
     fontSize: Int,
     extraSpacing: Int,
+    showDivider: Boolean,
 ) {
+    val horizontalScrollState = rememberScrollState(0)
+
     LazyColumn(
         content = {
             stateValue.rowListWrapper.wrapper.forEach { row ->
                 item {
-                    Row {
+                    Row(
+                        modifier = if (row.type == Row.Type.MonthlyTotal && showDivider) {
+                            Modifier.border(2.dp, SPECIAL_COLOR)
+                        } else {
+                            Modifier
+                        }
+                    ) {
                         row.dataList.forEach { grid ->
                             GridFactory(
                                 grid = grid,
@@ -101,6 +116,7 @@ fun PlusMinusTable(
         },
         state = lazyListState,
         modifier = modifier
+            .horizontalScroll(horizontalScrollState)
     )
 }
 

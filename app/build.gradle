@@ -29,7 +29,7 @@ android {
         applicationId "com.bj4.lottery2023"
         minSdk 30
         targetSdk 33
-        versionCode 5
+        versionCode 6
         versionName versionNameDate()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

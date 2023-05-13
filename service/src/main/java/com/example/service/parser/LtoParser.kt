@@ -53,10 +53,6 @@ class LtoParser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData) {
 
     override fun getSpecialCount(): Int = 8
 
-    private fun dateConverter(date: String): Long {
-        return dateFormat.parse(date.substring(0, date.length - 3).trim())?.time ?: 0L
-    }
-
     private fun numberConverter(numbers: String): List<Int> {
         return numbers.split(",").map { it.trim().toInt() }.toList()
     }

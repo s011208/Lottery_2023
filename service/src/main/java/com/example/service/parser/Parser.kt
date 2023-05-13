@@ -7,6 +7,7 @@ import com.example.data.LotteryType
 import org.koin.java.KoinJavaComponent
 import timber.log.Timber
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
@@ -73,4 +74,16 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
     internal abstract fun getSpecialCount(): Int
 
     internal abstract fun isSpecialNumberSeparate(): Boolean
+
+    internal open fun dateConverter(date: String): Long {
+        val tempDate = dateFormat.parse(date.substring(0, date.length - 3).trim()) ?: return 0L
+
+        val calendar = Calendar.getInstance()
+        calendar.time = tempDate
+        calendar.set(Calendar.MILLISECOND, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.HOUR, 0)
+        return calendar.time.time
+    }
 }

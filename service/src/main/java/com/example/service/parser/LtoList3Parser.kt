@@ -49,10 +49,6 @@ class LtoList3Parser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData) 
         return false
     }
 
-    private fun dateConverter(date: String): Long {
-        return dateFormat.parse(date.substring(0, date.length - 3).trim())?.time ?: 0L
-    }
-
     private fun numberConverter(numbers: String): List<Int> {
         return numbers.split(" ").subList(0, 3).map { it.trim().toInt() }.toList()
     }

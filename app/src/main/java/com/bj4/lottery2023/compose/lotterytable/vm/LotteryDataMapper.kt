@@ -2,6 +2,7 @@ package com.bj4.lottery2023.compose.lotterytable.vm
 
 import com.bj4.lottery2023.compose.general.Grid
 import com.bj4.lottery2023.compose.general.Row
+import com.bj4.lottery2023.getMonth
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
 import com.example.data.LotteryType
@@ -328,12 +329,6 @@ object LotteryDataMapper {
         }
 
         return rtn
-    }
-
-    private fun Long.getMonth(): Int {
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = this
-        return calendar.get(Calendar.MONTH)
     }
 
     private fun makeMonthlyTotalRow(

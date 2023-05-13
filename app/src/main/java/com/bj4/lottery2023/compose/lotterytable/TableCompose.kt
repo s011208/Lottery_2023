@@ -2,30 +2,25 @@ package com.bj4.lottery2023.compose.lotterytable
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.bj4.lottery2023.ImmutableListWrapper
+import com.bj4.lottery2023.compose.SPECIAL_COLOR
 import com.bj4.lottery2023.compose.general.Grid
 import com.bj4.lottery2023.compose.general.GridFactory
 import com.bj4.lottery2023.compose.general.Row
@@ -108,10 +103,6 @@ private fun NormalLotteryTable(
     clickedDate: MutableState<String>,
     showDivider: Boolean,
 ) {
-    var width by remember { mutableStateOf(0) }
-    val density = LocalDensity.current
-    val widthDp = remember(width, density) { with(density) { width.toDp() } }
-
     Column {
         if (rowListWrapper.wrapper.isNotEmpty()) {
             val first = rowListWrapper.wrapper.first()
@@ -120,7 +111,6 @@ private fun NormalLotteryTable(
                     row = first,
                     fontSize = fontSize.value,
                     extraSpacing = extraSpacing,
-                    widthDp = widthDp,
                 )
             }
         }
@@ -129,9 +119,6 @@ private fun NormalLotteryTable(
             state = lazyListState,
             modifier = Modifier
                 .horizontalScroll(horizontalScrollState)
-                .onSizeChanged {
-                    width = it.width
-                }
         ) {
             rowListWrapper.wrapper.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
@@ -142,7 +129,6 @@ private fun NormalLotteryTable(
                         extraSpacing = extraSpacing,
                         clickedDate = clickedDate,
                         showDivider = showDivider,
-                        widthDp = widthDp,
                     )
                 }
             }
@@ -160,18 +146,11 @@ private fun ListLotteryTable(
     clickedDate: MutableState<String>,
     showDivider: Boolean,
 ) {
-    var width by remember { mutableStateOf(0) }
-    val density = LocalDensity.current
-    val widthDp = remember(width, density) { with(density) { width.toDp() } }
-
     Column {
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
                 .horizontalScroll(horizontalScrollState)
-                .onSizeChanged {
-                    width = it.width
-                }
         ) {
             rowListWrapper.wrapper.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
@@ -183,7 +162,6 @@ private fun ListLotteryTable(
                         extraSpacing = extraSpacing,
                         clickedDate = clickedDate,
                         showDivider = showDivider,
-                        widthDp = widthDp,
                     )
                 }
             }
@@ -202,38 +180,25 @@ fun RowFactory(
         mutableStateOf(UNDEF)
     },
     showDivider: Boolean = false,
-    widthDp: Dp = 0.dp,
 ) {
-    val canShowDivider = showDivider && row.type == Row.Type.MonthlyTotal
-    val canShowBottomDivider = row.type == Row.Type.Header
+    val canShowDivider = showDivider && (row.type == Row.Type.MonthlyTotal ||  row.type == Row.Type.Header)
 
     if (canShowDivider) {
-        RowFactoryWithTopAndBottomDivider(
+        RowFactoryWithDivider(
             row,
             fontSize,
             modifier,
             fontSizeRatio,
             extraSpacing,
             clickedDate,
-            widthDp
-        )
-    } else if (canShowBottomDivider) {
-        RowFactoryWithBottomDivider(
-            row,
-            fontSize,
-            modifier,
-            fontSizeRatio,
-            extraSpacing,
-            clickedDate,
-            widthDp
         )
     } else {
-        RowFactoryWithoutDivider(row, fontSize, modifier, fontSizeRatio, extraSpacing, clickedDate)
+        RowFactory(row, fontSize, modifier, fontSizeRatio, extraSpacing, clickedDate)
     }
 }
 
 @Composable
-fun RowFactoryWithoutDivider(
+fun RowFactory(
     row: Row,
     fontSize: Int,
     modifier: Modifier = Modifier,
@@ -277,7 +242,7 @@ fun RowFactoryWithoutDivider(
 }
 
 @Composable
-fun RowFactoryWithBottomDivider(
+fun RowFactoryWithDivider(
     row: Row,
     fontSize: Int,
     modifier: Modifier = Modifier,
@@ -286,40 +251,10 @@ fun RowFactoryWithBottomDivider(
     clickedDate: MutableState<String> = remember {
         mutableStateOf(UNDEF)
     },
-    widthDp: Dp = 0.dp,
 ) {
     Column {
-        RowFactoryWithoutDivider(row, fontSize, modifier, fontSizeRatio, extraSpacing, clickedDate)
-        MonthlyTotalDivider(modifier.width(widthDp))
+        RowFactory(row, fontSize, modifier.border(2.dp, SPECIAL_COLOR), fontSizeRatio, extraSpacing, clickedDate)
     }
-}
-
-@Composable
-fun RowFactoryWithTopAndBottomDivider(
-    row: Row,
-    fontSize: Int,
-    modifier: Modifier = Modifier,
-    fontSizeRatio: Float = 1f,
-    extraSpacing: Int,
-    clickedDate: MutableState<String> = remember {
-        mutableStateOf(UNDEF)
-    },
-    widthDp: Dp = 0.dp,
-) {
-    Column {
-        MonthlyTotalDivider(modifier.width(widthDp))
-        RowFactoryWithoutDivider(row, fontSize, modifier, fontSizeRatio, extraSpacing, clickedDate)
-        MonthlyTotalDivider(modifier.width(widthDp))
-    }
-}
-
-@Composable
-private fun MonthlyTotalDivider(modifier: Modifier = Modifier) {
-    Divider(
-        color = MaterialTheme.colorScheme.inversePrimary,
-        thickness = 1.dp,
-        modifier = modifier
-    )
 }
 
 private const val UNDEF = "UNDEF"

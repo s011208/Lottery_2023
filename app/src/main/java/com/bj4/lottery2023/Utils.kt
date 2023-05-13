@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.service.cache.DayNightMode
+import java.util.Calendar
 
 object Utils {
 
@@ -30,3 +31,9 @@ object Utils {
 }
 
 data class ImmutableListWrapper<T>(val wrapper: List<T>)
+
+fun Long.getMonth(): Int {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = this
+    return calendar.get(Calendar.MONTH)
+}

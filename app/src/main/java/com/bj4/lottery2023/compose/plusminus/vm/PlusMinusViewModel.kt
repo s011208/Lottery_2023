@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.bj4.lottery2023.ImmutableListWrapper
 import com.bj4.lottery2023.compose.general.Grid
 import com.bj4.lottery2023.compose.general.Row
+import com.bj4.lottery2023.getMonth
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
 import com.example.data.LotteryType
@@ -26,8 +27,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
+@Suppress("SENSELESS_COMPARISON")
 class PlusMinusViewModel(
     private val displayUseCase: DisplayUseCase,
     context: Context,
@@ -164,22 +167,96 @@ class PlusMinusViewModel(
                     lotteryType
                 )
             } ?: return
+        val monthlyTotalDateFormat = SimpleDateFormat("MM", Locale.getDefault())
+
         val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
         val rtn = mutableListOf<Row>()
         val rowCount = lotteryData.dataList.size
         val sortedRow = lotteryData.dataList.sortedBy { it.date }
-        sortedRow.forEachIndexed { rowIndex, lotteryRawData ->
+
+        var previousMonth =
+            if (lotteryData.dataList.isEmpty()) {
+                Calendar.JANUARY
+            } else {
+                sortedRow.first().date.getMonth()
+            }
+        val monthlyCountList = mutableMapOf<Int, Int>()
+
+        sortedRow.forEachIndexed { rowIndex, lotteryRowData ->
+            if (lotteryRowData.date <= 0 ||
+                lotteryRowData.normalNumberList == null ||
+                lotteryRowData.normalNumberList.isEmpty() ||
+                lotteryRowData.specialNumberList == null ||
+                (lotteryRowData.specialNumberList.isEmpty() && lotteryData.type != LotteryType.Lto539)
+            ) {
+                // safe check for unexpected data
+                return@forEachIndexed
+            }
+
             val gridList = grids(
                 dateFormat,
-                lotteryRawData,
+                lotteryRowData,
                 rowIndex,
                 rowCount,
                 sortedRow,
                 deltaValue,
                 lotteryData
             )
-            rtn.add(Row(gridList, Row.Type.LotteryData))
+
+
+            val currentMonth = lotteryRowData.date.getMonth()
+            if (previousMonth != lotteryRowData.date.getMonth() || rowIndex == lotteryData.dataList.size - 1) {
+                val addDataFirst = rowIndex == lotteryData.dataList.size - 1
+                if (addDataFirst) {
+                    gridList.forEachIndexed { index, grid ->
+                        if (grid.type == Grid.Type.Special) {
+                            monthlyCountList[index] = monthlyCountList.getOrDefault(index, 0) + 1
+                        }
+                    }
+                    rtn.add(Row(gridList, Row.Type.LotteryData))
+                }
+                previousMonth = currentMonth
+                val subTotalGridList = mutableListOf(
+                    Grid(
+                        text = monthlyTotalDateFormat.format(
+                            sortedRow[rowIndex - if (addDataFirst) {
+                                0
+                            } else {
+                                1
+                            }].date
+                        ),
+                        type = Grid.Type.Date,
+                    )
+                )
+                for (index in 1..(lotteryRowData.specialNumberList.size + lotteryRowData.normalNumberList.size)) {
+                    subTotalGridList.add(
+                        Grid(
+                            index = index,
+                            text = monthlyCountList.getOrDefault(index, 0).toString(),
+                            type = Grid.Type.Special
+                        )
+                    )
+                }
+                rtn.add(Row(subTotalGridList, Row.Type.MonthlyTotal))
+                monthlyCountList.clear()
+                if (!addDataFirst) {
+                    gridList.forEachIndexed { index, grid ->
+                        if (grid.type == Grid.Type.Special) {
+                            monthlyCountList[index] = monthlyCountList.getOrDefault(index, 0) + 1
+                        }
+                    }
+                    rtn.add(Row(gridList, Row.Type.LotteryData))
+                }
+            } else {
+                gridList.forEachIndexed { index, grid ->
+                    if (grid.type == Grid.Type.Special) {
+                        monthlyCountList[index] = monthlyCountList.getOrDefault(index, 0) + 1
+                    }
+                }
+                rtn.add(Row(gridList, Row.Type.LotteryData))
+            }
         }
+
         viewModelScope.launch {
             _viewModelState.emit(
                 _viewModelState.value.copy(
