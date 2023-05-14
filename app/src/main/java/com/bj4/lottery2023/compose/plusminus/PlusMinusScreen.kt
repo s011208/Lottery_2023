@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.bj4.lottery2023.compose.SPECIAL_COLOR
 import com.bj4.lottery2023.compose.general.GridFactory
 import com.bj4.lottery2023.compose.general.Row
@@ -28,7 +31,15 @@ import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusViewModel
 import org.koin.java.KoinJavaComponent
 
 @Composable
-fun PlusMinusScreen() {
+fun PlusMinusScreen(navController: NavController = rememberNavController()) {
+    Scaffold(
+        topBar = { PlusMinusToolbar(navController) },
+        content = { paddingValues -> PlusMinusContent(Modifier.padding(paddingValues)) }
+    )
+}
+
+@Composable
+fun PlusMinusContent(modifier: Modifier) {
     val viewModel: PlusMinusViewModel by KoinJavaComponent.inject(PlusMinusViewModel::class.java)
     val lazyListState = rememberLazyListState(0)
     val plusMinusSignValue = remember {
@@ -46,7 +57,7 @@ fun PlusMinusScreen() {
 
     val state = viewModel.viewModelState.collectAsState()
 
-    Row {
+    Row(modifier = modifier) {
         PlusMinusTable(
             lazyListState = lazyListState,
             stateValue = state.value,

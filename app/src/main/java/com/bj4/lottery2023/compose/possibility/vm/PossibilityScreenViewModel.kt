@@ -1,3 +1,5 @@
+@file:Suppress("SENSELESS_COMPARISON")
+
 package com.bj4.lottery2023.compose.possibility.vm
 
 import android.content.Context
@@ -7,22 +9,22 @@ import com.bj4.lottery2023.compose.general.Grid
 import com.bj4.lottery2023.compose.general.Row
 import com.bj4.lottery2023.compose.lotterytable.vm.toDisplaySize
 import com.example.data.LotteryData
-import com.example.data.LotteryRowData
 import com.example.data.LotteryType
-import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LIST_TABLE
 import com.example.myapplication.compose.appsettings.SETTINGS_EXTRA_SPACING_LTO_TABLE
 import com.example.myapplication.compose.appsettings.SETTINGS_KEY_FONT_SIZE
 import com.example.myapplication.compose.appsettings.settingsDataStore
 import com.example.service.cache.FontSize
 import com.example.service.usecase.DisplayUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.DecimalFormat
+import timber.log.Timber
 
 class PossibilityScreenViewModel(
     private val displayUseCase: DisplayUseCase,
@@ -31,6 +33,9 @@ class PossibilityScreenViewModel(
 
     private val _viewModelState: MutableStateFlow<State> = MutableStateFlow(State())
     val viewModelState: StateFlow<State> = _viewModelState.asStateFlow()
+
+    private val _eventState = MutableSharedFlow<PossibilityUiEvent>()
+    val eventStateSharedFlow = _eventState.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -60,16 +65,6 @@ class PossibilityScreenViewModel(
                                     )
                                 }
                             }
-
-                            SETTINGS_EXTRA_SPACING_LIST_TABLE -> {
-                                viewModelScope.launch {
-                                    _viewModelState.emit(
-                                        _viewModelState.value.copy(
-                                            listExtraSpacing = (value as Float).toInt()
-                                        )
-                                    )
-                                }
-                            }
                         }
                     }
                 }
@@ -80,159 +75,296 @@ class PossibilityScreenViewModel(
         when (event) {
             PossibilityUiEvent.Reload -> {
                 viewModelScope.launch {
-                    val newList: List<PossibilityItem>
-                    withContext(Dispatchers.IO) {
-                        newList = loadData()
-                    }
-                    _viewModelState.emit(_viewModelState.value.copy(itemList = newList))
+                    val chartList =
+                        reload(_viewModelState.value.lotteryType, _viewModelState.value.count)
+                    _viewModelState.emit(_viewModelState.value.copy(chartList = chartList))
                 }
             }
 
             is PossibilityUiEvent.ChangeNumberOfRows -> {
                 viewModelScope.launch {
-                    val newList: List<PossibilityItem>
-                    withContext(Dispatchers.IO) {
-                        newList = loadData(event.number)
+                    try {
+                        val number = event.numberString.toInt()
+                        val chartList = reload(_viewModelState.value.lotteryType, number)
+                        _viewModelState.emit(
+                            _viewModelState.value.copy(
+                                chartList = chartList,
+                                count = number
+                            )
+                        )
+                    } catch (
+                        throwable: Throwable
+                    ) {
+                        _eventState.emit(PossibilityUiEvent.WrongFormat(event.numberString))
                     }
+                }
+            }
+
+            is PossibilityUiEvent.ChangeLotteryType -> {
+                viewModelScope.launch {
+                    val chartList =
+                        reload(event.newLotteryType, _viewModelState.value.count)
                     _viewModelState.emit(
                         _viewModelState.value.copy(
-                            itemList = newList,
-                            count = event.number
+                            chartList = chartList,
+                            lotteryType = event.newLotteryType
                         )
                     )
                 }
             }
+
+            else -> {}
         }
     }
 
-    private fun loadData(count: Int = 100): List<PossibilityItem> {
-        val rtn = mutableListOf<PossibilityItem>()
-        LotteryType.values().forEach { lotteryType ->
-            val data = displayUseCase.getLotteryData(lotteryType) ?: return@forEach
-            val realCount = count.coerceAtMost(data.dataList.size)
-            val subList = data.dataList.subList(0, realCount)
-            when (lotteryType) {
-                LotteryType.Lto -> {
-                    rtn.add(getNormalLtoPossibility(subList, data, realCount))
+    private suspend fun reload(lotteryType: LotteryType, count: Int): MutableList<Chart> {
+        val chartList: MutableList<Chart> = mutableListOf()
+        withContext(Dispatchers.IO) {
+            chartList.addAll(
+                getPossibilityChart(
+                    lotteryType,
+                    count
+                ).makePossibilityOrderList()
+            )
+            chartList.add(
+                getPossibilityListNoShowUntilToday(
+                    lotteryType,
+                    count
+                )
+            )
+        }
+        return chartList
+    }
+
+    private fun getPossibilityListNoShowUntilToday(
+        lotteryType: LotteryType,
+        count: Int
+    ): Chart.PossibilityListNoShowUntilToday {
+        val lotteryData =
+            displayUseCase.getLotteryData(lotteryType)
+                ?: return Chart.PossibilityListNoShowUntilToday()
+
+        val sortedRow = lotteryData.dataList.sortedByDescending { it.date }
+            .subList(0, count.coerceAtMost(lotteryData.dataList.size)).reversed()
+
+        val countNormalMap = mutableMapOf<Int, Int>()
+        val countSpecialMap = mutableMapOf<Int, Int>()
+        for (index in 1..lotteryData.normalNumberCount) {
+            countNormalMap[index] = 0
+        }
+        for (index in 1..lotteryData.specialNumberCount) {
+            countSpecialMap[index] = 0
+        }
+        Timber.e("sortedRow size: ${sortedRow.size}")
+        sortedRow.forEach { row ->
+            countNormalMap.forEach { (key, value) -> countNormalMap[key] = value + 1 }
+            countSpecialMap.forEach { (key, value) -> countNormalMap[key] = value + 1 }
+
+            Timber.e("$countNormalMap")
+
+
+            row.normalNumberList.forEach { number ->
+                countNormalMap[number] = 0
+            }
+            if (!lotteryData.isSpecialNumberSeparate) {
+                row.specialNumberList.forEach { number ->
+                    countNormalMap[number] = 0
                 }
-
-                LotteryType.LtoBig -> {
-                    rtn.add(getNormalLtoPossibility(subList, data, realCount))
-                }
-
-                LotteryType.LtoHK -> {
-                    rtn.add(getNormalLtoPossibility(subList, data, realCount))
-                }
-
-                LotteryType.LtoList3 -> {
-
-                }
-
-                LotteryType.LtoList4 -> {
-
-                }
-
-                LotteryType.Lto539 -> {
-                    rtn.add(getNormalLtoPossibility(subList, data, realCount))
+            } else {
+                row.specialNumberList.forEach { number ->
+                    countSpecialMap[number] = 0
                 }
             }
+        }
+
+        val (indexGridList, countGridList) = convertToRowPair(
+            countNormalMap,
+            lotteryData,
+            countSpecialMap
+        )
+
+        return Chart.PossibilityListNoShowUntilToday(
+            Row(indexGridList, Row.Type.Header),
+            Row(countGridList, Row.Type.LotteryData)
+        )
+    }
+
+    private fun Chart.PossibilityList.makePossibilityOrderList(): List<Chart> {
+        val rtn = mutableListOf<Chart>()
+        if (this.isValid()) {
+            rtn.add(this)
+
+            val countRowOrderByLowPossibility =
+                this.countRow!!.dataList.sortedBy { it.text.toInt() }
+            val indexRowOrderByLowPossibility =
+                this.indexRow!!.dataList.sortedBy { indexGrid ->
+                    countRowOrderByLowPossibility.indexOfFirst { grid -> grid.index == indexGrid.index }
+                }
+
+            rtn.add(
+                Chart.PossibilityListOrderByLowest(
+                    Row(
+                        indexRowOrderByLowPossibility,
+                        Row.Type.Header
+                    ),
+                    Row(countRowOrderByLowPossibility, Row.Type.LotteryData)
+                )
+            )
+
+            rtn.add(
+                Chart.PossibilityListOrderByHighest(
+                    Row(
+                        indexRowOrderByLowPossibility.reversed(),
+                        Row.Type.Header
+                    ),
+                    Row(
+                        countRowOrderByLowPossibility.reversed(),
+                        Row.Type.LotteryData
+                    )
+                )
+            )
         }
         return rtn
     }
 
-    private fun getNormalLtoPossibility(
-        subList: List<LotteryRowData>,
-        data: LotteryData,
+    private fun getPossibilityChart(
+        lotteryType: LotteryType,
         count: Int
-    ): PossibilityItem {
-        val rowList = mutableListOf<Row>()
-        val headerGridList = mutableListOf<Grid>()
-        val possibilityGridList = mutableListOf<Grid>()
-        val normalNumberMap = mutableMapOf<Int, Int>()
-        val specialNumberMap = mutableMapOf<Int, Int>()
-        val df = DecimalFormat(".##")
+    ): Chart.PossibilityList {
+        val lotteryData =
+            displayUseCase.getLotteryData(lotteryType) ?: return Chart.PossibilityList()
 
-        subList.forEach { lotteryRowData ->
-            lotteryRowData.normalNumberList.forEach {
-                normalNumberMap[it] = normalNumberMap.getOrDefault(it, 0) + 1
+        val sortedRow = lotteryData.dataList.sortedByDescending { it.date }
+            .subList(0, count.coerceAtMost(lotteryData.dataList.size))
+        val countNormalMap = mutableMapOf<Int, Int>()
+        val countSpecialMap = mutableMapOf<Int, Int>()
+
+        for (index in 1..lotteryData.normalNumberCount) {
+            countNormalMap[index] = 0
+        }
+        for (index in 1..lotteryData.specialNumberCount) {
+            countSpecialMap[index] = 0
+        }
+
+        sortedRow.forEach { lotteryRowData ->
+            if (lotteryRowData.date <= 0 ||
+                lotteryRowData.normalNumberList == null ||
+                lotteryRowData.normalNumberList.isEmpty() ||
+                lotteryRowData.specialNumberList == null ||
+                (lotteryRowData.specialNumberList.isEmpty() && lotteryData.type != LotteryType.Lto539)
+            ) {
+                // safe check for unexpected data
+                return@forEach
             }
-            if (!data.isSpecialNumberSeparate) {
-                lotteryRowData.specialNumberList.forEach {
-                    normalNumberMap[it] = normalNumberMap.getOrDefault(it, 0) + 1
+            lotteryRowData.normalNumberList.forEach { number ->
+                countNormalMap[number] = countNormalMap[number]!! + 1
+            }
+
+            if (!lotteryData.isSpecialNumberSeparate) {
+                lotteryRowData.specialNumberList.forEach { number ->
+                    countNormalMap[number] = countNormalMap[number]!! + 1
                 }
             } else {
-                lotteryRowData.specialNumberList.forEach {
-                    specialNumberMap[it] = specialNumberMap.getOrDefault(it, 0) + 1
+                lotteryRowData.specialNumberList.forEach { number ->
+                    countSpecialMap[number] = countSpecialMap[number]!! + 1
                 }
             }
         }
-        for (i in 1..data.normalNumberCount) {
-            headerGridList.add(
+
+        val (indexGridList, countGridList) = convertToRowPair(
+            countNormalMap,
+            lotteryData,
+            countSpecialMap
+        )
+
+        return Chart.PossibilityList(
+            Row(indexGridList, Row.Type.Header),
+            Row(countGridList, Row.Type.LotteryData)
+        )
+    }
+
+    private fun convertToRowPair(
+        countNormalMap: MutableMap<Int, Int>,
+        lotteryData: LotteryData,
+        countSpecialMap: MutableMap<Int, Int>
+    ): Pair<MutableList<Grid>, MutableList<Grid>> {
+        val indexGridListNormal = mutableListOf<Grid>()
+        val countGridListNormal = mutableListOf<Grid>()
+        for (index in 1..countNormalMap.size) {
+            indexGridListNormal.add(
                 Grid(
-                    index = i,
-                    text = i.toString(),
-                    visible = true,
-                    Grid.Type.NormalPossibility
+                    index = index,
+                    text = index.toString(),
+                    type = Grid.Type.Normal
                 )
             )
-
-            val numberCount = normalNumberMap.getOrDefault(
-                i,
-                0
-            )
-            possibilityGridList.add(
+            countGridListNormal.add(
                 Grid(
-                    index = i,
-                    text = if (numberCount == 0) "0" else df.format(numberCount / count.toFloat())
-                        .toString(),
-                    visible = true,
-                    Grid.Type.NormalPossibility
+                    index = index,
+                    text = countNormalMap[index].toString(),
+                    type = Grid.Type.Normal
                 )
             )
         }
-        if (data.isSpecialNumberSeparate) {
-            for (i in 1..data.specialNumberCount) {
-                headerGridList.add(
+        val indexGridListSpecial = mutableListOf<Grid>()
+        val countGridListSpecial = mutableListOf<Grid>()
+        if (lotteryData.isSpecialNumberSeparate) {
+            for (index in 1..countSpecialMap.size) {
+                indexGridListSpecial.add(
                     Grid(
-                        index = i,
-                        text = i.toString(),
-                        visible = true,
-                        Grid.Type.SpecialPossibility
+                        index = index,
+                        text = index.toString(),
+                        type = Grid.Type.Special
                     )
                 )
-                val numberCount = specialNumberMap.getOrDefault(
-                    i,
-                    0
-                )
-                possibilityGridList.add(
+                countGridListSpecial.add(
                     Grid(
-                        index = i,
-                        text = if (numberCount == 0) "0" else df.format(numberCount / count.toFloat())
-                            .toString(),
-                        visible = true,
-                        Grid.Type.SpecialPossibility
+                        index = index,
+                        text = countSpecialMap[index].toString(),
+                        type = Grid.Type.Special
                     )
                 )
             }
+            indexGridListSpecial.addAll(indexGridListSpecial)
+            countGridListSpecial.addAll(countGridListSpecial)
         }
-        rowList.add(Row(headerGridList, Row.Type.Header))
-        rowList.add(Row(possibilityGridList, Row.Type.LotteryData))
-        return PossibilityItem(data.type, rowList)
+        return Pair(indexGridListNormal, countGridListNormal)
     }
 
     data class State(
-        val itemList: List<PossibilityItem> = listOf(),
+        val chartList: List<Chart> = listOf(),
         val fontSize: Int = FontSize.NORMAL.toDisplaySize(),
         val normalExtraSpacing: Int = 0,
-        val listExtraSpacing: Int = 0,
         val count: Int = 100,
+        val lotteryType: LotteryType = LotteryType.Lto539,
     )
 }
 
-data class PossibilityItem(val lotteryType: LotteryType, val rowList: List<Row>)
+sealed class Chart {
+    data class PossibilityList(val indexRow: Row? = null, val countRow: Row? = null) : Chart() {
+        fun isValid() = !indexRow?.dataList.isNullOrEmpty() && !countRow?.dataList.isNullOrEmpty()
+    }
+
+    data class PossibilityListOrderByLowest(val indexRow: Row? = null, val countRow: Row? = null) :
+        Chart()
+
+    data class PossibilityListOrderByHighest(val indexRow: Row? = null, val countRow: Row? = null) :
+        Chart()
+
+    data class PossibilityListNoShowUntilToday(
+        val indexRow: Row? = null,
+        val countRow: Row? = null
+    ) : Chart()
+}
 
 sealed class PossibilityUiEvent {
     object Reload : PossibilityUiEvent()
 
-    data class ChangeNumberOfRows(val number: Int) : PossibilityUiEvent()
+    data class ChangeNumberOfRows(val numberString: String) : PossibilityUiEvent()
+
+    data class ChangeLotteryType(
+        val newLotteryType: LotteryType,
+    ) : PossibilityUiEvent()
+
+    data class WrongFormat(val text: String) : PossibilityUiEvent()
 }

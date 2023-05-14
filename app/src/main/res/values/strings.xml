@@ -69,7 +69,7 @@
 
     <string name="plus_minus">加減</string>
     <string name="possibility">機率</string>
-    <string name="choose_number">選擇期數</string>
+    <string name="choose_number">設定期數: </string>
     <string name="choose_number_dialog_title">選擇計算期數</string>
     <string name="enter_number_count_hint">輸入計算期數</string>
     <string name="choose_number_title">近 %1$s 期</string>
@@ -77,4 +77,14 @@
     <string name="settings_app_version_name">版本名稱</string>
     <string name="settings_app_version_code">版本號碼</string>
     <string name="clear_data">清除資料</string>
+
+    <string name="possibility_order">出現機率</string>
+    <string name="possibility_order_l_t_h">出現機率 (低到高)</string>
+    <string name="possibility_order_h_t_l">出現機率 (高到低)</string>
+    <string name="possibility_no_show_until_today">到今天已經幾期沒出現</string>
+    <string name="possibility_no_show_until_today_l_t_h">到今天幾期沒出現 (低到高)</string>
+    <string name="possibility_no_show_until_today_h_t_l">到今天幾期沒出現 (高到低)</string>
+    <string name="possibility_index">號碼</string>
+    <string name="possibility_times">次數</string>
+    <string name="wrong_count_format">期數輸入格式錯誤: %1$s</string>
 </resources>

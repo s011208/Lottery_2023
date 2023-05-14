@@ -1,193 +1,249 @@
 package com.bj4.lottery2023.compose.possibility
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.border
+import android.widget.Toast
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.bj4.lottery2023.R
-import com.bj4.lottery2023.compose.lotterytable.RowFactory
-import com.bj4.lottery2023.compose.possibility.vm.PossibilityItem
+import com.bj4.lottery2023.compose.general.Grid
+import com.bj4.lottery2023.compose.general.GridFactory
+import com.bj4.lottery2023.compose.possibility.vm.Chart
 import com.bj4.lottery2023.compose.possibility.vm.PossibilityScreenViewModel
 import com.bj4.lottery2023.compose.possibility.vm.PossibilityUiEvent
-import com.example.data.LotteryType
 import org.koin.java.KoinJavaComponent
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun PossibilityScreen() {
+fun PossibilityScreen(navController: NavController = rememberNavController()) {
     val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
-
-    var dialogOpen by remember {
-        mutableStateOf(false)
-    }
 
     LaunchedEffect(key1 = Unit) {
         viewModel.handle(PossibilityUiEvent.Reload)
     }
 
-    Scaffold(floatingActionButton = { FloatingButton { dialogOpen = true } }, content = {
-        Surface(modifier = Modifier.padding(16.dp)) {
-            Column {
-                Text(
-                    text = stringResource(
-                        id = R.string.choose_number_title,
-                        viewModel.viewModelState.collectAsState().value.count
-                    ),
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                PossibilityDataScreen()
-                Dialogs(dialogOpen) { dialogOpen = false }
-            }
-        }
-    })
+    Scaffold(
+        topBar = { PossibilityToolbar(navController) },
+        content = { paddingValues -> PossibilityContent(Modifier.padding(paddingValues)) }
+    )
 }
 
 @Composable
-fun Dialogs(dialogOpen: Boolean, onDialogClose: () -> Unit) {
+fun PossibilityContent(modifier: Modifier) {
     val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
-    val inputValue = remember { mutableStateOf(TextFieldValue()) }
-    if (dialogOpen) {
-        Dialog(onDismissRequest = {
-            onDialogClose()
-        }) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                shape = RoundedCornerShape(size = 10.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.choose_number_dialog_title),
-                        modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colorScheme.secondary
-                    )
+    val chartList = viewModel.viewModelState.collectAsState().value.chartList
 
-                    TextField(
-                        value = inputValue.value,
-                        onValueChange = { inputValue.value = it },
-                        placeholder = { Text(text = stringResource(id = R.string.enter_number_count_hint)) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth(),
-                        maxLines = 1,
-                        singleLine = true,
-                    )
-
-                    Button(onClick = {
-                        onDialogClose()
-                        val count = try {
-                            inputValue.value.text.trim().toInt()
-                        } catch (e: NumberFormatException) {
-                            0
-                        }
-//                        Timber.e("${inputValue.value.text}, count: count$count")
-                        if (count <= 0) return@Button
-                        viewModel.handle(
-                            PossibilityUiEvent.ChangeNumberOfRows(count)
-                        )
-                        inputValue.value = TextFieldValue("")
-                    }, modifier = Modifier
-                        .padding(8.dp)
-                        .align(Alignment.CenterHorizontally)) {
-                        Text(text = stringResource(id = android.R.string.ok))
-                    }
-                }
-            }
-
-        }
-    }
-}
-
-@Composable
-fun FloatingButton(onClick: () -> Unit) {
-    val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
-    FloatingActionButton(onClick = {
-        onClick()
-    }) {
-        Icon(
-            Icons.Filled.DateRange, stringResource(id = R.string.choose_number)
-        )
-    }
-}
-
-@Composable
-fun PossibilityDataScreen() {
-    val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
-    val state = viewModel.viewModelState.collectAsState().value
     val horizontalScrollState = rememberScrollState(0)
-    LazyColumn(content = {
-        state.itemList.forEach { possibilityItem ->
-            item {
-                PossibilityColumn(
-                    possibilityItem,
-                    state.fontSize,
-                    state.normalExtraSpacing,
-                    state.listExtraSpacing,
-                )
+    val lazyListState = rememberLazyListState(0)
+
+    Column(modifier = modifier) {
+        CountNumberComponent(modifier = Modifier.padding(all = 16.dp))
+
+        LazyColumn(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .horizontalScroll(horizontalScrollState),
+            state = lazyListState
+        ) {
+            chartList.forEach { chart ->
+                when (chart) {
+                    is Chart.PossibilityList -> {
+                        item {
+                            Column(modifier = Modifier.padding(vertical = 16.dp)) {
+                                Text(
+                                    text = stringResource(id = R.string.possibility_order),
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
+                                Row {
+                                    GridFactory(
+                                        grid = Grid(
+                                            index = -1,
+                                            text = stringResource(id = R.string.possibility_index),
+                                            type = Grid.Type.Date
+                                        ), fontSize = 20, extraSpacing = 2
+                                    )
+                                    chart.indexRow?.dataList?.forEach { grid ->
+                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
+                                    }
+                                }
+                                Row {
+                                    GridFactory(
+                                        grid = Grid(
+                                            index = -1,
+                                            text = stringResource(id = R.string.possibility_times),
+                                            type = Grid.Type.Date
+                                        ), fontSize = 20, extraSpacing = 2
+                                    )
+                                    chart.countRow?.dataList?.forEach { grid ->
+                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    is Chart.PossibilityListOrderByHighest -> {
+                        item {
+                            Column(modifier = Modifier.padding(vertical = 16.dp)) {
+                                Text(
+                                    text = stringResource(id = R.string.possibility_order_h_t_l),
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
+                                Row {
+                                    GridFactory(
+                                        grid = Grid(
+                                            index = -1,
+                                            text = stringResource(id = R.string.possibility_index),
+                                            type = Grid.Type.Date
+                                        ), fontSize = 20, extraSpacing = 2
+                                    )
+                                    chart.indexRow?.dataList?.forEach { grid ->
+                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
+                                    }
+                                }
+                                Row {
+                                    GridFactory(
+                                        grid = Grid(
+                                            index = -1,
+                                            text = stringResource(id = R.string.possibility_times),
+                                            type = Grid.Type.Date
+                                        ), fontSize = 20, extraSpacing = 2
+                                    )
+                                    chart.countRow?.dataList?.forEach { grid ->
+                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    is Chart.PossibilityListOrderByLowest -> {
+                        item {
+                            Column(modifier = Modifier.padding(vertical = 16.dp)) {
+                                Text(
+                                    text = stringResource(id = R.string.possibility_order_l_t_h),
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
+                                Row {
+                                    GridFactory(
+                                        grid = Grid(
+                                            index = -1,
+                                            text = stringResource(id = R.string.possibility_index),
+                                            type = Grid.Type.Date
+                                        ), fontSize = 20, extraSpacing = 2
+                                    )
+                                    chart.indexRow?.dataList?.forEach { grid ->
+                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
+                                    }
+                                }
+                                Row {
+                                    GridFactory(
+                                        grid = Grid(
+                                            index = -1,
+                                            text = stringResource(id = R.string.possibility_times),
+                                            type = Grid.Type.Date
+                                        ), fontSize = 20, extraSpacing = 2
+                                    )
+                                    chart.countRow?.dataList?.forEach { grid ->
+                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    is Chart.PossibilityListNoShowUntilToday -> {
+                        item {
+                            Column(modifier = Modifier.padding(vertical = 16.dp)) {
+                                Text(
+                                    text = stringResource(id = R.string.possibility_no_show_until_today),
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
+                                Row {
+                                    GridFactory(
+                                        grid = Grid(
+                                            index = -1,
+                                            text = stringResource(id = R.string.possibility_index),
+                                            type = Grid.Type.Date
+                                        ), fontSize = 20, extraSpacing = 2
+                                    )
+                                    chart.indexRow?.dataList?.forEach { grid ->
+                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
+                                    }
+                                }
+                                Row {
+                                    GridFactory(
+                                        grid = Grid(
+                                            index = -1,
+                                            text = stringResource(id = R.string.possibility_times),
+                                            type = Grid.Type.Date
+                                        ), fontSize = 20, extraSpacing = 2
+                                    )
+                                    chart.countRow?.dataList?.forEach { grid ->
+                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-    }, modifier = Modifier.horizontalScroll(horizontalScrollState))
+    }
 }
 
 @Composable
-fun PossibilityColumn(
-    possibilityItem: PossibilityItem,
-    fontSize: Int,
-    normalExtraSpacing: Int,
-    listExtraSpacing: Int,
-) {
-    Column(
-        modifier = Modifier
-            .padding(top = 32.dp)
-            .border(1.dp, MaterialTheme.colorScheme.secondary, RoundedCornerShape(0.dp))
-            .padding(10.dp)
-    ) {
-        Text(
-            text = when (possibilityItem.lotteryType) {
-                LotteryType.Lto -> stringResource(id = R.string.lto)
-                LotteryType.LtoBig -> stringResource(id = R.string.lto_big)
-                LotteryType.LtoHK -> stringResource(id = R.string.lto_hk)
-                LotteryType.LtoList3 -> stringResource(id = R.string.lto_list3)
-                LotteryType.LtoList4 -> stringResource(id = R.string.lto_list4)
-                LotteryType.Lto539 -> stringResource(id = R.string.lto_539)
-            },
-            color = MaterialTheme.colorScheme.secondary,
-        )
+fun CountNumberComponent(modifier: Modifier) {
+    val context = LocalContext.current
+    val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
 
-        possibilityItem.rowList.forEach {
-            RowFactory(
-                row = it, fontSize = fontSize, extraSpacing = when (possibilityItem.lotteryType) {
-                    LotteryType.LtoList3, LotteryType.LtoList4 -> {
-                        listExtraSpacing
-                    }
+    val textFieldText = remember {
+        mutableStateOf(viewModel.viewModelState.value.count.toString())
+    }
 
-                    else -> {
-                        normalExtraSpacing
-                    }
+    LaunchedEffect(key1 = Unit) {
+        viewModel.eventStateSharedFlow.collect { event ->
+            when (event) {
+                is PossibilityUiEvent.WrongFormat -> {
+                    Toast.makeText(
+                        context,
+                        context.resources.getString(R.string.wrong_count_format, event.text),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
-            )
+
+                else -> {}
+            }
+        }
+    }
+
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        Text(text = stringResource(id = R.string.choose_number))
+        TextField(
+            value = textFieldText.value,
+            onValueChange = { textFieldText.value = it },
+            modifier = modifier.padding(horizontal = 8.dp),
+            singleLine = true,
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        )
+        Button(onClick = { viewModel.handle(PossibilityUiEvent.ChangeNumberOfRows(textFieldText.value)) }) {
+            Text(text = stringResource(id = android.R.string.ok))
         }
     }
 }

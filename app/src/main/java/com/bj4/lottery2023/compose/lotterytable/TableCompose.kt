@@ -253,7 +253,7 @@ fun RowFactoryWithDivider(
     },
 ) {
     Column {
-        RowFactory(row, fontSize, modifier.border(2.dp, SPECIAL_COLOR), fontSizeRatio, extraSpacing, clickedDate)
+        RowFactory(row, fontSize, modifier.border(1.dp, SPECIAL_COLOR), fontSizeRatio, extraSpacing, clickedDate)
     }
 }
 

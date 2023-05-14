@@ -47,12 +47,14 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
                 LotteryTypeDropdownMenu(viewModel)
                 SortTypeDropdownMenu(viewModel)
                 DisplayOrderDropdownMenu(viewModel)
-                StartPlusMinusScreen { navController.navigate(MainActivity.SCREEN_NAME_PLUS_MINUS) }
-                StartPossibilityScreen { navController.navigate(MainActivity.SCREEN_NAME_POSSIBILITY) }
+                if (!value.isSyncing) {
+                    StartPlusMinusScreen { navController.navigate(MainActivity.SCREEN_NAME_PLUS_MINUS) }
+                    StartPossibilityScreen { navController.navigate(MainActivity.SCREEN_NAME_POSSIBILITY) }
+                }
                 StartSettingsScreen { navController.navigate(MainActivity.SCREEN_NAME_PREFERENCE) }
             }
         }
-    })
+    }, modifier = Modifier.padding(vertical = 16.dp))
 }
 
 @Composable

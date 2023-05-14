@@ -1,4 +1,4 @@
-package com.bj4.lottery2023.compose.plusminus
+package com.bj4.lottery2023.compose.possibility
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,8 +17,8 @@ import com.bj4.lottery2023.MainActivity
 import com.bj4.lottery2023.R
 import com.bj4.lottery2023.compose.general.AppToolbarSettingsDropDownText
 import com.bj4.lottery2023.compose.general.AppToolbarSettingsText
-import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusEvent
-import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusViewModel
+import com.bj4.lottery2023.compose.possibility.vm.PossibilityScreenViewModel
+import com.bj4.lottery2023.compose.possibility.vm.PossibilityUiEvent
 import com.example.data.LotteryType
 import org.koin.java.KoinJavaComponent
 
@@ -26,24 +26,22 @@ private const val PADDING = 4
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlusMinusToolbar(navController: NavController = rememberNavController()) {
-    val viewModel: PlusMinusViewModel by KoinJavaComponent.inject(PlusMinusViewModel::class.java)
+fun PossibilityToolbar(navController: NavController = rememberNavController()) {
+    val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
     val currentLotteryType = viewModel.viewModelState.collectAsState().value.lotteryType
 
     TopAppBar(title = {
         Text(
-            text = "${stringResource(id = R.string.plus_minus)} - ${currentLotteryType.toUiString()}"
+            text = "${stringResource(id = R.string.possibility)} - ${currentLotteryType.toUiString()}"
         )
     }, navigationIcon = {
         IconButton(onClick = { navController.navigateUp() }) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
-                contentDescription = stringResource(id = com.bj4.lottery2023.R.string.back)
+                contentDescription = stringResource(id = R.string.back)
             )
         }
     }, actions = {
-        ScrollToBottom(viewModel)
-        ScrollToTop(viewModel)
         LotteryTypeDropdownMenu()
         StartSettingsScreen {
             navController.navigate(
@@ -54,24 +52,12 @@ fun PlusMinusToolbar(navController: NavController = rememberNavController()) {
 }
 
 @Composable
-fun ScrollToBottom(viewModel: PlusMinusViewModel) {
-    AppToolbarSettingsText(text = stringResource(id = R.string.scroll_to_bottom),
-        Modifier.clickable { viewModel.handleEvent(PlusMinusEvent.ScrollToBottom) })
-}
-
-@Composable
-fun ScrollToTop(viewModel: PlusMinusViewModel) {
-    AppToolbarSettingsText(text = stringResource(id = R.string.scroll_to_top),
-        Modifier.clickable { viewModel.handleEvent(PlusMinusEvent.ScrollToTop) })
-}
-
-@Composable
 private fun LotteryTypeDropdownMenu() {
     var expanded by remember {
         mutableStateOf(false)
     }
 
-    val viewModel: PlusMinusViewModel by KoinJavaComponent.inject(PlusMinusViewModel::class.java)
+    val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
     val currentLotteryType = viewModel.viewModelState.collectAsState().value.lotteryType
 
     Box(modifier = Modifier.padding(PADDING.dp)) {
@@ -86,7 +72,7 @@ private fun LotteryTypeDropdownMenu() {
                 .filterNot { it == LotteryType.LtoList4 || it == LotteryType.LtoList3 || it == LotteryType.Lto }
                 .forEachIndexed { _, itemValue ->
                     DropdownMenuItem(onClick = {
-                        viewModel.handleEvent(PlusMinusEvent.ChangeLotteryType(itemValue))
+                        viewModel.handle(PossibilityUiEvent.ChangeLotteryType(itemValue))
                         expanded = false
                     }, enabled = true, text = {
                         AppToolbarSettingsDropDownText(
