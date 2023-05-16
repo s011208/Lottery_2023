@@ -87,4 +87,8 @@
     <string name="possibility_index">號碼</string>
     <string name="possibility_times">次數</string>
     <string name="wrong_count_format">期數輸入格式錯誤: %1$s</string>
+
+    <string name="order_by_index">顯示數字排序</string>
+    <string name="order_by_asc">顯示由低到高排序</string>
+    <string name="order_by_desc">顯示由高到低排序</string>
 </resources>

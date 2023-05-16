@@ -2,9 +2,12 @@ package com.bj4.lottery2023.compose.possibility
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bj4.lottery2023.R
-import com.bj4.lottery2023.compose.general.Grid
 import com.bj4.lottery2023.compose.general.GridFactory
 import com.bj4.lottery2023.compose.possibility.vm.Chart
 import com.bj4.lottery2023.compose.possibility.vm.PossibilityScreenViewModel
@@ -52,7 +54,15 @@ fun PossibilityContent(modifier: Modifier) {
     val lazyListState = rememberLazyListState(0)
 
     Column(modifier = modifier) {
-        CountNumberComponent(modifier = Modifier.padding(all = 16.dp))
+        Row(
+            modifier = Modifier
+                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(32.dp)
+        ) {
+            CountNumberComponent()
+            CheckBoxGroup()
+        }
 
         LazyColumn(
             modifier = Modifier
@@ -62,143 +72,9 @@ fun PossibilityContent(modifier: Modifier) {
         ) {
             chartList.forEach { chart ->
                 when (chart) {
-                    is Chart.PossibilityList -> {
+                    is Chart.TableChart -> {
                         item {
-                            Column(modifier = Modifier.padding(vertical = 16.dp)) {
-                                Text(
-                                    text = stringResource(id = R.string.possibility_order),
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
-                                Row {
-                                    GridFactory(
-                                        grid = Grid(
-                                            index = -1,
-                                            text = stringResource(id = R.string.possibility_index),
-                                            type = Grid.Type.Date
-                                        ), fontSize = 20, extraSpacing = 2
-                                    )
-                                    chart.indexRow?.dataList?.forEach { grid ->
-                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
-                                    }
-                                }
-                                Row {
-                                    GridFactory(
-                                        grid = Grid(
-                                            index = -1,
-                                            text = stringResource(id = R.string.possibility_times),
-                                            type = Grid.Type.Date
-                                        ), fontSize = 20, extraSpacing = 2
-                                    )
-                                    chart.countRow?.dataList?.forEach { grid ->
-                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    is Chart.PossibilityListOrderByHighest -> {
-                        item {
-                            Column(modifier = Modifier.padding(vertical = 16.dp)) {
-                                Text(
-                                    text = stringResource(id = R.string.possibility_order_h_t_l),
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
-                                Row {
-                                    GridFactory(
-                                        grid = Grid(
-                                            index = -1,
-                                            text = stringResource(id = R.string.possibility_index),
-                                            type = Grid.Type.Date
-                                        ), fontSize = 20, extraSpacing = 2
-                                    )
-                                    chart.indexRow?.dataList?.forEach { grid ->
-                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
-                                    }
-                                }
-                                Row {
-                                    GridFactory(
-                                        grid = Grid(
-                                            index = -1,
-                                            text = stringResource(id = R.string.possibility_times),
-                                            type = Grid.Type.Date
-                                        ), fontSize = 20, extraSpacing = 2
-                                    )
-                                    chart.countRow?.dataList?.forEach { grid ->
-                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    is Chart.PossibilityListOrderByLowest -> {
-                        item {
-                            Column(modifier = Modifier.padding(vertical = 16.dp)) {
-                                Text(
-                                    text = stringResource(id = R.string.possibility_order_l_t_h),
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
-                                Row {
-                                    GridFactory(
-                                        grid = Grid(
-                                            index = -1,
-                                            text = stringResource(id = R.string.possibility_index),
-                                            type = Grid.Type.Date
-                                        ), fontSize = 20, extraSpacing = 2
-                                    )
-                                    chart.indexRow?.dataList?.forEach { grid ->
-                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
-                                    }
-                                }
-                                Row {
-                                    GridFactory(
-                                        grid = Grid(
-                                            index = -1,
-                                            text = stringResource(id = R.string.possibility_times),
-                                            type = Grid.Type.Date
-                                        ), fontSize = 20, extraSpacing = 2
-                                    )
-                                    chart.countRow?.dataList?.forEach { grid ->
-                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    is Chart.PossibilityListNoShowUntilToday -> {
-                        item {
-                            Column(modifier = Modifier.padding(vertical = 16.dp)) {
-                                Text(
-                                    text = stringResource(id = R.string.possibility_no_show_until_today),
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
-                                Row {
-                                    GridFactory(
-                                        grid = Grid(
-                                            index = -1,
-                                            text = stringResource(id = R.string.possibility_index),
-                                            type = Grid.Type.Date
-                                        ), fontSize = 20, extraSpacing = 2
-                                    )
-                                    chart.indexRow?.dataList?.forEach { grid ->
-                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
-                                    }
-                                }
-                                Row {
-                                    GridFactory(
-                                        grid = Grid(
-                                            index = -1,
-                                            text = stringResource(id = R.string.possibility_times),
-                                            type = Grid.Type.Date
-                                        ), fontSize = 20, extraSpacing = 2
-                                    )
-                                    chart.countRow?.dataList?.forEach { grid ->
-                                        GridFactory(grid = grid, fontSize = 20, extraSpacing = 2)
-                                    }
-                                }
-                            }
+                            TableChartColumn(chart)
                         }
                     }
                 }
@@ -208,7 +84,113 @@ fun PossibilityContent(modifier: Modifier) {
 }
 
 @Composable
-fun CountNumberComponent(modifier: Modifier) {
+private fun TableChartColumn(chart: Chart.TableChart) {
+    Column(modifier = Modifier.padding(vertical = 16.dp)) {
+        val title = when (chart) {
+            is Chart.TableChart.PossibilityList -> stringResource(id = R.string.possibility_order)
+            is Chart.TableChart.NoShowUntilToday -> stringResource(
+                id = R.string.possibility_no_show_until_today
+            )
+
+            is Chart.TableChart.PossibilityListOrderByDescent -> stringResource(
+                id = R.string.possibility_order_h_t_l
+            )
+
+            is Chart.TableChart.PossibilityListOrderByAscent -> stringResource(
+                id = R.string.possibility_order_l_t_h
+            )
+
+            is Chart.TableChart.NoShowUntilTodayOrderByAscent -> stringResource(id = R.string.possibility_no_show_until_today_l_t_h)
+            is Chart.TableChart.NoShowUntilTodayOrderByDescent -> stringResource(id = R.string.possibility_no_show_until_today_h_t_l)
+        }
+        TableChart(title, chart)
+    }
+}
+
+@Composable
+private fun CheckBoxGroup() {
+    val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
+    val showByIndex = remember {
+        mutableStateOf(viewModel.viewModelState.value.showByIndex)
+    }
+
+    val showByAscent = remember {
+        mutableStateOf(viewModel.viewModelState.value.showByAscent)
+    }
+
+    val showByDescent = remember {
+        mutableStateOf(viewModel.viewModelState.value.showByDescent)
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        OrderCheckBox(
+            R.string.order_by_index,
+            showByIndex
+        ) { viewModel.handle(PossibilityUiEvent.ShowOrderByIndex(showByIndex.value)) }
+
+        OrderCheckBox(R.string.order_by_asc, showByAscent) {
+            viewModel.handle(PossibilityUiEvent.ShowOrderByAsc(showByAscent.value))
+        }
+
+        OrderCheckBox(R.string.order_by_desc, showByDescent) {
+            viewModel.handle(PossibilityUiEvent.ShowOrderByDesc(showByDescent.value))
+        }
+    }
+}
+
+@Composable
+private fun OrderCheckBox(@StringRes title: Int, value: MutableState<Boolean>, click: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Checkbox(
+            checked = value.value,
+            onCheckedChange = {
+                value.value = !value.value
+                click()
+            }
+        )
+
+        Text(text = stringResource(id = title))
+    }
+}
+
+@Composable
+private fun TableChart(
+    title: String,
+    chart: Chart.TableChart
+) {
+    val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
+    Text(
+        text = title,
+        modifier = Modifier.padding(vertical = 4.dp)
+    )
+    Row {
+        chart.indexRow?.dataList?.forEach { grid ->
+            GridFactory(
+                grid = grid,
+                fontSize = viewModel.viewModelState.value.fontSize,
+                extraSpacing = viewModel.viewModelState.value.extraSpacing
+            )
+        }
+    }
+    Row {
+        chart.countRow?.dataList?.forEach { grid ->
+            GridFactory(
+                grid = grid,
+                fontSize = viewModel.viewModelState.value.fontSize,
+                extraSpacing = viewModel.viewModelState.value.extraSpacing
+            )
+        }
+    }
+}
+
+@Composable
+fun CountNumberComponent(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val viewModel: PossibilityScreenViewModel by KoinJavaComponent.inject(PossibilityScreenViewModel::class.java)
 
