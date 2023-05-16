@@ -17,7 +17,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
 
     private var currentPage: Int = 1
 
-    internal val dateFormat = SimpleDateFormat(DATE_FORMATTER, Locale.getDefault())
+    private val dateFormat = SimpleDateFormat(DATE_FORMATTER, Locale.getDefault())
 
     val analytics: Analytics by KoinJavaComponent.inject(Analytics::class.java)
 
@@ -75,8 +75,12 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
 
     internal abstract fun isSpecialNumberSeparate(): Boolean
 
+    internal open fun getDateFormat(): SimpleDateFormat {
+        return dateFormat
+    }
+
     internal open fun dateConverter(date: String): Long {
-        val tempDate = dateFormat.parse(date.substring(0, date.length - 3).trim()) ?: return 0L
+        val tempDate = getDateFormat().parse(date.substring(0, date.length - 3).trim()) ?: return 0L
 
         val calendar = Calendar.getInstance()
         calendar.time = tempDate

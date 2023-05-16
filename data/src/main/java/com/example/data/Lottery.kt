@@ -25,7 +25,7 @@ data class LotteryData(
 )
 
 enum class LotteryType {
-    Lto, LtoBig, LtoHK, Lto539, LtoList3, LtoList4,
+    Lto, LtoBig, LtoHK, Lto539, LtoCF5, LtoList3, LtoList4,
 }
 
 class LotteryDataConverter {

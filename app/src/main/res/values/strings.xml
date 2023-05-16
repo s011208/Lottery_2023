@@ -10,6 +10,7 @@
     <string name="lto_list3">三星彩</string>
     <string name="lto_list4">四星彩</string>
     <string name="lto_539">今彩539</string>
+    <string name="lto_cf5">加州彩</string>
     <string name="sort_type">排列方式</string>
     <string name="normal_order">一般</string>
     <string name="last_digit">尾數</string>
@@ -43,6 +44,7 @@
     <string name="failed_to_load_lto_list3">下載三星彩失敗</string>
     <string name="failed_to_load_lto_list4">下載四星彩失敗</string>
     <string name="failed_to_load_lto_539">下載今彩539失敗</string>
+    <string name="failed_to_load_lto_cf5">下載今彩加州彩失敗</string>
 
     <string name="day_night_settings">日夜間模式</string>
     <string name="mode_day">日間模式</string>

@@ -15,10 +15,15 @@ class Analytics {
 
     private val firebaseAnalytics: FirebaseAnalytics = Firebase.analytics
 
+    init {
+        firebaseAnalytics.setAnalyticsCollectionEnabled(true)
+    }
+
     fun trackSyncSource(source: String) {
         val bundle = Bundle()
         bundle.putString("source_type", source)
         firebaseAnalytics.logEvent(SYNC_SOURCE, bundle)
+
     }
 
     fun trackLotteryTypeClick(type: String) {

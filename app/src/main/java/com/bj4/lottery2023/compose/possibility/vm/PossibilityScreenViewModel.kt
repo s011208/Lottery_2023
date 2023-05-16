@@ -161,7 +161,7 @@ class PossibilityScreenViewModel(
                                     )?.toInt() ?: 2
                                 }
 
-                                LotteryType.Lto539 -> {
+                                LotteryType.Lto539, LotteryType.LtoCF5 -> {
                                     settingsDataStoreFlow.stateIn(viewModelScope).value.get(
                                         floatPreferencesKey(
                                             SETTINGS_EXTRA_SPACING_LTO_539_TABLE
@@ -417,7 +417,7 @@ class PossibilityScreenViewModel(
         }
 
         sortedRow.forEach { lotteryRowData ->
-            if (lotteryRowData.date <= 0 || lotteryRowData.normalNumberList == null || lotteryRowData.normalNumberList.isEmpty() || lotteryRowData.specialNumberList == null || (lotteryRowData.specialNumberList.isEmpty() && lotteryData.type != LotteryType.Lto539)) {
+            if (lotteryRowData.date <= 0 || lotteryRowData.normalNumberList == null || lotteryRowData.normalNumberList.isEmpty() || lotteryRowData.specialNumberList == null || (lotteryRowData.specialNumberList.isEmpty() && lotteryData.type != LotteryType.Lto539 && lotteryData.type != LotteryType.LtoCF5)) {
                 // safe check for unexpected data
                 return@forEach
             }

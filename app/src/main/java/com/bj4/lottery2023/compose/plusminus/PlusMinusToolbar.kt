@@ -17,6 +17,7 @@ import com.bj4.lottery2023.MainActivity
 import com.bj4.lottery2023.R
 import com.bj4.lottery2023.compose.general.AppToolbarSettingsDropDownText
 import com.bj4.lottery2023.compose.general.AppToolbarSettingsText
+import com.bj4.lottery2023.compose.general.toUiString
 import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusEvent
 import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusViewModel
 import com.example.data.LotteryType
@@ -117,14 +118,4 @@ private fun StartSettingsScreen(
                 onSettingsClick()
             })
     }
-}
-
-@Composable
-private fun LotteryType.toUiString() = when (this) {
-    LotteryType.Lto -> stringResource(id = R.string.lto)
-    LotteryType.LtoBig -> stringResource(id = R.string.lto_big)
-    LotteryType.LtoHK -> stringResource(id = R.string.lto_hk)
-    LotteryType.Lto539 -> stringResource(id = R.string.lto_539)
-    LotteryType.LtoList3 -> stringResource(id = R.string.lto_list3)
-    LotteryType.LtoList4 -> stringResource(id = R.string.lto_list4)
 }

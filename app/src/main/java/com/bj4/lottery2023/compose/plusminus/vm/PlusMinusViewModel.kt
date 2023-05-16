@@ -187,7 +187,7 @@ class PlusMinusViewModel(
                 lotteryRowData.normalNumberList == null ||
                 lotteryRowData.normalNumberList.isEmpty() ||
                 lotteryRowData.specialNumberList == null ||
-                (lotteryRowData.specialNumberList.isEmpty() && lotteryData.type != LotteryType.Lto539)
+                (lotteryRowData.specialNumberList.isEmpty() && (lotteryData.type != LotteryType.Lto539 && lotteryData.type != LotteryType.LtoCF5))
             ) {
                 // safe check for unexpected data
                 return@forEachIndexed

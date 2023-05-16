@@ -299,13 +299,14 @@ class LotteryTableViewModel(
                         )?.toInt() ?: 3
                     }
 
-                    LotteryType.LtoBig ->{
+                    LotteryType.LtoBig -> {
                         settingsDataStoreFlow.stateIn(viewModelScope).value.get(
                             floatPreferencesKey(
                                 SETTINGS_EXTRA_SPACING_LTO_BIG_TABLE
                             )
                         )?.toInt() ?: 2
                     }
+
                     LotteryType.LtoHK -> {
                         settingsDataStoreFlow.stateIn(viewModelScope).value.get(
                             floatPreferencesKey(
@@ -313,13 +314,15 @@ class LotteryTableViewModel(
                             )
                         )?.toInt() ?: 2
                     }
-                    LotteryType.Lto539 ->{
+
+                    LotteryType.Lto539, LotteryType.LtoCF5 -> {
                         settingsDataStoreFlow.stateIn(viewModelScope).value.get(
                             floatPreferencesKey(
                                 SETTINGS_EXTRA_SPACING_LTO_539_TABLE
                             )
                         )?.toInt() ?: 4
                     }
+
                     LotteryType.LtoList3 -> {
                         settingsDataStoreFlow.stateIn(viewModelScope).value.get(
                             floatPreferencesKey(
@@ -327,6 +330,7 @@ class LotteryTableViewModel(
                             )
                         )?.toInt() ?: 10
                     }
+
                     LotteryType.LtoList4 -> {
                         settingsDataStoreFlow.stateIn(viewModelScope).value.get(
                             floatPreferencesKey(
@@ -421,11 +425,8 @@ class LotteryTableViewModel(
     private suspend fun dropData() {
         val lotteryType = _viewModelState.value.lotteryType
         val sortType = _viewModelState.value.sortType
-        val displayOrder = _viewModelState.value.displayOrder
-        val rowList: List<Row>
         withContext(Dispatchers.IO) {
             syncUseCase.clearDatabase()
-//            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
         }
         _viewModelState.emit(
             _viewModelState.value.copy(
@@ -446,15 +447,24 @@ class LotteryTableViewModel(
         _viewModelState.emit(_viewModelState.value.copy(isSyncing = true))
         withContext(Dispatchers.IO) {
             val taskId = Calendar.getInstance().time.time.toString()
-            awaitAll(
+
+            LotteryType.values().map { lotteryType ->
                 async {
-                    syncUseCase.parse(taskId, source.name, LotteryType.Lto).also {
+                    syncUseCase.parse(taskId, source.name, lotteryType).also {
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(
                                     it.exceptionOrNull(),
-                                    LotteryType.Lto,
-                                    R.string.failed_to_load_lto,
+                                    lotteryType,
+                                    when (lotteryType) {
+                                        LotteryType.Lto -> R.string.failed_to_load_lto
+                                        LotteryType.LtoBig -> R.string.failed_to_load_lto_big
+                                        LotteryType.LtoHK -> R.string.failed_to_load_lto_hk
+                                        LotteryType.Lto539 -> R.string.failed_to_load_lto_539
+                                        LotteryType.LtoCF5 -> R.string.failed_to_load_lto_cf5
+                                        LotteryType.LtoList3 -> R.string.failed_to_load_lto_list3
+                                        LotteryType.LtoList4 -> R.string.failed_to_load_lto_list4
+                                    }
                                 )
                             )
                             it.exceptionOrNull()?.let { throwable ->
@@ -462,88 +472,8 @@ class LotteryTableViewModel(
                             }
                         }
                     }
-                },
-                async {
-                    syncUseCase.parse(taskId, source.name, LotteryType.LtoBig).also { it ->
-                        if (it.isFailure) {
-                            _eventState.emit(
-                                LotteryTableEvents.SyncFailed(
-                                    it.exceptionOrNull(),
-                                    LotteryType.LtoBig,
-                                    R.string.failed_to_load_lto_big,
-                                )
-                            )
-                            it.exceptionOrNull()?.let { throwable ->
-                                analytics.recordException(throwable)
-                            }
-                        }
-                    }
-                },
-                async {
-                    syncUseCase.parse(taskId, source.name, LotteryType.LtoHK).also {
-                        if (it.isFailure) {
-                            _eventState.emit(
-                                LotteryTableEvents.SyncFailed(
-                                    it.exceptionOrNull(),
-                                    LotteryType.LtoHK,
-                                    R.string.failed_to_load_lto_hk,
-                                )
-                            )
-                            it.exceptionOrNull()?.let { throwable ->
-                                analytics.recordException(throwable)
-                            }
-                        }
-                    }
-                },
-                async {
-                    syncUseCase.parse(taskId, source.name, LotteryType.LtoList3).also {
-                        if (it.isFailure) {
-                            _eventState.emit(
-                                LotteryTableEvents.SyncFailed(
-                                    it.exceptionOrNull(),
-                                    LotteryType.LtoList3,
-                                    R.string.failed_to_load_lto_list3,
-                                )
-                            )
-                            it.exceptionOrNull()?.let { throwable ->
-                                analytics.recordException(throwable)
-                            }
-                        }
-                    }
-                },
-                async {
-                    syncUseCase.parse(taskId, source.name, LotteryType.LtoList4).also {
-                        if (it.isFailure) {
-                            _eventState.emit(
-                                LotteryTableEvents.SyncFailed(
-                                    it.exceptionOrNull(),
-                                    LotteryType.LtoList4,
-                                    R.string.failed_to_load_lto_list4,
-                                )
-                            )
-                            it.exceptionOrNull()?.let { throwable ->
-                                analytics.recordException(throwable)
-                            }
-                        }
-                    }
-                },
-                async {
-                    syncUseCase.parse(taskId, source.name, LotteryType.Lto539).also {
-                        if (it.isFailure) {
-                            _eventState.emit(
-                                LotteryTableEvents.SyncFailed(
-                                    it.exceptionOrNull(),
-                                    LotteryType.Lto539,
-                                    R.string.failed_to_load_lto_539,
-                                )
-                            )
-                            it.exceptionOrNull()?.let { throwable ->
-                                analytics.recordException(throwable)
-                            }
-                        }
-                    }
-                },
-            )
+                }
+            }.awaitAll()
         }
         _viewModelState.emit(_viewModelState.value.copy(isSyncing = false))
         _eventState.emit(LotteryTableEvents.EndSync)

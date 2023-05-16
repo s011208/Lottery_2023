@@ -19,9 +19,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bj4.lottery2023.R
 import com.bj4.lottery2023.compose.GRID_HORIZONTAL_PADDING
 import com.bj4.lottery2023.compose.SPECIAL_COLOR
 import com.bj4.lottery2023.compose.getNumberWidth
+import com.example.data.LotteryType
 
 
 data class Row(
@@ -182,4 +184,13 @@ fun getPossibilityNumberWidth(fontSize: Int): Dp {
     return with(density) { textSize.width.toDp() } + GRID_HORIZONTAL_PADDING.dp
 }
 
-
+@Composable
+fun LotteryType.toUiString() = when (this) {
+    LotteryType.Lto -> stringResource(id = R.string.lto)
+    LotteryType.LtoBig -> stringResource(id = R.string.lto_big)
+    LotteryType.LtoHK -> stringResource(id = R.string.lto_hk)
+    LotteryType.Lto539 -> stringResource(id = R.string.lto_539)
+    LotteryType.LtoCF5 -> stringResource(id = R.string.lto_cf5)
+    LotteryType.LtoList3 -> stringResource(id = R.string.lto_list3)
+    LotteryType.LtoList4 -> stringResource(id = R.string.lto_list4)
+}
