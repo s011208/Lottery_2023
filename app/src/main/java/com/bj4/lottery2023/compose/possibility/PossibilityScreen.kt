@@ -3,6 +3,7 @@ package com.bj4.lottery2023.compose.possibility
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -64,18 +66,27 @@ fun PossibilityContent(modifier: Modifier) {
             CheckBoxGroup()
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .horizontalScroll(horizontalScrollState),
-            state = lazyListState
-        ) {
-            chartList.forEach { chart ->
-                when (chart) {
-                    is Chart.TableChart -> {
-                        item {
-                            TableChartColumn(chart)
-                        }
+        ChartContent(horizontalScrollState, lazyListState, chartList)
+    }
+}
+
+@Composable
+private fun ChartContent(
+    horizontalScrollState: ScrollState,
+    lazyListState: LazyListState,
+    chartList: List<Chart>
+) {
+    LazyColumn(
+        modifier = Modifier
+            .padding(start = 16.dp)
+            .horizontalScroll(horizontalScrollState),
+        state = lazyListState
+    ) {
+        chartList.forEach { chart ->
+            when (chart) {
+                is Chart.TableChart -> {
+                    item {
+                        TableChartColumn(chart)
                     }
                 }
             }

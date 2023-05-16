@@ -16,20 +16,11 @@ android {
     namespace 'com.bj4.lottery2023'
     compileSdk 33
 
-    signingConfigs {
-        release {
-            keyPassword '750630'
-            storeFile file('C:\\Users\\s0112\\OneDrive\\桌面\\test.jks')
-            storePassword '750630'
-            keyAlias 'key0'
-        }
-    }
-
     defaultConfig {
         applicationId "com.bj4.lottery2023"
         minSdk 30
         targetSdk 33
-        versionCode 8
+        versionCode 9
         versionName versionNameDate()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
