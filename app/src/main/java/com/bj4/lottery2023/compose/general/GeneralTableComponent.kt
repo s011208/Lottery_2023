@@ -41,7 +41,7 @@ data class Grid(
     @StringRes val textResource: Int = Resources.ID_NULL,
 ) {
     enum class Type {
-        Normal, Date, Special, NormalPossibility, SpecialPossibility, NormalLast, SpecialLast,
+        Normal, Date, Special, NormalLast, SpecialLast,
     }
 }
 
@@ -52,20 +52,6 @@ fun GridFactory(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpaci
         Grid.Type.Normal -> NormalGrid(grid, fontSize, fontSizeRatio, extraSpacing)
         Grid.Type.Date -> DateGrid(grid, fontSize, fontSizeRatio, extraSpacing)
         Grid.Type.Special -> SpecialGrid(grid, fontSize, fontSizeRatio, extraSpacing)
-        Grid.Type.NormalPossibility -> NormalPossibilityGrid(
-            grid,
-            fontSize,
-            fontSizeRatio,
-            extraSpacing
-        )
-
-        Grid.Type.SpecialPossibility -> SpecialPossibilityGrid(
-            grid,
-            fontSize,
-            fontSizeRatio,
-            extraSpacing
-        )
-
         Grid.Type.NormalLast -> NormalLastGrid(grid, fontSize, fontSizeRatio, extraSpacing)
         Grid.Type.SpecialLast -> SpecialLastGrid(grid, fontSize, fontSizeRatio, extraSpacing)
     }
@@ -79,11 +65,7 @@ fun DateGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing:
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
             .width(getDateWidth(fontSize) * fontSizeRatio + (2 * extraSpacing).dp),
-        text = if (grid.textResource != Resources.ID_NULL) {
-            stringResource(id = grid.textResource)
-        } else {
-            grid.text
-        },
+        text = gridText(grid),
         color = if (grid.visible) {
             Color.Gray
         } else {
@@ -96,11 +78,7 @@ fun DateGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing:
 @Composable
 fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
     Text(
-        text = if (grid.textResource != Resources.ID_NULL) {
-            stringResource(id = grid.textResource)
-        } else {
-            grid.text
-        },
+        text = gridText(grid),
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
@@ -117,36 +95,11 @@ fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacin
 @Composable
 fun NormalLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
     Text(
-        text = if (grid.textResource != Resources.ID_NULL) {
-            stringResource(id = grid.textResource)
-        } else {
-            grid.text
-        },
+        text = gridText(grid),
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
             .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
-        color = if (grid.visible) {
-            Color.Unspecified
-        } else {
-            Color.Transparent
-        },
-        fontSize = fontSize.sp * fontSizeRatio
-    )
-}
-
-@Composable
-fun NormalPossibilityGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
-    Text(
-        text = if (grid.textResource != Resources.ID_NULL) {
-            stringResource(id = grid.textResource)
-        } else {
-            grid.text
-        },
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .border(width = 1.dp, Color.Black)
-            .width(getPossibilityNumberWidth(fontSize) + (2 * extraSpacing).dp),
         color = if (grid.visible) {
             Color.Unspecified
         } else {
@@ -163,11 +116,7 @@ fun SpecialGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpaci
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
             .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
-        text = if (grid.textResource != Resources.ID_NULL) {
-            stringResource(id = grid.textResource)
-        } else {
-            grid.text
-        },
+        text = gridText(grid),
         color = if (grid.visible) {
             SPECIAL_COLOR
         } else {
@@ -184,11 +133,7 @@ fun SpecialLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraS
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
             .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
-        text = if (grid.textResource != Resources.ID_NULL) {
-            stringResource(id = grid.textResource)
-        } else {
-            grid.text
-        },
+        text = gridText(grid),
         color = if (grid.visible) {
             SPECIAL_COLOR
         } else {
@@ -199,30 +144,12 @@ fun SpecialLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraS
 }
 
 @Composable
-fun SpecialPossibilityGrid(
-    grid: Grid,
-    fontSize: Int,
-    fontSizeRatio: Float = 1f,
-    extraSpacing: Int
-) {
-    Text(
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .border(width = 1.dp, Color.Black)
-            .width(getPossibilityNumberWidth(fontSize) + (2 * extraSpacing).dp),
-        text = if (grid.textResource != Resources.ID_NULL) {
-            stringResource(id = grid.textResource)
-        } else {
-            grid.text
-        },
-        color = if (grid.visible) {
-            SPECIAL_COLOR
-        } else {
-            Color.Transparent
-        },
-        fontSize = fontSize.sp * fontSizeRatio
-    )
-}
+private fun gridText(grid: Grid) =
+    if (grid.textResource != Resources.ID_NULL) {
+        stringResource(id = grid.textResource)
+    } else {
+        grid.text
+    }
 
 
 @OptIn(ExperimentalTextApi::class)
