@@ -30,6 +30,7 @@ import com.bj4.lottery2023.compose.general.GridFactory
 import com.bj4.lottery2023.compose.possibility.vm.Chart
 import com.bj4.lottery2023.compose.possibility.vm.PossibilityScreenViewModel
 import com.bj4.lottery2023.compose.possibility.vm.PossibilityUiEvent
+import com.example.analytics.Analytics
 import org.koin.java.KoinJavaComponent
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -39,6 +40,11 @@ fun PossibilityScreen(navController: NavController = rememberNavController()) {
 
     LaunchedEffect(key1 = Unit) {
         viewModel.handle(PossibilityUiEvent.Reload)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        val analytics: Analytics by KoinJavaComponent.inject(Analytics::class.java)
+        analytics.trackScreen("PossibilityScreen")
     }
 
     Scaffold(

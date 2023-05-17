@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.bj4.lottery2023.compose.lotterylog.vm.LotteryLogUiEvent
 import com.bj4.lottery2023.compose.lotterylog.vm.LotteryLogViewModel
+import com.example.analytics.Analytics
 import org.koin.java.KoinJavaComponent
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -38,6 +39,11 @@ fun LotteryLog() {
 
     LaunchedEffect(key1 = Unit) {
         viewModel.handleUiEvent(LotteryLogUiEvent.RequestData)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        val analytics: Analytics by KoinJavaComponent.inject(Analytics::class.java)
+        analytics.trackScreen("LotteryLog")
     }
 
     if (itemList.isEmpty()) {

@@ -28,10 +28,16 @@ import com.bj4.lottery2023.compose.general.GridFactory
 import com.bj4.lottery2023.compose.general.Row
 import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusEvent
 import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusViewModel
+import com.example.analytics.Analytics
 import org.koin.java.KoinJavaComponent
 
 @Composable
 fun PlusMinusScreen(navController: NavController = rememberNavController()) {
+    LaunchedEffect(key1 = Unit) {
+        val analytics: Analytics by KoinJavaComponent.inject(Analytics::class.java)
+        analytics.trackScreen("PlusMinusScreen")
+    }
+
     Scaffold(
         topBar = { PlusMinusToolbar(navController) },
         content = { paddingValues -> PlusMinusContent(Modifier.padding(paddingValues)) }

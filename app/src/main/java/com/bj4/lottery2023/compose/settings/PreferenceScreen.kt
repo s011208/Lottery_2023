@@ -3,6 +3,7 @@ package com.bj4.lottery2023.compose.settings
 import android.widget.Toast
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -14,6 +15,7 @@ import com.bj4.lottery2023.compose.appsettings.DropDatabase
 import com.bj4.lottery2023.compose.appsettings.ResetDatabase
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableEvents
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableViewModel
+import com.example.analytics.Analytics
 import com.example.myapplication.compose.appsettings.*
 import com.example.service.cache.DayNightMode
 import com.example.service.cache.FontSize
@@ -31,6 +33,11 @@ import org.koin.java.KoinJavaComponent
 fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
     val viewModel: LotteryTableViewModel by KoinJavaComponent.inject(LotteryTableViewModel::class.java)
     val context = LocalContext.current
+
+    LaunchedEffect(key1 = Unit) {
+        val analytics: Analytics by KoinJavaComponent.inject(Analytics::class.java)
+        analytics.trackScreen("PreferenceScreen")
+    }
 
     val resetDatabaseDialogOpen = remember {
         mutableStateOf(false)
