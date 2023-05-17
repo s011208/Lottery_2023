@@ -1,5 +1,8 @@
 package com.bj4.lottery2023.compose.settings
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -230,6 +233,25 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                     title = stringResource(id = R.string.settings_app_version_code),
                     summary = BuildConfig.VERSION_CODE.toString()
                 )
+            }
+            prefsItem {
+                TextPref(title = stringResource(id = R.string.google_play_link), onClick = {
+                    try {
+                        context.startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id=${context.packageName}")
+                            )
+                        )
+                    } catch (e: ActivityNotFoundException) {
+                        context.startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
+                            )
+                        )
+                    }
+                }, enabled = true)
             }
         }
     }
