@@ -37,7 +37,10 @@ fun LotteryTableToolbar(navController: NavController = rememberNavController()) 
     TopAppBar(title = {
         Text(
             text = when (value) {
-                is UiState.Show -> state.value.lotteryType.toUiString()
+                is UiState.Show -> state.value.lotteryType.toUiString() + stringResource(
+                    id = R.string.total_data_count,
+                    state.value.dataCount.toString()
+                )
             }
         )
     }, actions = {

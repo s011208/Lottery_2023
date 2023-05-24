@@ -94,4 +94,6 @@
     <string name="order_by_index">顯示數字排序</string>
     <string name="order_by_asc">顯示由低到高排序</string>
     <string name="order_by_desc">顯示由高到低排序</string>
+
+    <string name="total_data_count"> (共 %1$s 筆)</string>
 </resources>

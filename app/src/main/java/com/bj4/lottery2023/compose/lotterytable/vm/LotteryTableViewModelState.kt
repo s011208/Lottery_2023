@@ -20,4 +20,5 @@ data class ViewModelState(
     val normalTableExtraSpacing: Int = 3,
     val listTableExtraSpacing: Int = 0,
     val showDivideLine: Boolean = false,
+    val dataCount: Int = 0,
 )

@@ -41,7 +41,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
                 }
                 ++currentPage
                 Timber.d("minDate: $currentMinDate, getLastDataDate(): ${getLotteryLastDataDate()}, data size: ${cacheLotteryDataSet.size}")
-            } while (newDataRows.isNotEmpty() && currentMinDate > getLotteryLastDataDate())
+            } while (newDataRows.isNotEmpty() /*&& currentMinDate > getLotteryLastDataDate()*/) // TODO needed?
         } catch (exception: Throwable) {
             Timber.w(exception, "exception")
             return Result.failure(exception)

@@ -176,15 +176,15 @@ class LotteryTableViewModel(
         lotteryType: LotteryType,
         sortType: SortType,
         displayOrder: DisplayOrder
-    ): List<Row> {
-        val data = displayUseCase.getLotteryData(lotteryType) ?: return listOf()
-        return LotteryDataMapper.map(
+    ): Pair<List<Row>, Int> {
+        val data = displayUseCase.getLotteryData(lotteryType) ?: return Pair(listOf(), 0)
+        return Pair(LotteryDataMapper.map(
             data.copy(
                 dataList = if (displayOrder == DisplayOrder.ASCEND) {
                     data.dataList
                 } else data.dataList.reversed()
             ), sortType, lotteryType
-        )
+        ), data.dataList.size)
     }
 
     fun handleEvent(event: LotteryTableEvents) {
@@ -258,15 +258,20 @@ class LotteryTableViewModel(
         val sortType = event.type
         val displayOrder = _viewModelState.value.displayOrder
         val rowList: List<Row>
+        val dataCount: Int
         withContext(Dispatchers.IO) {
-            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
+            getLotteryDisplayRow(lotteryType, sortType, displayOrder).also {
+                rowList = it.first
+                dataCount = it.second
+            }
         }
 
         _viewModelState.emit(
             _viewModelState.value.copy(
                 isLoading = false,
                 sortType = event.type,
-                rowList = rowList
+                rowList = rowList,
+                dataCount = dataCount,
             )
         )
         settingsUseCase.setSortType(event.type)
@@ -282,15 +287,24 @@ class LotteryTableViewModel(
         val sortType = settingsUseCase.getSortType()
         val displayOrder = _viewModelState.value.displayOrder
         val rowList: List<Row>
+        val dataCount: Int
+        val extraSpacing: Int
         withContext(Dispatchers.IO) {
-            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
+            getLotteryDisplayRow(lotteryType, sortType, displayOrder).also {
+                rowList = it.first
+                dataCount = it.second
+            }
+            extraSpacing = getLotteryExtraSpacing(lotteryType)
         }
+
         _viewModelState.emit(
             _viewModelState.value.copy(
                 isLoading = false,
                 lotteryType = event.type,
                 rowList = rowList,
-                normalTableExtraSpacing = getLotteryExtraSpacing(lotteryType)
+                normalTableExtraSpacing = extraSpacing,
+                listTableExtraSpacing = extraSpacing,
+                dataCount = dataCount,
             )
         )
         _eventState.emit(event)
@@ -387,15 +401,20 @@ class LotteryTableViewModel(
         val sortType = _viewModelState.value.sortType
         val displayOrder = event.order
         val rowList: List<Row>
+        val dataCount: Int
         withContext(Dispatchers.IO) {
-            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
+            getLotteryDisplayRow(lotteryType, sortType, displayOrder).also {
+                rowList = it.first
+                dataCount = it.second
+            }
         }
 
         _viewModelState.emit(
             _viewModelState.value.copy(
                 isLoading = false,
                 displayOrder = event.order,
-                rowList = rowList
+                rowList = rowList,
+                dataCount = dataCount,
             )
         )
         settingsUseCase.setDisplayOrder(event.order)
@@ -408,16 +427,21 @@ class LotteryTableViewModel(
         val sortType = _viewModelState.value.sortType
         val displayOrder = _viewModelState.value.displayOrder
         val rowList: List<Row>
+        val dataCount: Int
         withContext(Dispatchers.IO) {
             syncUseCase.clearDatabase()
-            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
+            getLotteryDisplayRow(lotteryType, sortType, displayOrder).also {
+                rowList = it.first
+                dataCount = it.second
+            }
         }
         _viewModelState.emit(
             _viewModelState.value.copy(
                 isLoading = false,
                 lotteryType = lotteryType,
                 sortType = sortType,
-                rowList = rowList
+                rowList = rowList,
+                dataCount = dataCount,
             )
         )
         syncData(Source.UI)
@@ -495,16 +519,25 @@ class LotteryTableViewModel(
         val displayOrder = _viewModelState.value.displayOrder
 
         val rowList: List<Row>
+        val dataCount: Int
+        val extraSpacing: Int
         withContext(Dispatchers.IO) {
-            rowList = getLotteryDisplayRow(lotteryType, sortType, displayOrder)
+            getLotteryDisplayRow(lotteryType, sortType, displayOrder).also {
+                rowList = it.first
+                dataCount = it.second
+            }
+            extraSpacing = getLotteryExtraSpacing(lotteryType)
         }
+
         _viewModelState.emit(
             _viewModelState.value.copy(
                 isLoading = false,
                 lotteryType = _viewModelState.value.lotteryType,
                 sortType = sortType,
                 rowList = rowList,
-                normalTableExtraSpacing = getLotteryExtraSpacing(lotteryType)
+                normalTableExtraSpacing = extraSpacing,
+                listTableExtraSpacing = extraSpacing,
+                dataCount = dataCount,
             )
         )
     }
