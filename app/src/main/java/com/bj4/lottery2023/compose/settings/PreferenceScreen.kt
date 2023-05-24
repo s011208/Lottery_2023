@@ -178,7 +178,7 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                         DayNightMode.NIGHT.toString() to stringResource(id = R.string.mode_night),
                         DayNightMode.AUTO.toString() to stringResource(id = R.string.mode_system),
                     ),
-                    defaultValue = DayNightMode.AUTO.toString(),
+                    defaultValue = DayNightMode.DAY.toString(),
                 )
             }
         }

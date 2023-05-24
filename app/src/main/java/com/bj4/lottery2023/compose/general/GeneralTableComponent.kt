@@ -49,19 +49,44 @@ data class Grid(
 
 
 @Composable
-fun GridFactory(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
+fun GridFactory(
+    grid: Grid,
+    fontSize: Int,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int,
+    textColor: Color = Color.Unspecified
+) {
     when (grid.type) {
-        Grid.Type.Normal -> NormalGrid(grid, fontSize, fontSizeRatio, extraSpacing)
-        Grid.Type.Date -> DateGrid(grid, fontSize, fontSizeRatio, extraSpacing)
-        Grid.Type.Special -> SpecialGrid(grid, fontSize, fontSizeRatio, extraSpacing)
-        Grid.Type.NormalLast -> NormalLastGrid(grid, fontSize, fontSizeRatio, extraSpacing)
-        Grid.Type.SpecialLast -> SpecialLastGrid(grid, fontSize, fontSizeRatio, extraSpacing)
+        Grid.Type.Normal -> NormalGrid(grid, fontSize, fontSizeRatio, extraSpacing, textColor)
+        Grid.Type.Date -> DateGrid(grid, fontSize, fontSizeRatio, extraSpacing, textColor)
+        Grid.Type.Special -> SpecialGrid(grid, fontSize, fontSizeRatio, extraSpacing, textColor)
+        Grid.Type.NormalLast -> NormalLastGrid(
+            grid,
+            fontSize,
+            fontSizeRatio,
+            extraSpacing,
+            textColor
+        )
+
+        Grid.Type.SpecialLast -> SpecialLastGrid(
+            grid,
+            fontSize,
+            fontSizeRatio,
+            extraSpacing,
+            textColor
+        )
     }
 }
 
 
 @Composable
-fun DateGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
+fun DateGrid(
+    grid: Grid,
+    fontSize: Int,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int,
+    textColor: Color = Color.Unspecified
+) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
@@ -69,7 +94,11 @@ fun DateGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing:
             .width(getDateWidth(fontSize) * fontSizeRatio + (2 * extraSpacing).dp),
         text = gridText(grid),
         color = if (grid.visible) {
-            Color.Gray
+            if (textColor == Color.Unspecified) {
+                Color.Gray
+            } else {
+                textColor
+            }
         } else {
             Color.Transparent
         },
@@ -78,7 +107,13 @@ fun DateGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing:
 }
 
 @Composable
-fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
+fun NormalGrid(
+    grid: Grid,
+    fontSize: Int,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int,
+    textColor: Color = Color.Unspecified
+) {
     Text(
         text = gridText(grid),
         textAlign = TextAlign.Center,
@@ -86,7 +121,7 @@ fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacin
             .border(width = 1.dp, Color.Black)
             .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
         color = if (grid.visible) {
-            Color.Unspecified
+            textColor
         } else {
             Color.Transparent
         },
@@ -95,7 +130,13 @@ fun NormalGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacin
 }
 
 @Composable
-fun NormalLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
+fun NormalLastGrid(
+    grid: Grid,
+    fontSize: Int,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int,
+    textColor: Color = Color.Unspecified
+) {
     Text(
         text = gridText(grid),
         textAlign = TextAlign.Center,
@@ -103,7 +144,7 @@ fun NormalLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSp
             .border(width = 1.dp, Color.Black)
             .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
         color = if (grid.visible) {
-            Color.Unspecified
+            textColor
         } else {
             Color.Transparent
         },
@@ -112,7 +153,13 @@ fun NormalLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSp
 }
 
 @Composable
-fun SpecialGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
+fun SpecialGrid(
+    grid: Grid,
+    fontSize: Int,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int,
+    textColor: Color = Color.Unspecified
+) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
@@ -120,7 +167,11 @@ fun SpecialGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpaci
             .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
         text = gridText(grid),
         color = if (grid.visible) {
-            SPECIAL_COLOR
+            if (textColor == Color.Unspecified) {
+                SPECIAL_COLOR
+            } else {
+                textColor
+            }
         } else {
             Color.Transparent
         },
@@ -129,7 +180,13 @@ fun SpecialGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpaci
 }
 
 @Composable
-fun SpecialLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraSpacing: Int) {
+fun SpecialLastGrid(
+    grid: Grid,
+    fontSize: Int,
+    fontSizeRatio: Float = 1f,
+    extraSpacing: Int,
+    textColor: Color = Color.Unspecified
+) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
@@ -137,7 +194,11 @@ fun SpecialLastGrid(grid: Grid, fontSize: Int, fontSizeRatio: Float = 1f, extraS
             .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
         text = gridText(grid),
         color = if (grid.visible) {
-            SPECIAL_COLOR
+            if (textColor == Color.Unspecified) {
+                SPECIAL_COLOR
+            } else {
+                textColor
+            }
         } else {
             Color.Transparent
         },

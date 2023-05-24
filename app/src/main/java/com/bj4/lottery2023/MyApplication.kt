@@ -3,8 +3,7 @@ package com.bj4.lottery2023
 import android.app.Application
 import android.app.UiModeManager
 import android.content.Context
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.room.Room
@@ -69,20 +68,20 @@ class MyApplication : Application(), Configuration.Provider {
             modules(myModule)
         }
 
-        if (VERSION.SDK_INT <= VERSION_CODES.R) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            (getSystemService(Context.UI_MODE_SERVICE) as UiModeManager).setApplicationNightMode(
-                UiModeManager.MODE_NIGHT_YES
-            )
-        }
-
         CoroutineScope(Dispatchers.IO).launch {
             val dayNightSettings = settingsDataStore.data.stateIn(this).value[stringPreferencesKey(
                 SETTINGS_KEY_DAY_NIGHT_MODE
             )]
             if (dayNightSettings != null) {
                 Utils.setMode(this@MyApplication, DayNightMode.valueOf(dayNightSettings))
+            } else {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                } else {
+                    (getSystemService(Context.UI_MODE_SERVICE) as UiModeManager).setApplicationNightMode(
+                        UiModeManager.MODE_NIGHT_NO
+                    )
+                }
             }
         }
 

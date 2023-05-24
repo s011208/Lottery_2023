@@ -20,10 +20,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.bj4.lottery2023.compose.SPECIAL_COLOR
+import com.bj4.lottery2023.compose.general.Grid
 import com.bj4.lottery2023.compose.general.GridFactory
 import com.bj4.lottery2023.compose.general.Row
 import com.bj4.lottery2023.compose.plusminus.vm.PlusMinusEvent
@@ -115,7 +116,7 @@ fun PlusMinusTable(
                 item {
                     Row(
                         modifier = if (row.type == Row.Type.MonthlyTotal && showDivider) {
-                            Modifier.border(2.dp, SPECIAL_COLOR)
+                            Modifier.border(2.dp, Color.Red)
                         } else {
                             Modifier
                         }
@@ -124,7 +125,12 @@ fun PlusMinusTable(
                             GridFactory(
                                 grid = grid,
                                 fontSize = fontSize,
-                                extraSpacing = extraSpacing
+                                extraSpacing = extraSpacing,
+                                textColor = if (grid.type == Grid.Type.Special) {
+                                    Color.Red
+                                } else {
+                                    Color.Unspecified
+                                }
                             )
                         }
                     }
@@ -136,6 +142,9 @@ fun PlusMinusTable(
             .horizontalScroll(horizontalScrollState)
     )
 }
+
+private const val RADIO_GROUP_COLUMN_COUNT = 3
+private const val RADIO_GROUP_ROW_COUNT = 10
 
 @Composable
 fun PlusMinusGroup(
@@ -174,117 +183,139 @@ fun PlusMinusGroup(
             }
         }
 
-        Column {
-            Row {
-                RadioButton(
-                    selected = plusMinusValue.value == 0,
-                    onClick = {
-                        plusMinusValue.value = 0
-                        clickEvent()
-                    },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Text(text = "0", modifier = Modifier.align(Alignment.CenterVertically))
-            }
-            Row {
-                RadioButton(
-                    selected = plusMinusValue.value == 1,
-                    onClick = {
-                        plusMinusValue.value = 1
-                        clickEvent()
-                    },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Text(text = "1", modifier = Modifier.align(Alignment.CenterVertically))
-            }
-            Row {
-                RadioButton(
-                    selected = plusMinusValue.value == 2,
-                    onClick = {
-                        plusMinusValue.value = 2
-                        clickEvent()
-                    },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Text(text = "2", modifier = Modifier.align(Alignment.CenterVertically))
-            }
-            Row {
-                RadioButton(
-                    selected = plusMinusValue.value == 3,
-                    onClick = {
-                        plusMinusValue.value = 3
-                        clickEvent()
-                    },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Text(text = "3", modifier = Modifier.align(Alignment.CenterVertically))
-            }
-            Row {
-                RadioButton(
-                    selected = plusMinusValue.value == 4,
-                    onClick = {
-                        plusMinusValue.value = 4
-                        clickEvent()
-                    },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Text(text = "4", modifier = Modifier.align(Alignment.CenterVertically))
-            }
-            Row {
-                RadioButton(
-                    selected = plusMinusValue.value == 5,
-                    onClick = {
-                        plusMinusValue.value = 5
-                        clickEvent()
-                    },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Text(text = "5", modifier = Modifier.align(Alignment.CenterVertically))
-            }
-            Row {
-                RadioButton(
-                    selected = plusMinusValue.value == 6,
-                    onClick = {
-                        plusMinusValue.value = 6
-                        clickEvent()
-                    },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Text(text = "6", modifier = Modifier.align(Alignment.CenterVertically))
-            }
-            Row {
-                RadioButton(
-                    selected = plusMinusValue.value == 7,
-                    onClick = {
-                        plusMinusValue.value = 7
-                        clickEvent()
-                    },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Text(text = "7", modifier = Modifier.align(Alignment.CenterVertically))
-            }
-            Row {
-                RadioButton(
-                    selected = plusMinusValue.value == 8,
-                    onClick = {
-                        plusMinusValue.value = 8
-                        clickEvent()
-                    },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Text(text = "8", modifier = Modifier.align(Alignment.CenterVertically))
-            }
-            Row {
-                RadioButton(
-                    selected = plusMinusValue.value == 9,
-                    onClick = {
-                        plusMinusValue.value = 9
-                        clickEvent()
-                    },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Text(text = "9", modifier = Modifier.align(Alignment.CenterVertically))
+        for (columnCount in 0 until RADIO_GROUP_COLUMN_COUNT) {
+            Column {
+                for (rowCount in 0 until RADIO_GROUP_ROW_COUNT) {
+                    val buttonValue = columnCount * 10 + rowCount
+                    Row {
+                        RadioButton(
+                            selected = plusMinusValue.value == buttonValue,
+                            onClick = {
+                                plusMinusValue.value = buttonValue
+                                clickEvent()
+                            },
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                        Text(
+                            text = buttonValue.toString(),
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
+                }
             }
         }
+//
+//        Column {
+//            Row {
+//                RadioButton(
+//                    selected = plusMinusValue.value == 0,
+//                    onClick = {
+//                        plusMinusValue.value = 0
+//                        clickEvent()
+//                    },
+//                    modifier = Modifier.align(Alignment.CenterVertically)
+//                )
+//                Text(text = "0", modifier = Modifier.align(Alignment.CenterVertically))
+//            }
+//            Row {
+//                RadioButton(
+//                    selected = plusMinusValue.value == 1,
+//                    onClick = {
+//                        plusMinusValue.value = 1
+//                        clickEvent()
+//                    },
+//                    modifier = Modifier.align(Alignment.CenterVertically)
+//                )
+//                Text(text = "1", modifier = Modifier.align(Alignment.CenterVertically))
+//            }
+//            Row {
+//                RadioButton(
+//                    selected = plusMinusValue.value == 2,
+//                    onClick = {
+//                        plusMinusValue.value = 2
+//                        clickEvent()
+//                    },
+//                    modifier = Modifier.align(Alignment.CenterVertically)
+//                )
+//                Text(text = "2", modifier = Modifier.align(Alignment.CenterVertically))
+//            }
+//            Row {
+//                RadioButton(
+//                    selected = plusMinusValue.value == 3,
+//                    onClick = {
+//                        plusMinusValue.value = 3
+//                        clickEvent()
+//                    },
+//                    modifier = Modifier.align(Alignment.CenterVertically)
+//                )
+//                Text(text = "3", modifier = Modifier.align(Alignment.CenterVertically))
+//            }
+//            Row {
+//                RadioButton(
+//                    selected = plusMinusValue.value == 4,
+//                    onClick = {
+//                        plusMinusValue.value = 4
+//                        clickEvent()
+//                    },
+//                    modifier = Modifier.align(Alignment.CenterVertically)
+//                )
+//                Text(text = "4", modifier = Modifier.align(Alignment.CenterVertically))
+//            }
+//            Row {
+//                RadioButton(
+//                    selected = plusMinusValue.value == 5,
+//                    onClick = {
+//                        plusMinusValue.value = 5
+//                        clickEvent()
+//                    },
+//                    modifier = Modifier.align(Alignment.CenterVertically)
+//                )
+//                Text(text = "5", modifier = Modifier.align(Alignment.CenterVertically))
+//            }
+//            Row {
+//                RadioButton(
+//                    selected = plusMinusValue.value == 6,
+//                    onClick = {
+//                        plusMinusValue.value = 6
+//                        clickEvent()
+//                    },
+//                    modifier = Modifier.align(Alignment.CenterVertically)
+//                )
+//                Text(text = "6", modifier = Modifier.align(Alignment.CenterVertically))
+//            }
+//            Row {
+//                RadioButton(
+//                    selected = plusMinusValue.value == 7,
+//                    onClick = {
+//                        plusMinusValue.value = 7
+//                        clickEvent()
+//                    },
+//                    modifier = Modifier.align(Alignment.CenterVertically)
+//                )
+//                Text(text = "7", modifier = Modifier.align(Alignment.CenterVertically))
+//            }
+//            Row {
+//                RadioButton(
+//                    selected = plusMinusValue.value == 8,
+//                    onClick = {
+//                        plusMinusValue.value = 8
+//                        clickEvent()
+//                    },
+//                    modifier = Modifier.align(Alignment.CenterVertically)
+//                )
+//                Text(text = "8", modifier = Modifier.align(Alignment.CenterVertically))
+//            }
+//            Row {
+//                RadioButton(
+//                    selected = plusMinusValue.value == 9,
+//                    onClick = {
+//                        plusMinusValue.value = 9
+//                        clickEvent()
+//                    },
+//                    modifier = Modifier.align(Alignment.CenterVertically)
+//                )
+//                Text(text = "9", modifier = Modifier.align(Alignment.CenterVertically))
+//            }
+//        }
     }
 }
