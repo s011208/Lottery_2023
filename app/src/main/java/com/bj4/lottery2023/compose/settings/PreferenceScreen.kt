@@ -107,7 +107,7 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                     valueRange = 0f..100f,
                     showValue = true,
                     steps = 99,
-                    defaultValue = 4f,
+                    defaultValue = 5f,
                 )
 
                 SliderPref(

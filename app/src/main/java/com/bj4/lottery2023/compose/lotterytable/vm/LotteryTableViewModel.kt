@@ -290,61 +290,63 @@ class LotteryTableViewModel(
                 isLoading = false,
                 lotteryType = event.type,
                 rowList = rowList,
-                normalTableExtraSpacing = when (lotteryType) {
-                    LotteryType.Lto -> {
-                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
-                            floatPreferencesKey(
-                                SETTINGS_EXTRA_SPACING_LTO_TABLE
-                            )
-                        )?.toInt() ?: 3
-                    }
-
-                    LotteryType.LtoBig -> {
-                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
-                            floatPreferencesKey(
-                                SETTINGS_EXTRA_SPACING_LTO_BIG_TABLE
-                            )
-                        )?.toInt() ?: 2
-                    }
-
-                    LotteryType.LtoHK -> {
-                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
-                            floatPreferencesKey(
-                                SETTINGS_EXTRA_SPACING_LTO_HK_TABLE
-                            )
-                        )?.toInt() ?: 2
-                    }
-
-                    LotteryType.Lto539, LotteryType.LtoCF5 -> {
-                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
-                            floatPreferencesKey(
-                                SETTINGS_EXTRA_SPACING_LTO_539_TABLE
-                            )
-                        )?.toInt() ?: 4
-                    }
-
-                    LotteryType.LtoList3 -> {
-                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
-                            floatPreferencesKey(
-                                SETTINGS_EXTRA_SPACING_LIST_TABLE
-                            )
-                        )?.toInt() ?: 10
-                    }
-
-                    LotteryType.LtoList4 -> {
-                        settingsDataStoreFlow.stateIn(viewModelScope).value.get(
-                            floatPreferencesKey(
-                                SETTINGS_EXTRA_SPACING_LIST_TABLE
-                            )
-                        )?.toInt() ?: 10
-                    }
-                }
+                normalTableExtraSpacing = getLotteryExtraSpacing(lotteryType)
             )
         )
         _eventState.emit(event)
         settingsUseCase.setLotteryType(event.type)
 
         analytics.trackLotteryTypeClick(lotteryType.name)
+    }
+
+    private suspend fun getLotteryExtraSpacing(lotteryType: LotteryType) = when (lotteryType) {
+        LotteryType.Lto -> {
+            settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                floatPreferencesKey(
+                    SETTINGS_EXTRA_SPACING_LTO_TABLE
+                )
+            )?.toInt() ?: 3
+        }
+
+        LotteryType.LtoBig -> {
+            settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                floatPreferencesKey(
+                    SETTINGS_EXTRA_SPACING_LTO_BIG_TABLE
+                )
+            )?.toInt() ?: 2
+        }
+
+        LotteryType.LtoHK -> {
+            settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                floatPreferencesKey(
+                    SETTINGS_EXTRA_SPACING_LTO_HK_TABLE
+                )
+            )?.toInt() ?: 2
+        }
+
+        LotteryType.Lto539, LotteryType.LtoCF5 -> {
+            settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                floatPreferencesKey(
+                    SETTINGS_EXTRA_SPACING_LTO_539_TABLE
+                )
+            )?.toInt() ?: 5
+        }
+
+        LotteryType.LtoList3 -> {
+            settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                floatPreferencesKey(
+                    SETTINGS_EXTRA_SPACING_LIST_TABLE
+                )
+            )?.toInt() ?: 10
+        }
+
+        LotteryType.LtoList4 -> {
+            settingsDataStoreFlow.stateIn(viewModelScope).value.get(
+                floatPreferencesKey(
+                    SETTINGS_EXTRA_SPACING_LIST_TABLE
+                )
+            )?.toInt() ?: 10
+        }
     }
 
     private suspend fun scrollToBottom() {
@@ -501,7 +503,8 @@ class LotteryTableViewModel(
                 isLoading = false,
                 lotteryType = _viewModelState.value.lotteryType,
                 sortType = sortType,
-                rowList = rowList
+                rowList = rowList,
+                normalTableExtraSpacing = getLotteryExtraSpacing(lotteryType)
             )
         )
     }
