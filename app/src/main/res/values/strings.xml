@@ -96,4 +96,6 @@
     <string name="order_by_desc">顯示由高到低排序</string>
 
     <string name="total_data_count"> (共 %1$s 筆)</string>
+    <string name="danger_zone">其他設定</string>
+    <string name="force_close">強制結束應用程式</string>
 </resources>

@@ -29,6 +29,7 @@ import com.jamal.composeprefs3.ui.prefs.ListPref
 import com.jamal.composeprefs3.ui.prefs.SliderPref
 import com.jamal.composeprefs3.ui.prefs.TextPref
 import org.koin.java.KoinJavaComponent
+import kotlin.system.exitProcess
 
 // https://github.com/JamalMulla/ComposePrefs3/
 @OptIn(ExperimentalComposeUiApi::class)
@@ -235,23 +236,43 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                 )
             }
             prefsItem {
-                TextPref(title = stringResource(id = R.string.google_play_link), onClick = {
-                    try {
-                        context.startActivity(
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("market://details?id=${context.packageName}")
+                TextPref(
+                    title = stringResource(id = R.string.google_play_link),
+                    onClick = {
+                        try {
+                            context.startActivity(
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=${context.packageName}")
+                                )
                             )
-                        )
-                    } catch (e: ActivityNotFoundException) {
-                        context.startActivity(
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
+                        } catch (e: ActivityNotFoundException) {
+                            context.startActivity(
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
+                                )
                             )
-                        )
-                    }
-                }, enabled = true)
+                        }
+                    }, enabled = true
+                )
+            }
+        }
+
+        prefsGroup({
+            GroupHeader(
+                title = stringResource(id = R.string.danger_zone),
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }) {
+            prefsItem {
+                TextPref(
+                    title = stringResource(id = R.string.force_close),
+                    onClick = {
+                        exitProcess(0)
+                    },
+                    enabled = true
+                )
             }
         }
     }
