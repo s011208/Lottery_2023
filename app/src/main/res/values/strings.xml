@@ -37,6 +37,14 @@
     <string name="reset_title">確定要重置所有資料嗎？</string>
     <string name="reset_message">重置資料會刪除原本的樂透資料並且重新從網路上下載新的資料。</string>
     <string name="drop_message">重置資料會刪除原本的樂透資料。</string>
+    <string name="drop_lto">清除威力彩資料</string>
+    <string name="drop_lto_big">清除大樂透資料</string>
+    <string name="drop_lto_hk">清除六合彩資料</string>
+    <string name="drop_lto_539">清除今彩539資料</string>
+    <string name="drop_lto_cf5">清除加州彩資料</string>
+    <string name="drop_lto_list3">清除三星彩資料</string>
+    <string name="drop_lto_list4">清除四星彩資料</string>
+    <string name="drop_done">資料已清除</string>
 
     <string name="failed_to_load_lto">下載威力彩失敗</string>
     <string name="failed_to_load_lto_big">下載大樂透失敗</string>
@@ -44,7 +52,7 @@
     <string name="failed_to_load_lto_list3">下載三星彩失敗</string>
     <string name="failed_to_load_lto_list4">下載四星彩失敗</string>
     <string name="failed_to_load_lto_539">下載今彩539失敗</string>
-    <string name="failed_to_load_lto_cf5">下載今彩加州彩失敗</string>
+    <string name="failed_to_load_lto_cf5">下載加州彩失敗</string>
 
     <string name="day_night_settings">日夜間模式</string>
     <string name="mode_day">日間模式</string>
@@ -95,7 +103,7 @@
     <string name="order_by_asc">顯示由低到高排序</string>
     <string name="order_by_desc">顯示由高到低排序</string>
 
-    <string name="total_data_count"> (共 %1$s 筆)</string>
+    <string name="total_data_count"> (共 %1$s 期)</string>
     <string name="danger_zone">其他設定</string>
     <string name="force_close">強制結束應用程式</string>
 </resources>

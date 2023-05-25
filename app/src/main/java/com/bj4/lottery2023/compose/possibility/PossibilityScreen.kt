@@ -176,6 +176,8 @@ private fun OrderCheckBox(@StringRes title: Int, value: MutableState<Boolean>, c
     }
 }
 
+private const val MIN_GRID_HEIGHT = 25
+
 @Composable
 private fun TableChart(
     title: String,
@@ -186,21 +188,23 @@ private fun TableChart(
         text = title,
         modifier = Modifier.padding(vertical = 4.dp)
     )
-    Row {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         chart.indexRow?.dataList?.forEach { grid ->
             GridFactory(
                 grid = grid,
                 fontSize = viewModel.viewModelState.value.fontSize,
-                extraSpacing = viewModel.viewModelState.value.extraSpacing
+                extraSpacing = viewModel.viewModelState.value.extraSpacing,
+                minHeight = MIN_GRID_HEIGHT
             )
         }
     }
-    Row {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         chart.countRow?.dataList?.forEach { grid ->
             GridFactory(
                 grid = grid,
                 fontSize = viewModel.viewModelState.value.fontSize,
-                extraSpacing = viewModel.viewModelState.value.extraSpacing
+                extraSpacing = viewModel.viewModelState.value.extraSpacing,
+                minHeight = MIN_GRID_HEIGHT
             )
         }
     }

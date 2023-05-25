@@ -17,6 +17,9 @@ interface LotteryDataDao {
     @Query("DELETE FROM lotterydata")
     fun delete()
 
+    @Query("DELETE FROM lotterydata WHERE type=:id")
+    fun deleteLottery(id: String)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg data: LotteryData)
 }

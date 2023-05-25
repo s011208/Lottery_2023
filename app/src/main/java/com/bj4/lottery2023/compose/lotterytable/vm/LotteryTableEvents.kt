@@ -42,4 +42,6 @@ sealed class LotteryTableEvents {
     object ResetData : LotteryTableEvents()
 
     object DropData : LotteryTableEvents()
+
+    data class ClearLotteryData(val lotteryType: LotteryType): LotteryTableEvents()
 }

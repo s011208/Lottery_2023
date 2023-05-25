@@ -19,6 +19,7 @@ import com.bj4.lottery2023.compose.appsettings.ResetDatabase
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableEvents
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableViewModel
 import com.example.analytics.Analytics
+import com.example.data.LotteryType
 import com.example.myapplication.compose.appsettings.*
 import com.example.service.cache.DayNightMode
 import com.example.service.cache.FontSize
@@ -211,8 +212,45 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
             }
 
             prefsItem {
-                TextPref(title = stringResource(id = R.string.lottery_log), onClick = {
-                    onLotteryDataClick()
+                TextPref(title = stringResource(id = R.string.drop_lto), onClick = {
+                    viewModel.handleEvent(LotteryTableEvents.ClearLotteryData(LotteryType.Lto))
+                    Toast.makeText(context, R.string.drop_done, Toast.LENGTH_LONG).show()
+                }, enabled = true)
+            }
+            prefsItem {
+                TextPref(title = stringResource(id = R.string.drop_lto_big), onClick = {
+                    viewModel.handleEvent(LotteryTableEvents.ClearLotteryData(LotteryType.LtoBig))
+                    Toast.makeText(context, R.string.drop_done, Toast.LENGTH_LONG).show()
+                }, enabled = true)
+            }
+            prefsItem {
+                TextPref(title = stringResource(id = R.string.drop_lto_hk), onClick = {
+                    viewModel.handleEvent(LotteryTableEvents.ClearLotteryData(LotteryType.LtoHK))
+                    Toast.makeText(context, R.string.drop_done, Toast.LENGTH_LONG).show()
+                }, enabled = true)
+            }
+            prefsItem {
+                TextPref(title = stringResource(id = R.string.drop_lto_539), onClick = {
+                    viewModel.handleEvent(LotteryTableEvents.ClearLotteryData(LotteryType.Lto539))
+                    Toast.makeText(context, R.string.drop_done, Toast.LENGTH_LONG).show()
+                }, enabled = true)
+            }
+            prefsItem {
+                TextPref(title = stringResource(id = R.string.drop_lto_cf5), onClick = {
+                    viewModel.handleEvent(LotteryTableEvents.ClearLotteryData(LotteryType.LtoCF5))
+                    Toast.makeText(context, R.string.drop_done, Toast.LENGTH_LONG).show()
+                }, enabled = true)
+            }
+            prefsItem {
+                TextPref(title = stringResource(id = R.string.drop_lto_list3), onClick = {
+                    viewModel.handleEvent(LotteryTableEvents.ClearLotteryData(LotteryType.LtoList3))
+                    Toast.makeText(context, R.string.drop_done, Toast.LENGTH_LONG).show()
+                }, enabled = true)
+            }
+            prefsItem {
+                TextPref(title = stringResource(id = R.string.drop_lto_list4), onClick = {
+                    viewModel.handleEvent(LotteryTableEvents.ClearLotteryData(LotteryType.LtoList4))
+                    Toast.makeText(context, R.string.drop_done, Toast.LENGTH_LONG).show()
                 }, enabled = true)
             }
         }
@@ -265,6 +303,12 @@ fun PreferenceScreen(onLotteryDataClick: () -> Unit = {}) {
                 color = MaterialTheme.colorScheme.secondary
             )
         }) {
+            prefsItem {
+                TextPref(title = stringResource(id = R.string.lottery_log), onClick = {
+                    onLotteryDataClick()
+                }, enabled = true)
+            }
+
             prefsItem {
                 TextPref(
                     title = stringResource(id = R.string.force_close),

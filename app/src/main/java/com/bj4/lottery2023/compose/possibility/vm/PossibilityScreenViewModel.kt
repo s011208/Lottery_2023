@@ -3,12 +3,12 @@
 package com.bj4.lottery2023.compose.possibility.vm
 
 import android.content.Context
-import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bj4.lottery2023.R
 import com.bj4.lottery2023.compose.general.Grid
 import com.bj4.lottery2023.compose.general.Row
+import com.bj4.lottery2023.compose.lotterytable.vm.getLotteryExtraSpacing
 import com.bj4.lottery2023.compose.lotterytable.vm.toDisplaySize
 import com.example.data.LotteryData
 import com.example.data.LotteryType
@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -113,21 +112,47 @@ class PossibilityScreenViewModel(
     fun handle(event: PossibilityUiEvent) {
         when (event) {
             PossibilityUiEvent.Reload -> {
+                val lotteryType = _viewModelState.value.lotteryType
+
                 viewModelScope.launch {
+                    val extraSpacing: Int
+                    withContext(Dispatchers.IO) {
+                        extraSpacing = getLotteryExtraSpacing(
+                            lotteryType,
+                            settingsDataStoreFlow,
+                            viewModelScope
+                        )
+                    }
                     val chartList =
-                        reload(_viewModelState.value.lotteryType, _viewModelState.value.count)
-                    _viewModelState.emit(_viewModelState.value.copy(chartList = chartList))
+                        reload(lotteryType, _viewModelState.value.count)
+                    _viewModelState.emit(
+                        _viewModelState.value.copy(
+                            chartList = chartList,
+                            extraSpacing = extraSpacing,
+                        )
+                    )
                 }
             }
 
             is PossibilityUiEvent.ChangeNumberOfRows -> {
+                val number = event.numberString.toInt()
+                if (number == _viewModelState.value.count) return
                 viewModelScope.launch {
+                    val lotteryType = _viewModelState.value.lotteryType
                     try {
-                        val number = event.numberString.toInt()
-                        val chartList = reload(_viewModelState.value.lotteryType, number)
+                        val chartList = reload(lotteryType, number)
+                        val extraSpacing: Int
+                        withContext(Dispatchers.IO) {
+                            extraSpacing = getLotteryExtraSpacing(
+                                lotteryType,
+                                settingsDataStoreFlow,
+                                viewModelScope
+                            )
+                        }
                         _viewModelState.emit(
                             _viewModelState.value.copy(
-                                chartList = chartList, count = number
+                                chartList = chartList, count = number,
+                                extraSpacing = extraSpacing,
                             )
                         )
                     } catch (
@@ -139,40 +164,24 @@ class PossibilityScreenViewModel(
             }
 
             is PossibilityUiEvent.ChangeLotteryType -> {
+                val lotteryType = event.newLotteryType
+                if (lotteryType == _viewModelState.value.lotteryType) {
+                    return
+                }
                 viewModelScope.launch {
-                    val chartList = reload(event.newLotteryType, _viewModelState.value.count)
+                    val chartList = reload(lotteryType, _viewModelState.value.count)
+                    val extraSpacing: Int
+                    withContext(Dispatchers.IO) {
+                        extraSpacing = getLotteryExtraSpacing(
+                            lotteryType,
+                            settingsDataStoreFlow,
+                            viewModelScope
+                        )
+                    }
                     _viewModelState.emit(
                         _viewModelState.value.copy(
-                            chartList = chartList, lotteryType = event.newLotteryType,
-                            extraSpacing = when (event.newLotteryType) {
-                                LotteryType.LtoBig -> {
-                                    settingsDataStoreFlow.stateIn(viewModelScope).value.get(
-                                        floatPreferencesKey(
-                                            SETTINGS_EXTRA_SPACING_LTO_BIG_TABLE
-                                        )
-                                    )?.toInt() ?: 2
-                                }
-
-                                LotteryType.LtoHK -> {
-                                    settingsDataStoreFlow.stateIn(viewModelScope).value.get(
-                                        floatPreferencesKey(
-                                            SETTINGS_EXTRA_SPACING_LTO_HK_TABLE
-                                        )
-                                    )?.toInt() ?: 2
-                                }
-
-                                LotteryType.Lto539, LotteryType.LtoCF5 -> {
-                                    settingsDataStoreFlow.stateIn(viewModelScope).value.get(
-                                        floatPreferencesKey(
-                                            SETTINGS_EXTRA_SPACING_LTO_539_TABLE
-                                        )
-                                    )?.toInt() ?: 4
-                                }
-
-                                else -> {
-                                    0
-                                }
-                            }
+                            chartList = chartList, lotteryType = lotteryType,
+                            extraSpacing = extraSpacing,
                         )
                     )
                 }

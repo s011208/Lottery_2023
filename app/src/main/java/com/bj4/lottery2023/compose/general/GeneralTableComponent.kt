@@ -3,10 +3,13 @@ package com.bj4.lottery2023.compose.general
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
@@ -54,18 +57,44 @@ fun GridFactory(
     fontSize: Int,
     fontSizeRatio: Float = 1f,
     extraSpacing: Int,
-    textColor: Color = Color.Unspecified
+    textColor: Color = Color.Unspecified,
+    minHeight: Int = 0,
 ) {
     when (grid.type) {
-        Grid.Type.Normal -> NormalGrid(grid, fontSize, fontSizeRatio, extraSpacing, textColor)
-        Grid.Type.Date -> DateGrid(grid, fontSize, fontSizeRatio, extraSpacing, textColor)
-        Grid.Type.Special -> SpecialGrid(grid, fontSize, fontSizeRatio, extraSpacing, textColor)
+        Grid.Type.Normal -> NormalGrid(
+            grid,
+            fontSize,
+            fontSizeRatio,
+            extraSpacing,
+            textColor,
+            minHeight
+        )
+
+        Grid.Type.Date -> DateGrid(
+            grid,
+            fontSize,
+            fontSizeRatio,
+            extraSpacing,
+            textColor,
+            minHeight
+        )
+
+        Grid.Type.Special -> SpecialGrid(
+            grid,
+            fontSize,
+            fontSizeRatio,
+            extraSpacing,
+            textColor,
+            minHeight
+        )
+
         Grid.Type.NormalLast -> NormalLastGrid(
             grid,
             fontSize,
             fontSizeRatio,
             extraSpacing,
-            textColor
+            textColor,
+            minHeight
         )
 
         Grid.Type.SpecialLast -> SpecialLastGrid(
@@ -73,25 +102,29 @@ fun GridFactory(
             fontSize,
             fontSizeRatio,
             extraSpacing,
-            textColor
+            textColor,
+            minHeight
         )
     }
 }
 
 
 @Composable
-fun DateGrid(
+private fun DateGrid(
     grid: Grid,
     fontSize: Int,
     fontSizeRatio: Float = 1f,
     extraSpacing: Int,
-    textColor: Color = Color.Unspecified
+    textColor: Color = Color.Unspecified,
+    minHeight: Int,
 ) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getDateWidth(fontSize) * fontSizeRatio + (2 * extraSpacing).dp),
+            .width(getDateWidth(fontSize) * fontSizeRatio + (2 * extraSpacing).dp)
+            .heightIn(min = minHeight.dp)
+            .wrapContentHeight(align = Alignment.CenterVertically),
         text = gridText(grid),
         color = if (grid.visible) {
             if (textColor == Color.Unspecified) {
@@ -107,19 +140,22 @@ fun DateGrid(
 }
 
 @Composable
-fun NormalGrid(
+private fun NormalGrid(
     grid: Grid,
     fontSize: Int,
     fontSizeRatio: Float = 1f,
     extraSpacing: Int,
-    textColor: Color = Color.Unspecified
+    textColor: Color = Color.Unspecified,
+    minHeight: Int,
 ) {
     Text(
         text = gridText(grid),
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
+            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp)
+            .heightIn(min = minHeight.dp)
+            .wrapContentHeight(align = Alignment.CenterVertically),
         color = if (grid.visible) {
             textColor
         } else {
@@ -130,19 +166,22 @@ fun NormalGrid(
 }
 
 @Composable
-fun NormalLastGrid(
+private fun NormalLastGrid(
     grid: Grid,
     fontSize: Int,
     fontSizeRatio: Float = 1f,
     extraSpacing: Int,
-    textColor: Color = Color.Unspecified
+    textColor: Color = Color.Unspecified,
+    minHeight: Int,
 ) {
     Text(
         text = gridText(grid),
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
+            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp)
+            .heightIn(min = minHeight.dp)
+            .wrapContentHeight(align = Alignment.CenterVertically),
         color = if (grid.visible) {
             textColor
         } else {
@@ -153,18 +192,21 @@ fun NormalLastGrid(
 }
 
 @Composable
-fun SpecialGrid(
+private fun SpecialGrid(
     grid: Grid,
     fontSize: Int,
     fontSizeRatio: Float = 1f,
     extraSpacing: Int,
-    textColor: Color = Color.Unspecified
+    textColor: Color = Color.Unspecified,
+    minHeight: Int,
 ) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
+            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp)
+            .heightIn(min = minHeight.dp)
+            .wrapContentHeight(align = Alignment.CenterVertically),
         text = gridText(grid),
         color = if (grid.visible) {
             if (textColor == Color.Unspecified) {
@@ -180,18 +222,21 @@ fun SpecialGrid(
 }
 
 @Composable
-fun SpecialLastGrid(
+private fun SpecialLastGrid(
     grid: Grid,
     fontSize: Int,
     fontSizeRatio: Float = 1f,
     extraSpacing: Int,
-    textColor: Color = Color.Unspecified
+    textColor: Color = Color.Unspecified,
+    minHeight: Int,
 ) {
     Text(
         textAlign = TextAlign.Center,
         modifier = Modifier
             .border(width = 1.dp, Color.Black)
-            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp),
+            .width(getNumberWidth(fontSize) + (2 * extraSpacing).dp)
+            .heightIn(min = minHeight.dp)
+            .wrapContentHeight(align = Alignment.CenterVertically),
         text = gridText(grid),
         color = if (grid.visible) {
             if (textColor == Color.Unspecified) {
@@ -222,21 +267,6 @@ fun getDateWidth(fontSize: Int): Dp {
     val textLayoutResult: TextLayoutResult =
         textMeasurer.measure(
             text = AnnotatedString("0000/00/00"),
-            style = LocalTextStyle.current.copy(fontSize = fontSize.sp)
-        )
-    val textSize = textLayoutResult.size
-    val density = LocalDensity.current
-
-    return with(density) { textSize.width.toDp() } + GRID_HORIZONTAL_PADDING.dp
-}
-
-@OptIn(ExperimentalTextApi::class)
-@Composable
-fun getPossibilityNumberWidth(fontSize: Int): Dp {
-    val textMeasurer = rememberTextMeasurer()
-    val textLayoutResult: TextLayoutResult =
-        textMeasurer.measure(
-            text = AnnotatedString(".00"),
             style = LocalTextStyle.current.copy(fontSize = fontSize.sp)
         )
     val textSize = textLayoutResult.size

@@ -6,7 +6,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.bj4.lottery2023.ImmutableListWrapper
 import com.bj4.lottery2023.compose.general.LoadingView
 import com.bj4.lottery2023.compose.lotterytable.ViewModelStateMapper.mapToUiState
 import com.bj4.lottery2023.compose.lotterytable.vm.LotteryTableViewModel
@@ -28,7 +27,7 @@ fun LotteryTableMainScreen() {
             Box {
                 if (value.rowList.isNotEmpty()) {
                     LotteryTable(
-                        ImmutableListWrapper(value.rowList),
+                        value.rowList,
                         value.tableType,
                         value.extraSpacing,
                         value.showDivideLine,

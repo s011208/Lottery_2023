@@ -19,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.bj4.lottery2023.ImmutableListWrapper
 import com.bj4.lottery2023.compose.SPECIAL_COLOR
 import com.bj4.lottery2023.compose.general.Grid
 import com.bj4.lottery2023.compose.general.GridFactory
@@ -32,7 +31,7 @@ private const val LIST_LOTTERY_TABLE_FONT_SIZE_RATIO = 1.5f
 
 @Composable
 fun LotteryTable(
-    rowListWrapper: ImmutableListWrapper<Row>,
+    rowList: List<Row>,
     tableType: TableType,
     extraSpacing: Int,
     showDivider: Boolean,
@@ -46,11 +45,11 @@ fun LotteryTable(
         mutableStateOf(UNDEF)
     }
 
-    LaunchedEffect(rowListWrapper) {
+    LaunchedEffect(rowList) {
         viewModel.eventStateSharedFlow.collect { myEvent ->
             when (myEvent) {
                 LotteryTableEvents.ScrollToBottom -> {
-                    lazyListState.scrollToItem(rowListWrapper.wrapper.size)
+                    lazyListState.scrollToItem(rowList.size)
                 }
 
                 LotteryTableEvents.ScrollToTop -> {
@@ -72,7 +71,7 @@ fun LotteryTable(
 
     when (tableType) {
         TableType.NORMAL -> NormalLotteryTable(
-            rowListWrapper,
+            rowList,
             horizontalScrollState,
             fontSize,
             lazyListState,
@@ -82,7 +81,7 @@ fun LotteryTable(
         )
 
         TableType.LIST -> ListLotteryTable(
-            rowListWrapper,
+            rowList,
             horizontalScrollState,
             fontSize,
             lazyListState,
@@ -95,7 +94,7 @@ fun LotteryTable(
 
 @Composable
 private fun NormalLotteryTable(
-    rowListWrapper: ImmutableListWrapper<Row>,
+    rowList: List<Row>,
     horizontalScrollState: ScrollState,
     fontSize: MutableState<Int>,
     lazyListState: LazyListState,
@@ -104,8 +103,8 @@ private fun NormalLotteryTable(
     showDivider: Boolean,
 ) {
     Column {
-        if (rowListWrapper.wrapper.isNotEmpty()) {
-            val first = rowListWrapper.wrapper.first()
+        if (rowList.isNotEmpty()) {
+            val first = rowList.first()
             Column(modifier = Modifier.horizontalScroll(horizontalScrollState)) {
                 RowFactory(
                     row = first,
@@ -120,7 +119,7 @@ private fun NormalLotteryTable(
             modifier = Modifier
                 .horizontalScroll(horizontalScrollState)
         ) {
-            rowListWrapper.wrapper.forEachIndexed { index, row ->
+            rowList.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
                 item {
                     RowFactory(
@@ -138,7 +137,7 @@ private fun NormalLotteryTable(
 
 @Composable
 private fun ListLotteryTable(
-    rowListWrapper: ImmutableListWrapper<Row>,
+    rowList: List<Row>,
     horizontalScrollState: ScrollState,
     fontSize: MutableState<Int>,
     lazyListState: LazyListState,
@@ -152,7 +151,7 @@ private fun ListLotteryTable(
             modifier = Modifier
                 .horizontalScroll(horizontalScrollState)
         ) {
-            rowListWrapper.wrapper.forEachIndexed { index, row ->
+            rowList.forEachIndexed { index, row ->
                 if (index == 0) return@forEachIndexed
                 item {
                     RowFactory(

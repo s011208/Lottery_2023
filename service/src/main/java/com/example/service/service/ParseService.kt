@@ -83,4 +83,8 @@ class ParseService {
     fun clearDatabase() {
         database.userDao().delete()
     }
+
+    fun deleteLottery(lotteryType: LotteryType) {
+        database.userDao().deleteLottery(lotteryType.toString())
+    }
 }
