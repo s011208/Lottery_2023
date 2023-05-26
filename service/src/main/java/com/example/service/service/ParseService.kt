@@ -15,18 +15,14 @@ import com.example.service.parser.LtoList4Parser
 import com.example.service.parser.LtoParser
 import com.example.service.parser.Parser
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 import timber.log.Timber
-import java.util.concurrent.Executors
 
 class ParseService {
 
     private val database: LotteryDataDatabase by inject(LotteryDataDatabase::class.java)
     private val logDatabase: LotteryLogDatabase by inject(LotteryLogDatabase::class.java)
-
-    private val dispatcher = Executors.newFixedThreadPool(1).asCoroutineDispatcher()
 
     private fun getLotteryParser(lotteryType: LotteryType): Parser {
         val lotteryData = database.userDao().getLottery(lotteryType.toString())
@@ -44,12 +40,13 @@ class ParseService {
     fun parse(
         taskId: String = "",
         syncSource: String = "",
-        lotteryType: LotteryType
+        lotteryType: LotteryType,
+        scope: CoroutineScope
     ): Result<LotteryData> {
         val result = getLotteryParser(lotteryType).parse()
         if (result.isSuccess) {
             result.onSuccess {
-                CoroutineScope(dispatcher).launch {
+                scope.launch {
                     database.userDao().insertAll(it)
                     logDatabase.userDao().insertAll(
                         LotteryLog(
@@ -64,7 +61,7 @@ class ParseService {
             }
         } else {
             Timber.w(result.exceptionOrNull(), "parse${lotteryType.name} failed")
-            CoroutineScope(dispatcher).launch {
+            scope.launch {
                 logDatabase.userDao().insertAll(
                     LotteryLog(
                         timeStamp = System.currentTimeMillis(),

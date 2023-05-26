@@ -194,6 +194,7 @@ class LotteryTableViewModel(
 
     fun handleEvent(event: LotteryTableEvents) {
         viewModelScope.launch {
+            Timber.e("handleEvent: $event")
             when (event) {
                 is LotteryTableEvents.StartSync -> {
                     startSync(event.source)
@@ -440,7 +441,7 @@ class LotteryTableViewModel(
 
             LotteryType.values().map { lotteryType ->
                 async {
-                    syncUseCase.parse(taskId, source.name, lotteryType).also {
+                    syncUseCase.parse(taskId, source.name, lotteryType, this).also {
                         if (it.isFailure) {
                             _eventState.emit(
                                 LotteryTableEvents.SyncFailed(
@@ -467,7 +468,7 @@ class LotteryTableViewModel(
         }
         _viewModelState.emit(_viewModelState.value.copy(isSyncing = false))
         _eventState.emit(LotteryTableEvents.EndSync)
-        viewModelScope.launch(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
             analytics.trackSyncSource(source.name)
         }
     }
@@ -505,6 +506,7 @@ class LotteryTableViewModel(
                 dataCount = dataCount,
             )
         )
+        Timber.e("reloadLotteryUiData")
     }
 }
 
@@ -560,8 +562,6 @@ suspend fun getLotteryExtraSpacing(
             )
         )?.toInt() ?: 10
     }
-}.also {
-    Timber.e("type: $lotteryType, spacing: $it")
 }
 
 fun FontSize.toDisplaySize(): Int = when (this) {
