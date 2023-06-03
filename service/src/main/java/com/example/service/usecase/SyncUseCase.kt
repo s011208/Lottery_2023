@@ -8,7 +8,7 @@ import timber.log.Timber
 
 class SyncUseCase(val service: ParseService) {
 
-    fun parse(taskId: String, source: String, type: LotteryType, scope: CoroutineScope): Result<LotteryData> {
+    suspend fun parse(taskId: String, source: String, type: LotteryType, scope: CoroutineScope): Result<LotteryData> {
         return service.parse(taskId, source, type, scope).also {
             Timber.i("parse${type.name} lotteryData size: ${it.getOrNull()?.dataList?.size}")
         }

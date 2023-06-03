@@ -168,7 +168,7 @@ val myModule = module {
     }
 
     single { LotteryTableViewModel(get(), get(), get(), get()) }
-    single { ParseService() }
+    single { ParseService(get()) }
     single { SyncUseCase(get()) }
     single { DisplayUseCase() }
     single { Preferences(get()) }

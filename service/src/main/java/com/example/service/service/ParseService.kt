@@ -1,5 +1,8 @@
 package com.example.service.service
 
+import android.annotation.SuppressLint
+import android.content.Context
+import com.bj4.lottery2023.service.BuildConfig
 import com.example.data.LoadingState
 import com.example.data.LotteryData
 import com.example.data.LotteryLog
@@ -14,18 +17,30 @@ import com.example.service.parser.LtoList3Parser
 import com.example.service.parser.LtoList4Parser
 import com.example.service.parser.LtoParser
 import com.example.service.parser.Parser
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 import timber.log.Timber
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.util.Locale
 
-class ParseService {
+
+class ParseService(private val context: Context) {
 
     private val database: LotteryDataDatabase by inject(LotteryDataDatabase::class.java)
     private val logDatabase: LotteryLogDatabase by inject(LotteryLogDatabase::class.java)
 
-    private fun getLotteryParser(lotteryType: LotteryType): Parser {
-        val lotteryData = database.userDao().getLottery(lotteryType.toString())
+    private suspend fun getLotteryParser(lotteryType: LotteryType): Parser {
+        var lotteryData = database.userDao().getLottery(lotteryType.toString())
+        if (lotteryData == null) {
+            lotteryData =
+                Gson().fromJson(readFromFile(lotteryType), LotteryData::class.java)
+        }
         return when (lotteryType) {
             LotteryType.Lto -> LtoParser(lotteryData)
             LotteryType.LtoBig -> LtoBigParser(lotteryData)
@@ -37,7 +52,40 @@ class ParseService {
         }
     }
 
-    fun parse(
+    private fun LotteryType.getFileName(): String = toString().lowercase(Locale.getDefault())
+
+    @SuppressLint("DiscouragedApi")
+    private fun readFromFile(type: LotteryType): String {
+        val resource = try {
+            context.resources.getIdentifier(type.getFileName(), "raw", context.packageName)
+        } catch (e: Exception) {
+            Timber.w(e, "failed to read resource")
+            return ""
+        }
+        val inputStream: InputStream = context.resources.openRawResource(resource)
+        val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+        var eachline = bufferedReader.readLine()
+        var result = ""
+        while (eachline != null) {
+            result += eachline
+            eachline = bufferedReader.readLine()
+        }
+        bufferedReader.close()
+        return result
+    }
+
+    private fun writeToFile(data: String, type: LotteryType) {
+        try {
+            val outputStreamWriter =
+                OutputStreamWriter(context.openFileOutput(type.getFileName(), Context.MODE_PRIVATE))
+            outputStreamWriter.write(data)
+            outputStreamWriter.close()
+        } catch (e: IOException) {
+            Timber.w(e, "Exception", "File write failed")
+        }
+    }
+
+    suspend fun parse(
         taskId: String = "",
         syncSource: String = "",
         lotteryType: LotteryType,
@@ -47,6 +95,9 @@ class ParseService {
         if (result.isSuccess) {
             result.onSuccess {
                 scope.launch {
+                    if (BuildConfig.DEBUG) {
+                        writeToFile(Gson().toJson(it), lotteryType)
+                    }
                     database.userDao().insertAll(it)
                     logDatabase.userDao().insertAll(
                         LotteryLog(
