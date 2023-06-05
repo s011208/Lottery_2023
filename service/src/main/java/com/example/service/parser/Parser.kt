@@ -9,10 +9,12 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
     companion object {
         private const val DATE_FORMATTER = "yyyy/MM/dd"
+        private const val TIME_ZONE_TAIPEI = "Asia/Taipei"
     }
 
     private var currentPage: Int = 1
@@ -28,7 +30,6 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
         try {
             do {
                 Timber.d("type: ${getType()}, url: ${getUrl()}")
-
                 val newDataRows = parseInternal(getUrl())
                 currentMinDate =
                     previousMinDate.coerceAtMost(newDataRows.minOfOrNull { it.date } ?: 0)
@@ -83,6 +84,7 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
         val tempDate = getDateFormat().parse(date.substring(0, date.length - 3).trim()) ?: return 0L
 
         val calendar = Calendar.getInstance()
+        calendar.timeZone = TimeZone.getTimeZone(TIME_ZONE_TAIPEI)
         calendar.time = tempDate
         calendar.set(Calendar.MILLISECOND, 0)
         calendar.set(Calendar.SECOND, 0)

@@ -2,7 +2,6 @@ package com.example.service.service
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.bj4.lottery2023.service.BuildConfig
 import com.example.data.LoadingState
 import com.example.data.LotteryData
 import com.example.data.LotteryLog
@@ -36,10 +35,12 @@ class ParseService(private val context: Context) {
     private val logDatabase: LotteryLogDatabase by inject(LotteryLogDatabase::class.java)
 
     private suspend fun getLotteryParser(lotteryType: LotteryType): Parser {
-        var lotteryData = database.userDao().getLottery(lotteryType.toString())
-        if (lotteryData == null) {
+        var lotteryData: LotteryData? = database.userDao().getLottery(lotteryType.toString())
+        if (lotteryData == null ) {
+            Timber.d("init data from file")
             lotteryData =
                 Gson().fromJson(readFromFile(lotteryType), LotteryData::class.java)
+            Timber.d("init data from file done: ${lotteryData?.dataList?.size}")
         }
         return when (lotteryType) {
             LotteryType.Lto -> LtoParser(lotteryData)
@@ -95,9 +96,9 @@ class ParseService(private val context: Context) {
         if (result.isSuccess) {
             result.onSuccess {
                 scope.launch {
-                    if (BuildConfig.DEBUG) {
-                        writeToFile(Gson().toJson(it), lotteryType)
-                    }
+//                    if (BuildConfig.DEBUG) {
+//                        writeToFile(Gson().toJson(it), lotteryType)
+//                    }
                     database.userDao().insertAll(it)
                     logDatabase.userDao().insertAll(
                         LotteryLog(
