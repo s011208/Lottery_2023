@@ -6,10 +6,12 @@ import com.bj4.lottery2023.getMonth
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
 import com.example.data.LotteryType
+import com.example.data.TIME_ZONE_TAIPEI
 import com.example.service.cache.SortType
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 object LotteryDataMapper {
     private const val DATE_FORMAT = "yyyy/MM/dd"
@@ -157,7 +159,8 @@ object LotteryDataMapper {
             }
 
     private fun makeListLotteryData(lotteryData: LotteryData): MutableList<Row> {
-        val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
+        val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.TAIWAN)
+        dateFormat.timeZone = TimeZone.getTimeZone(TIME_ZONE_TAIPEI)
         val rtn = mutableListOf<Row>()
         lotteryData.dataList.forEach { lotteryRowData ->
             val dailyLotteryRowList = mutableListOf<Grid>()
@@ -185,8 +188,10 @@ object LotteryDataMapper {
 
     @Suppress("SENSELESS_COMPARISON")
     private fun makeLotteryData(lotteryData: LotteryData): MutableList<Row> {
-        val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
-        val monthlyTotalDateFormat = SimpleDateFormat("MM", Locale.getDefault())
+        val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.TAIWAN)
+        dateFormat.timeZone = TimeZone.getTimeZone(TIME_ZONE_TAIPEI)
+
+        val monthlyTotalDateFormat = SimpleDateFormat("MM", Locale.TAIWAN)
         val rtn = mutableListOf<Row>()
 
         val headerRowList = mutableListOf<Grid>()

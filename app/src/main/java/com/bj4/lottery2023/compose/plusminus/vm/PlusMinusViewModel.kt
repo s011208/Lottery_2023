@@ -167,9 +167,9 @@ class PlusMinusViewModel(
                     lotteryType
                 )
             } ?: return
-        val monthlyTotalDateFormat = SimpleDateFormat("MM", Locale.getDefault())
+        val monthlyTotalDateFormat = SimpleDateFormat("MM", Locale.TAIWAN)
 
-        val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
+        val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.TAIWAN)
         val rtn = mutableListOf<Row>()
         val rowCount = lotteryData.dataList.size
         val sortedRow = lotteryData.dataList.sortedBy { it.date }

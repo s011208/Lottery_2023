@@ -4,6 +4,7 @@ import com.example.analytics.Analytics
 import com.example.data.LotteryData
 import com.example.data.LotteryRowData
 import com.example.data.LotteryType
+import com.example.data.TIME_ZONE_TAIPEI
 import org.koin.java.KoinJavaComponent
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -14,12 +15,11 @@ import java.util.TimeZone
 abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
     companion object {
         private const val DATE_FORMATTER = "yyyy/MM/dd"
-        private const val TIME_ZONE_TAIPEI = "Asia/Taipei"
     }
 
     private var currentPage: Int = 1
 
-    private val dateFormat = SimpleDateFormat(DATE_FORMATTER, Locale.getDefault())
+    private val dateFormat = SimpleDateFormat(DATE_FORMATTER, Locale.TAIWAN)
 
     val analytics: Analytics by KoinJavaComponent.inject(Analytics::class.java)
 
@@ -51,7 +51,8 @@ abstract class Parser(private val cacheLotteryData: LotteryData? = null) {
         return Result.success(
             LotteryData(
                 dataList = cacheLotteryDataSet.distinctBy { it.date }.toMutableList()
-                    .also { it.sortByDescending { lotteryRowData -> lotteryRowData.date } },
+                    .also { it.sortByDescending { lotteryRowData -> lotteryRowData.date } }
+                    .also { Timber.d("${getType()}: latest row: ${it.firstOrNull()}") },
                 type = getType(),
                 normalNumberCount = getNormalCount(),
                 specialNumberCount = getSpecialCount(),

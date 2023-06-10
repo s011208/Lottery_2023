@@ -31,7 +31,7 @@ fun LotteryLog() {
     val viewModel: LotteryLogViewModel by KoinJavaComponent.inject(LotteryLogViewModel::class.java)
     val state = viewModel.viewModelState.collectAsState()
 
-    val dateFormat = SimpleDateFormat("yyyy/MM/dd hh:mm:ss", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("yyyy/MM/dd hh:mm:ss", Locale.TAIWAN)
 
     val itemList = state.value.taskGroupLList
 

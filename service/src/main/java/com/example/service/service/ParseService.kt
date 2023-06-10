@@ -53,7 +53,7 @@ class ParseService(private val context: Context) {
         }
     }
 
-    private fun LotteryType.getFileName(): String = toString().lowercase(Locale.getDefault())
+    private fun LotteryType.getFileName(): String = toString().lowercase(Locale.TAIWAN)
 
     @SuppressLint("DiscouragedApi")
     private fun readFromFile(type: LotteryType): String {

@@ -18,7 +18,7 @@ class LtoCF5Parser(cacheLotteryData: LotteryData?) : Parser(cacheLotteryData) {
         private const val DATE_FORMATTER = "MM/dd/yyyy"
     }
 
-    private val dateFormat = SimpleDateFormat(DATE_FORMATTER, Locale.getDefault())
+    private val dateFormat = SimpleDateFormat(DATE_FORMATTER, Locale.TAIWAN)
 
     override fun getBaseUrl(): String = URL
 

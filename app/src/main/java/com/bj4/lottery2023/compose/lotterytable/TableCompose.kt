@@ -151,8 +151,7 @@ private fun ListLotteryTable(
             modifier = Modifier
                 .horizontalScroll(horizontalScrollState)
         ) {
-            rowList.forEachIndexed { index, row ->
-                if (index == 0) return@forEachIndexed
+            rowList.forEachIndexed { _, row ->
                 item {
                     RowFactory(
                         row = row,
